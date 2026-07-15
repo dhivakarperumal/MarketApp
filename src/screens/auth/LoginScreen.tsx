@@ -25,12 +25,30 @@ export const LoginScreen = () => {
 
     setIsLoading(true);
     try {
-      const res = await api.post("/auth/login", form);
-      const userData = res.data.user || res.data;
-      await login(res.data.token, userData);
+      const response = await api.post("/auth/login", {
+        identifier: form.identifier,
+        password: form.password,
+      });
+      
+      if (response.data && response.data.token) {
+        const userData = {
+          id: response.data.user?.id || response.data.id || '',
+          name: response.data.user?.name || response.data.name || '',
+          email: response.data.user?.email || response.data.email || form.identifier,
+        };
+        
+        await login(response.data.token, userData);
+        // Navigation will happen automatically via App.tsx when user context updates
+      } else {
+        Alert.alert("Login Failed", "Invalid response from server.");
+      }
     } catch (error: any) {
       console.error("Login Error:", error);
-      Alert.alert("Login Failed", error.response?.data?.message || "Invalid credentials.");
+      const errorMessage = 
+        error.response?.data?.message || 
+        error.message || 
+        "An error occurred during login. Please check your credentials and try again.";
+      Alert.alert("Login Failed", errorMessage);
     } finally {
       setIsLoading(false);
     }

@@ -47,6 +47,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(userData);
     } catch (e) {
       console.error('Login error', e);
+      throw new Error('Failed to save login data. Please try again.');
     }
   }
 
