@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Alert, Image } from 'react-native';
-import { User, Phone, Mail, Lock, Leaf, CheckSquare, ShoppingCart, ShieldCheck } from 'lucide-react-native';
+import { User, Phone, Mail, Lock, Leaf, CheckSquare, ShoppingCart, ShieldCheck, Eye, EyeOff } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import api from '../../services/api';
 
@@ -17,6 +17,8 @@ export const RegisterScreen = () => {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (name: string, value: string | boolean) => {
     setForm({ ...form, [name]: value });
@@ -62,7 +64,7 @@ export const RegisterScreen = () => {
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} bounces={false} showsVerticalScrollIndicator={false}>
         
-        {/* Top Image Section (Matching Login) */}
+        {/* Top Image Section */}
         <View className="h-48 relative bg-green-900">
           <Image 
             source={{ uri: "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1974&auto=format&fit=crop" }} 
@@ -97,7 +99,7 @@ export const RegisterScreen = () => {
           <View className="space-y-4 mb-8">
             
             <View>
-              <Text className="text-slate-700 font-bold mb-1 ml-1 text-sm">Full Name</Text>
+              <Text className="text-slate-700 font-bold mb-2 ml-1 text-sm">Full Name</Text>
               <View className="relative justify-center">
                 <View className="absolute left-4 z-10"><User color="#94a3b8" size={18} /></View>
                 <TextInput
@@ -111,7 +113,7 @@ export const RegisterScreen = () => {
             </View>
 
             <View>
-              <Text className="text-slate-700 font-bold mb-1 ml-1 text-sm">Phone Number</Text>
+              <Text className="text-slate-700 font-bold mb-2 ml-1 text-sm">Phone Number</Text>
               <View className="relative justify-center">
                 <View className="absolute left-4 z-10"><Phone color="#94a3b8" size={18} /></View>
                 <TextInput
@@ -126,7 +128,7 @@ export const RegisterScreen = () => {
             </View>
 
             <View>
-              <Text className="text-slate-700 font-bold mb-1 ml-1 text-sm">Email Address</Text>
+              <Text className="text-slate-700 font-bold mb-2 ml-1 text-sm">Email Address</Text>
               <View className="relative justify-center">
                 <View className="absolute left-4 z-10"><Mail color="#94a3b8" size={18} /></View>
                 <TextInput
@@ -141,35 +143,45 @@ export const RegisterScreen = () => {
               </View>
             </View>
 
-            <View className="flex-row gap-3">
-              <View className="flex-1">
-                <Text className="text-slate-700 font-bold mb-1 ml-1 text-sm">Password</Text>
-                <View className="relative justify-center">
-                  <View className="absolute left-3 z-10"><Lock color="#94a3b8" size={16} /></View>
-                  <TextInput
-                    placeholder="Create pass"
-                    placeholderTextColor="#94a3b8"
-                    value={form.password}
-                    secureTextEntry
-                    onChangeText={(text) => handleChange("password", text)}
-                    className="w-full pl-9 pr-3 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800 text-sm"
-                  />
-                </View>
+            <View>
+              <Text className="text-slate-700 font-bold mb-2 ml-1 text-sm">Password</Text>
+              <View className="relative justify-center">
+                <View className="absolute left-4 z-10"><Lock color="#94a3b8" size={18} /></View>
+                <TextInput
+                  placeholder="Create password"
+                  placeholderTextColor="#94a3b8"
+                  value={form.password}
+                  secureTextEntry={!showPassword}
+                  onChangeText={(text) => handleChange("password", text)}
+                  className="w-full pl-12 pr-12 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800 text-sm"
+                />
+                <TouchableOpacity 
+                  className="absolute right-4 z-10 p-2"
+                  onPress={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff color="#94a3b8" size={20} /> : <Eye color="#94a3b8" size={20} />}
+                </TouchableOpacity>
               </View>
-              
-              <View className="flex-1">
-                <Text className="text-slate-700 font-bold mb-1 ml-1 text-sm">Confirm</Text>
-                <View className="relative justify-center">
-                  <View className="absolute left-3 z-10"><Lock color="#94a3b8" size={16} /></View>
-                  <TextInput
-                    placeholder="Repeat pass"
-                    placeholderTextColor="#94a3b8"
-                    value={form.confirmPassword}
-                    secureTextEntry
-                    onChangeText={(text) => handleChange("confirmPassword", text)}
-                    className="w-full pl-9 pr-3 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800 text-sm"
-                  />
-                </View>
+            </View>
+
+            <View>
+              <Text className="text-slate-700 font-bold mb-2 ml-1 text-sm">Confirm Password</Text>
+              <View className="relative justify-center">
+                <View className="absolute left-4 z-10"><Lock color="#94a3b8" size={18} /></View>
+                <TextInput
+                  placeholder="Repeat password"
+                  placeholderTextColor="#94a3b8"
+                  value={form.confirmPassword}
+                  secureTextEntry={!showConfirmPassword}
+                  onChangeText={(text) => handleChange("confirmPassword", text)}
+                  className="w-full pl-12 pr-12 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800 text-sm"
+                />
+                <TouchableOpacity 
+                  className="absolute right-4 z-10 p-2"
+                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <EyeOff color="#94a3b8" size={20} /> : <Eye color="#94a3b8" size={20} />}
+                </TouchableOpacity>
               </View>
             </View>
 
