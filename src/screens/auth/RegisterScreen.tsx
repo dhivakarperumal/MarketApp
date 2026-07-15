@@ -96,10 +96,10 @@ export const RegisterScreen = () => {
             </View>
           </View>
 
-          <View className="space-y-4 mb-8">
+          <View className="space-y-3 mb-8">
             
             <View>
-              <Text className="text-slate-700 font-bold mb-2 ml-1 text-sm">Full Name</Text>
+              <Text className="text-slate-700 font-bold mt-3 mb-2 ml-1 text-sm">Full Name</Text>
               <View className="relative justify-center">
                 <View className="absolute left-4 z-10"><User color="#94a3b8" size={18} /></View>
                 <TextInput
@@ -113,7 +113,7 @@ export const RegisterScreen = () => {
             </View>
 
             <View>
-              <Text className="text-slate-700 font-bold mb-2 ml-1 text-sm">Phone Number</Text>
+              <Text className="text-slate-700 font-bold mt-3 mb-2 ml-1 text-sm">Phone Number</Text>
               <View className="relative justify-center">
                 <View className="absolute left-4 z-10"><Phone color="#94a3b8" size={18} /></View>
                 <TextInput
@@ -128,7 +128,7 @@ export const RegisterScreen = () => {
             </View>
 
             <View>
-              <Text className="text-slate-700 font-bold mb-2 ml-1 text-sm">Email Address</Text>
+              <Text className="text-slate-700 font-bold mt-3 mb-2 ml-1 text-sm">Email Address</Text>
               <View className="relative justify-center">
                 <View className="absolute left-4 z-10"><Mail color="#94a3b8" size={18} /></View>
                 <TextInput
@@ -144,7 +144,7 @@ export const RegisterScreen = () => {
             </View>
 
             <View>
-              <Text className="text-slate-700 font-bold mb-2 ml-1 text-sm">Password</Text>
+              <Text className="text-slate-700 font-bold mt-3 mb-2 ml-1 text-sm">Password</Text>
               <View className="relative justify-center">
                 <View className="absolute left-4 z-10"><Lock color="#94a3b8" size={18} /></View>
                 <TextInput
@@ -165,7 +165,7 @@ export const RegisterScreen = () => {
             </View>
 
             <View>
-              <Text className="text-slate-700 font-bold mb-2 ml-1 text-sm">Confirm Password</Text>
+              <Text className="text-slate-700 font-bold mt-3 mb-2 ml-1 text-sm">Confirm Password</Text>
               <View className="relative justify-center">
                 <View className="absolute left-4 z-10"><Lock color="#94a3b8" size={18} /></View>
                 <TextInput
@@ -186,7 +186,7 @@ export const RegisterScreen = () => {
             </View>
 
             <TouchableOpacity 
-              className="flex-row items-center mt-3"
+              className="flex-row items-center mt-5"
               onPress={() => handleChange("agreed", !form.agreed)}
               activeOpacity={0.7}
             >

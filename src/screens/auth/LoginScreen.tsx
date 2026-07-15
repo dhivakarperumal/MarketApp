@@ -41,7 +41,7 @@ export const LoginScreen = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
       className="flex-1 bg-slate-50"
     >
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} bounces={false}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} bounces={false} showsVerticalScrollIndicator={false}>
         
         {/* Top Image Section */}
         <View className="h-64 relative bg-green-900">
@@ -79,10 +79,10 @@ export const LoginScreen = () => {
           </View>
 
           {/* Inputs */}
-          <View className="space-y-5 mb-6">
+          <View className="space-y-3 mb-8">
             
             <View>
-              <Text className="text-slate-700 font-bold mb-2 ml-1">Email or Phone</Text>
+              <Text className="text-slate-700 font-bold mt-3 mb-2 ml-1 text-sm">Email or Phone</Text>
               <View className="relative justify-center">
                 <View className="absolute left-4 z-10">
                   <Mail color="#94a3b8" size={20} />
@@ -99,7 +99,7 @@ export const LoginScreen = () => {
             </View>
 
             <View>
-              <Text className="text-slate-700 font-bold mb-2 ml-1">Password</Text>
+              <Text className="text-slate-700 font-bold mt-3 mb-2 ml-1 text-sm">Password</Text>
               <View className="relative justify-center">
                 <View className="absolute left-4 z-10">
                   <Lock color="#94a3b8" size={20} />
@@ -121,8 +121,8 @@ export const LoginScreen = () => {
               </View>
             </View>
             
-            <TouchableOpacity className="items-end mt-1">
-              <Text className="text-green-600 font-bold">Forgot Password?</Text>
+            <TouchableOpacity className="items-end mt-2">
+              <Text className="text-green-600 font-bold text-sm">Forgot Password?</Text>
             </TouchableOpacity>
           </View>
 
@@ -136,24 +136,8 @@ export const LoginScreen = () => {
             <Text className="text-white font-bold text-lg">{isLoading ? "Signing In..." : "Sign In"}</Text>
           </TouchableOpacity>
 
-          <View className="flex-row items-center justify-center gap-4 my-8">
-            <View className="flex-1 h-[1px] bg-slate-200" />
-            <Text className="text-slate-400 font-medium text-xs">or continue with</Text>
-            <View className="flex-1 h-[1px] bg-slate-200" />
-          </View>
-
-          {/* Social Auth Placeholders */}
-          <View className="flex-row gap-4 mb-8">
-            <TouchableOpacity className="flex-1 py-3 border border-slate-200 rounded-xl items-center justify-center bg-slate-50">
-              <Text className="font-bold text-slate-700">Google</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="flex-1 py-3 border border-slate-200 rounded-xl items-center justify-center bg-slate-50">
-              <Text className="font-bold text-slate-700">Facebook</Text>
-            </TouchableOpacity>
-          </View>
-
           {/* Register Link */}
-          <View className="flex-row justify-center items-center mt-auto">
+          <View className="flex-row justify-center items-center mt-10 pb-4">
             <Text className="text-slate-600">Don't have an account? </Text>
             <TouchableOpacity onPress={() => navigation.navigate("Register")}>
               <Text className="text-green-600 font-bold">Register Now</Text>
