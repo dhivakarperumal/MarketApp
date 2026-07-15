@@ -30,6 +30,11 @@ export const RegisterScreen = () => {
       return;
     }
 
+    if (!form.username || !form.email || !form.phone || !form.password) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+
     if (form.password !== form.confirmPassword) {
       Alert.alert("Error", "Passwords do not match");
       return;
@@ -42,16 +47,27 @@ export const RegisterScreen = () => {
         email: form.email.trim(),
         phone: form.phone.trim(),
         password: form.password,
-        role: "user",
-        status: "active",
       };
 
-      await api.post("/auth/register", payload);
-      Alert.alert("Success", "Registration successful! Please login.");
-      navigation.navigate("Login");
+      const response = await api.post("/auth/register", payload);
+      
+      if (response.data && response.data.success) {
+        Alert.alert("Success", response.data.message || "Registration successful! Please login.", [
+          {
+            text: "OK",
+            onPress: () => navigation.navigate("Login"),
+          },
+        ]);
+      } else {
+        Alert.alert("Registration Failed", response.data?.message || "Something went wrong.");
+      }
     } catch (error: any) {
       console.error("Register Error:", error);
-      Alert.alert("Registration Failed", error.response?.data?.message || "Something went wrong.");
+      const errorMessage = 
+        error.response?.data?.message || 
+        error.message || 
+        "Registration failed. Please try again.";
+      Alert.alert("Registration Failed", errorMessage);
     } finally {
       setIsLoading(false);
     }
