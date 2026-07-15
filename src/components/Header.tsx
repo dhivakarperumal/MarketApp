@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
+import { AuthContext } from '../context/AuthContext';
 
 interface HeaderProps {
   title: string;
@@ -7,9 +8,10 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ title }) => {
   const [menuVisible, setMenuVisible] = useState(false);
+  const { user, logout } = useContext(AuthContext);
   
-  // Hardcoded for demonstration. In a real app, this would come from your auth state/context
-  const userInitial = "U"; 
+  // If user is logged in, show their first initial, else 'G' for Guest
+  const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : "G"; 
 
   return (
     <View className="bg-green-600 px-4 py-4 flex-row items-center justify-between shadow-md z-50">
@@ -31,11 +33,9 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
         animationType="fade"
         onRequestClose={() => setMenuVisible(false)}
       >
-        {/* Overlay to catch clicks outside the menu */}
         <TouchableWithoutFeedback onPress={() => setMenuVisible(false)}>
           <View className="flex-1 relative">
             
-            {/* The Dropdown Menu Box */}
             <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
               <View className="absolute top-16 right-4 bg-white rounded-xl shadow-lg w-40 border border-slate-100 overflow-hidden">
                 <TouchableOpacity 
@@ -50,9 +50,10 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
                 
                 <TouchableOpacity 
                   className="px-4 py-3 bg-white active:bg-slate-50"
-                  onPress={() => {
+                  onPress={async () => {
                     setMenuVisible(false);
-                    console.log("Handle Logout");
+                    await logout();
+                    console.log("User logged out");
                   }}
                 >
                   <Text className="text-red-500 text-base font-bold">Logout</Text>
