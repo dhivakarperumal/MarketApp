@@ -30,17 +30,11 @@ export const LoginScreen = () => {
         password: form.password,
       });
       
-      if (response.data && response.data.token) {
-        const userData = {
-          id: response.data.user?.id || response.data.id || '',
-          name: response.data.user?.name || response.data.name || '',
-          email: response.data.user?.email || response.data.email || form.identifier,
-        };
-        
-        await login(response.data.token, userData);
+      if (response.data && response.data.token && response.data.user) {
+        await login(response.data.token, response.data.user);
         // Navigation will happen automatically via App.tsx when user context updates
       } else {
-        Alert.alert("Login Failed", "Invalid response from server.");
+        Alert.alert("Login Failed", response.data?.message || "Invalid response from server.");
       }
     } catch (error: any) {
       console.error("Login Error:", error);
