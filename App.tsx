@@ -7,6 +7,7 @@ import { TabNavigator } from './src/navigation/TabNavigator';
 import { AuthProvider, AuthContext } from './src/context/AuthContext';
 import { LoginScreen } from './src/screens/auth/LoginScreen';
 import { RegisterScreen } from './src/screens/auth/RegisterScreen';
+import { Wishlist } from './src/pages/Wishlist';
 
 const Stack = createNativeStackNavigator();
 
@@ -15,14 +16,20 @@ const RootNavigator = () => {
 
   if (isLoading) {
     // Return null or a splash screen while checking async storage
-    return null; 
+    return null;
   }
 
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {user ? (
-          <Stack.Screen name="Main" component={TabNavigator} />
+          <>
+            <Stack.Screen name="Main" component={TabNavigator} />
+            <Stack.Screen
+              name="Wishlist"
+              component={Wishlist}
+            />
+          </>
         ) : (
           <>
             <Stack.Screen name="Login" component={LoginScreen} />
