@@ -1,5 +1,13 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Modal,
+  TouchableWithoutFeedback,
+} from 'react-native';
+import { Heart } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../context/AuthContext';
 
 interface HeaderProps {
@@ -8,23 +16,42 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ title }) => {
   const [menuVisible, setMenuVisible] = useState(false);
+
+  const navigation = useNavigation<any>();
+
   const { user, logout } = useContext(AuthContext);
-  
-  // If user is logged in, show their first initial, else 'G' for Guest
-  const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : "G"; 
+
+  const userInitial = user?.username
+    ? user.username.charAt(0).toUpperCase()
+    : "G";
 
   return (
     <View className="bg-green-600 px-4 py-4 flex-row items-center justify-between shadow-md z-50">
       <Text className="text-white text-xl font-bold">{title}</Text>
-      
-      {/* Profile Avatar Button */}
-      <TouchableOpacity 
-        className="w-10 h-10 bg-white rounded-full items-center justify-center shadow-sm"
-        onPress={() => setMenuVisible(true)}
-        activeOpacity={0.7}
-      >
-        <Text className="text-green-600 font-bold text-lg">{userInitial}</Text>
-      </TouchableOpacity>
+
+      <View className="flex-row items-center">
+
+        {/* Wishlist */}
+        <TouchableOpacity
+          className="mr-3"
+          onPress={() => navigation.navigate('Wishlist')}
+          activeOpacity={0.7}
+        >
+          <Heart color="white" size={26} />
+        </TouchableOpacity>
+
+        {/* Profile */}
+        <TouchableOpacity
+          className="w-10 h-10 bg-white rounded-full items-center justify-center shadow-sm"
+          onPress={() => setMenuVisible(true)}
+          activeOpacity={0.7}
+        >
+          <Text className="text-green-600 font-bold text-lg">
+            {userInitial}
+          </Text>
+        </TouchableOpacity>
+
+      </View>
 
       {/* Dropdown Menu Modal */}
       <Modal
@@ -35,10 +62,10 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
       >
         <TouchableWithoutFeedback onPress={() => setMenuVisible(false)}>
           <View className="flex-1 relative">
-            
+
             <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
               <View className="absolute top-16 right-4 bg-white rounded-xl shadow-lg w-40 border border-slate-100 overflow-hidden">
-                <TouchableOpacity 
+                <TouchableOpacity
                   className="px-4 py-3 border-b border-slate-100 bg-white active:bg-slate-50"
                   onPress={() => {
                     setMenuVisible(false);
@@ -47,8 +74,8 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
                 >
                   <Text className="text-slate-700 text-base font-medium">Profile</Text>
                 </TouchableOpacity>
-                
-                <TouchableOpacity 
+
+                <TouchableOpacity
                   className="px-4 py-3 bg-white active:bg-slate-50"
                   onPress={async () => {
                     setMenuVisible(false);
