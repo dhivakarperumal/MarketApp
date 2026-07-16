@@ -61,11 +61,11 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
       <View className="px-5 py-6">
         {/* Image */}
         <View className="relative">
-          <Image
+         {/* <Image
             source={require("../assets/aboutimagesupermarket.png")}
             className="w-full h-72 rounded-3xl"
             resizeMode="cover"
-          />
+          /> */}
 
           {/* Floating Badge */}
           <View className="absolute bottom-4 left-4 bg-green-600 px-5 py-3 rounded-2xl">
