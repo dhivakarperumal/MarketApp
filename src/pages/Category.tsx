@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
+import { CategorySection } from '../components/CategorySection';
 
 export const Category = () => {
   return (
-    <View className="flex-1 bg-white items-center justify-center">
-      <Text className="text-2xl font-bold text-green-700">Category</Text>
+    <View className="flex-1 bg-white">
+      <CategorySection />
     </View>
   );
 };

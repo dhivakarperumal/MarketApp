@@ -8,6 +8,7 @@ import { AuthProvider, AuthContext } from './src/context/AuthContext';
 import { LoginScreen } from './src/screens/auth/LoginScreen';
 import { RegisterScreen } from './src/screens/auth/RegisterScreen';
 import { Wishlist } from './src/pages/Wishlist';
+import { StoreProvider } from './src/context/StoreContext';
 
 const Stack = createNativeStackNavigator();
 
@@ -45,7 +46,9 @@ function App() {
   return (
     <SafeAreaProvider>
       <AuthProvider>
-        <RootNavigator />
+        <StoreProvider>
+          <RootNavigator />
+        </StoreProvider>
       </AuthProvider>
     </SafeAreaProvider>
   );
