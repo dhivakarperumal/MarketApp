@@ -1,13 +1,11 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View } from "react-native";
 import { HomeScreen } from '../screens/HomeScreen';
 import { ProductsScreen } from '../screens/ProductsScreen';
 import { CartScreen } from '../screens/CartScreen';
 import { ComboScreen } from '../screens/ComboScreen';
 import { MoreScreen } from '../screens/MoreScreen';
 import { Header } from '../components/Header';
-import { Home, Package, ShoppingCart, Layers, Menu } from 'lucide-react-native';
 import CustomTabBar from "./CustomTabBar";
 
 const Tab = createBottomTabNavigator();
