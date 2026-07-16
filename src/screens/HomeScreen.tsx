@@ -10,7 +10,7 @@ import { ProductSwiper } from '../components/ProductsSwiper';
 export const HomeScreen = () => {
   return (
     <ScrollView className="flex-1 bg-white">
-      <View className="py-4">
+      <View className="-pt-10 pb-4">
         <Hero />
         <CategorySection />
         <ProductSwiper />
