@@ -51,9 +51,16 @@ export const LoginScreen = () => {
   return (
     <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
-      className="flex-1 bg-slate-50"
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 20}
+      style={{ flex: 1, backgroundColor: '#f8fafc' }}
     >
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} bounces={false} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+      >
         
         {/* Top Image Section */}
         <View className="h-64 relative bg-green-900">
