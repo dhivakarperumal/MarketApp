@@ -13,6 +13,8 @@ import { OrdersScreen } from './src/screens/OrdersScreen';
 import { WishlistScreen } from './src/screens/WishlistScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
 import { HelpSupportScreen } from './src/screens/HelpSupportScreen';
+import { Wishlist } from './src/pages/Wishlist';
+import { StoreProvider } from './src/context/StoreContext';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,7 +23,7 @@ const RootNavigator = () => {
 
   if (isLoading) {
     // Return null or a splash screen while checking async storage
-    return null; 
+    return null;
   }
 
   return (
@@ -29,7 +31,13 @@ const RootNavigator = () => {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {user ? (
           <>
+            <>
             <Stack.Screen name="Main" component={TabNavigator} />
+            <Stack.Screen
+              name="Wishlist"
+              component={Wishlist}
+            />
+          </>
             <Stack.Screen name="Profile" component={ProfileScreen} />
             <Stack.Screen name="Orders" component={OrdersScreen} />
             <Stack.Screen name="Wishlist" component={WishlistScreen} />
@@ -51,7 +59,9 @@ function App() {
   return (
     <SafeAreaProvider>
       <AuthProvider>
-        <RootNavigator />
+        <StoreProvider>
+          <RootNavigator />
+        </StoreProvider>
       </AuthProvider>
     </SafeAreaProvider>
   );

@@ -1,10 +1,17 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, ScrollView } from 'react-native';
+import { CategorySection } from '../components/CategorySection';
+import { AboutSection } from '../components/AboutSection';
+import { Features } from '../components/Feature';
 
 export const HomeScreen = () => {
   return (
-    <View className="flex-1 bg-white items-center justify-center">
-      <Text className="text-2xl font-bold text-green-700">Home Screen</Text>
-    </View>
+    <ScrollView className="flex-1 bg-white">
+      <View className="py-4">
+        <CategorySection />
+        <AboutSection />
+        <Features />
+      </View>
+    </ScrollView>
   );
 };
