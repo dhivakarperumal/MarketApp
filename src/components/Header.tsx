@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Modal,
   TouchableWithoutFeedback,
+  Image,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { Heart, Sun } from "lucide-react-native";
@@ -45,21 +46,34 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
 
         <View className="px-5 pt-4 pb-6 flex-row justify-between items-center">
           {/* Left */}
-          <View className="flex-1">
-            <View className="flex-row items-center mb-1">
-              <Sun size={15} color="#FDE047" />
-              <Text className="text-white/90 text-xs ml-2 font-medium">
-                Good Morning 👋
+          {/* Left */}
+          <View className="flex-1 flex-row items-center">
+
+            {/* Logo */}
+            <Image
+              source={require("../assets/logo.png")} // Change to your logo path
+              className="w-16 h-16 mr-3"
+              resizeMode="contain"
+            />
+
+            {/* Title */}
+            <View className="flex-1">
+              <View className="flex-row items-center mb-1">
+                <Sun size={14} color="#FDE047" />
+                <Text className="text-white/90 text-xs ml-2 font-medium">
+                  Good Morning 👋
+                </Text>
+              </View>
+
+              <Text className="text-white text-[20px] font-extrabold">
+                {title}
+              </Text>
+
+              <Text className="text-white/80 text-xs mt-1">
+                Fresh • Healthy • Affordable
               </Text>
             </View>
 
-            <Text className="text-white text-[24px] font-extrabold">
-              {title}
-            </Text>
-
-            <Text className="text-white/80 text-xs mt-1">
-              Fresh • Healthy • Affordable
-            </Text>
           </View>
 
           {/* Right */}
