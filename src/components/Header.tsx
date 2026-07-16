@@ -10,7 +10,6 @@ import {
 import LinearGradient from "react-native-linear-gradient";
 import {
   Heart,
-  Sun,
   User,
   LogOut,
   ChevronRight,
