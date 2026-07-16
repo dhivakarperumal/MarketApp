@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
+import { ShoppingCart } from 'lucide-react-native';
 import { AuthContext } from '../context/AuthContext';
 
 interface HeaderProps {
@@ -15,7 +16,12 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
 
   return (
     <View className="bg-green-600 px-4 py-4 flex-row items-center justify-between shadow-md z-50">
-      <Text className="text-white text-xl font-bold">{title}</Text>
+      <View className="flex-row items-center">
+        <View className="bg-white/20 p-1.5 rounded-lg mr-3">
+          <ShoppingCart color="white" size={20} />
+        </View>
+        <Text className="text-white text-xl font-bold">{title}</Text>
+      </View>
       
       {/* Profile Avatar Button */}
       <TouchableOpacity 

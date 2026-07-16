@@ -8,6 +8,12 @@ import { AuthProvider, AuthContext } from './src/context/AuthContext';
 import { LoginScreen } from './src/screens/auth/LoginScreen';
 import { RegisterScreen } from './src/screens/auth/RegisterScreen';
 
+import { ProfileScreen } from './src/screens/ProfileScreen';
+import { OrdersScreen } from './src/screens/OrdersScreen';
+import { WishlistScreen } from './src/screens/WishlistScreen';
+import { SettingsScreen } from './src/screens/SettingsScreen';
+import { HelpSupportScreen } from './src/screens/HelpSupportScreen';
+
 const Stack = createNativeStackNavigator();
 
 const RootNavigator = () => {
@@ -22,7 +28,14 @@ const RootNavigator = () => {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {user ? (
-          <Stack.Screen name="Main" component={TabNavigator} />
+          <>
+            <Stack.Screen name="Main" component={TabNavigator} />
+            <Stack.Screen name="Profile" component={ProfileScreen} />
+            <Stack.Screen name="Orders" component={OrdersScreen} />
+            <Stack.Screen name="Wishlist" component={WishlistScreen} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
+          </>
         ) : (
           <>
             <Stack.Screen name="Login" component={LoginScreen} />

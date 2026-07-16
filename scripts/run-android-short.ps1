@@ -1,10 +1,16 @@
 $source = Resolve-Path (Join-Path $PSScriptRoot '..')
-$target = 'D:\s'
+$target = 'D:\smapp'
 
 if (Test-Path $target) {
-  Remove-Item $target -Force -Recurse -ErrorAction SilentlyContinue
+  $item = Get-Item $target -Force
+  if ($item.LinkType -in @('Junction', 'SymbolicLink')) {
+    Remove-Item $target -Force -ErrorAction SilentlyContinue
+  } else {
+    Remove-Item $target -Force -Recurse -ErrorAction SilentlyContinue
+  }
 }
 
+Remove-Item (Join-Path $source 'android/app/.cxx') -Force -Recurse -ErrorAction SilentlyContinue
 New-Item -ItemType Junction -Path $target -Target $source.Path -Force | Out-Null
 
 Set-Location $target
