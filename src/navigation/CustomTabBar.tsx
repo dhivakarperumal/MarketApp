@@ -43,7 +43,7 @@ export default function CustomTabBar({
         position: "absolute",
         left: 14,
         right: 14,
-        bottom: insets.bottom > 0 ? insets.bottom + 8 : 18,
+        bottom: insets.bottom,
 
         height: 82,
 
