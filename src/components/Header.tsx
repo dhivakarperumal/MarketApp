@@ -27,6 +27,27 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
     ? user.username.charAt(0).toUpperCase()
     : "G";
 
+  const currentHour = new Date().getHours();
+
+  let greeting = "Good Evening 🌙";
+  let greetingIcon = "🌙";
+
+  if (currentHour >= 5 && currentHour < 12) {
+    greeting = "Good Morning ";
+    greetingIcon = "☀️";
+  } else if (currentHour >= 12 && currentHour < 17) {
+    greeting = "Good Afternoon ";
+    greetingIcon = "🌤️";
+  } else if (currentHour >= 17 && currentHour < 21) {
+    greeting = "Good Evening ";
+    greetingIcon = "🌇";
+  } else {
+    greeting = "Good Night ";
+    greetingIcon = "🌙";
+  }
+
+  const displayName = user?.username || "Guest";
+
   return (
     <>
       <SafeAreaView edges={["top"]} className="bg-green-600" />
@@ -59,9 +80,10 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
             {/* Title */}
             <View className="flex-1">
               <View className="flex-row items-center mb-1">
-                <Sun size={14} color="#FDE047" />
-                <Text className="text-white/90 text-xs ml-2 font-medium">
-                  Good Morning 👋
+                <Text className="text-base">{greetingIcon}</Text>
+
+                <Text className="text-white/90 text-sm ml-1 font-medium">
+                  {greeting}, {displayName}
                 </Text>
               </View>
 
@@ -69,9 +91,9 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
                 {title}
               </Text>
 
-              <Text className="text-white/80 text-xs mt-1">
+              {/* <Text className="text-white/80 text-xs mt-1">
                 Fresh • Healthy • Affordable
-              </Text>
+              </Text> */}
             </View>
 
           </View>
