@@ -8,7 +8,13 @@ import {
   Image,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import { Heart, Sun } from "lucide-react-native";
+import {
+  Heart,
+  Sun,
+  User,
+  LogOut,
+  ChevronRight,
+} from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AuthContext } from "../context/AuthContext";
@@ -67,7 +73,6 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
 
         <View className="px-5 pt-4 pb-6 flex-row justify-between items-center">
           {/* Left */}
-          {/* Left */}
           <View className="flex-1 flex-row items-center">
 
             {/* Logo */}
@@ -91,31 +96,24 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
                 {title}
               </Text>
 
-              {/* <Text className="text-white/80 text-xs mt-1">
-                Fresh • Healthy • Affordable
-              </Text> */}
             </View>
 
           </View>
 
           {/* Right */}
           <View className="flex-row items-center">
-            {/* Wishlist */}
             <TouchableOpacity
               onPress={() => navigation.navigate("Wishlist")}
-              activeOpacity={0.8}
-              className="w-11 h-11 rounded-full bg-white/20 border border-white/30 items-center justify-center mr-3"
+              className="w-11 h-11 rounded-full bg-white/90 items-center justify-center mr-3"
             >
-              <Heart size={22} color="white" />
+              <Heart size={22} color="#16A34A" strokeWidth={2.5} />
             </TouchableOpacity>
 
-            {/* Profile */}
             <TouchableOpacity
               onPress={() => setMenuVisible(true)}
-              activeOpacity={0.8}
-              className="w-12 h-12 rounded-full bg-white/25 border border-white/40 items-center justify-center"
+              className="w-12 h-12 rounded-full bg-white items-center justify-center"
             >
-              <Text className="text-white text-lg font-bold">
+              <Text className="text-green-700 text-lg font-bold">
                 {userInitial}
               </Text>
             </TouchableOpacity>
@@ -131,36 +129,67 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
         onRequestClose={() => setMenuVisible(false)}
       >
         <TouchableWithoutFeedback onPress={() => setMenuVisible(false)}>
-          <View className="flex-1">
-            <TouchableWithoutFeedback>
-              <View className="absolute top-20 right-4 bg-white rounded-2xl w-44 overflow-hidden shadow-xl">
+          <View
+            className="absolute top-28 right-4 w-56 bg-white rounded-3xl overflow-hidden border border-gray-100"
+            style={{
+              elevation: 12,
+              shadowColor: "#000",
+              shadowOpacity: 0.15,
+              shadowRadius: 15,
+              shadowOffset: {
+                width: 0,
+                height: 8,
+              },
+            }}
+          >
+            {/* User Info */}
+            <View className="px-5 py-4 bg-green-50">
+              <Text className="text-green-700 text-base font-bold">
+                {user?.username || "Guest"}
+              </Text>
 
-                <TouchableOpacity
-                  className="px-5 py-4 border-b border-gray-100"
-                  onPress={() => {
-                    setMenuVisible(false);
-                    console.log("Profile");
-                  }}
-                >
-                  <Text className="text-gray-700 text-base font-semibold">
-                    👤 Profile
-                  </Text>
-                </TouchableOpacity>
+              <Text className="text-gray-500 text-xs mt-1">
+                Welcome back 👋
+              </Text>
+            </View>
 
-                <TouchableOpacity
-                  className="px-5 py-4"
-                  onPress={async () => {
-                    setMenuVisible(false);
-                    await logout();
-                  }}
-                >
-                  <Text className="text-red-500 text-base font-bold">
-                    🚪 Logout
-                  </Text>
-                </TouchableOpacity>
-
+            {/* Profile */}
+            <TouchableOpacity
+              activeOpacity={0.8}
+              className="flex-row items-center justify-between px-5 py-4 border-b border-gray-100"
+              onPress={() => {
+                setMenuVisible(false);
+                console.log("Profile");
+              }}
+            >
+              <View className="flex-row items-center">
+                <User size={20} color="#16A34A" />
+                <Text className="ml-3 text-gray-800 text-[15px] font-semibold">
+                  Profile
+                </Text>
               </View>
-            </TouchableWithoutFeedback>
+
+              <ChevronRight size={18} color="#9CA3AF" />
+            </TouchableOpacity>
+
+            {/* Logout */}
+            <TouchableOpacity
+              activeOpacity={0.8}
+              className="flex-row items-center justify-between px-5 py-4"
+              onPress={async () => {
+                setMenuVisible(false);
+                await logout();
+              }}
+            >
+              <View className="flex-row items-center">
+                <LogOut size={20} color="#EF4444" />
+                <Text className="ml-3 text-red-500 text-[15px] font-semibold">
+                  Logout
+                </Text>
+              </View>
+
+              <ChevronRight size={18} color="#9CA3AF" />
+            </TouchableOpacity>
           </View>
         </TouchableWithoutFeedback>
       </Modal>
