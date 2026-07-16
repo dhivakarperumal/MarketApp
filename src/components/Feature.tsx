@@ -1,6 +1,5 @@
 import React from "react";
-import { View, Text, Dimensions } from "react-native";
-import Carousel from "react-native-reanimated-carousel";
+import { View, Text, Dimensions, FlatList } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 
 const { width } = Dimensions.get("window");
@@ -42,27 +41,20 @@ const features: Feature[] = [
 export const Features = () => {
   return (
     <View className="py-5 bg-gray-50">
-      <Carousel
-        loop
-        width={width * 0.82}
-        height={150}
-        autoPlay
-        autoPlayInterval={3000}
+      <FlatList
         data={features}
+        horizontal
         pagingEnabled
-        snapEnabled
-        mode="parallax"
-        modeConfig={{
-          parallaxScrollingScale: 0.9,
-          parallaxScrollingOffset: 60,
-        }}
-        style={{
-          width,
-        }}
+        snapToAlignment="center"
+        decelerationRate="fast"
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 16 }}
         renderItem={({ item }) => (
           <View
             className="bg-white rounded-3xl border border-gray-100 mx-2 px-5 py-5 flex-row items-center"
             style={{
+              width: width * 0.82,
+              height: 150,
               elevation: 5,
               shadowColor: "#000",
               shadowOpacity: 0.08,
@@ -71,11 +63,7 @@ export const Features = () => {
             }}
           >
             <View className="w-16 h-16 rounded-2xl bg-green-100 items-center justify-center">
-              <Icon
-                name={item.icon}
-                size={30}
-                color="#15803d"
-              />
+              <Icon name={item.icon} size={30} color="#15803d" />
             </View>
 
             <View className="ml-4 flex-1">
@@ -89,6 +77,7 @@ export const Features = () => {
             </View>
           </View>
         )}
+        keyExtractor={(item) => item.title}
       />
     </View>
   );
