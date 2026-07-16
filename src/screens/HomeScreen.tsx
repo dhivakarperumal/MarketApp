@@ -2,6 +2,7 @@ import React from 'react';
 import { View, ScrollView } from 'react-native';
 import { CategorySection } from '../components/CategorySection';
 import { AboutSection } from '../components/AboutSection';
+import { Features } from '../components/Feature';
 
 export const HomeScreen = () => {
   return (
@@ -9,6 +10,7 @@ export const HomeScreen = () => {
       <View className="py-4">
         <CategorySection />
         <AboutSection />
+        <Features />
       </View>
     </ScrollView>
   );
