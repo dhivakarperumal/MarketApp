@@ -19,7 +19,7 @@ export const CategorySection = () => {
   const { categoriesCache, setCategoriesCache } = useStore();
   const [categories, setCategories] = useState(categoriesCache || []);
   const [loading, setLoading] = useState(!categoriesCache || categoriesCache.length === 0);
-  const categorySlides = chunkArray(categories, 8);
+  const categorySlides = chunkArray(categories, 6);
 
   const fetchCategories = async () => {
     try {
@@ -64,7 +64,7 @@ export const CategorySection = () => {
           {Array.from({ length: 8 }).map((_, index) => (
             <View
               key={index}
-              className="w-[22%] mb-5 items-center"
+              className="w-[30%] mb-6 items-center"
             >
               <View className="w-16 h-16 rounded-2xl bg-gray-200 mb-2" />
               <View className="w-12 h-3 rounded-full bg-gray-200" />
@@ -72,7 +72,7 @@ export const CategorySection = () => {
           ))}
         </View>
       ) : (
-        <View style={{ height: 215 }}>
+        <View style={{ height: 300 }}>
           <Swiper
             autoplay
             autoplayTimeout={4}
@@ -101,11 +101,11 @@ export const CategorySection = () => {
                   return (
                     <TouchableOpacity
                       key={cat?.id || `${name}-${index}`}
-                      className="w-[22%] mb-5 items-center"
+                      className="w-[30%] mb-6 items-center"
                       activeOpacity={0.85}
                     >
                       <View
-                        className="w-16 h-16 rounded-2xl bg-white border border-gray-100 p-2 mb-2"
+                        className="w-24 h-24 rounded-3xl bg-white border border-gray-100 p-1.5 mb-3"
                         style={{
                           elevation: 3,
                           shadowColor: "#000",
@@ -119,7 +119,7 @@ export const CategorySection = () => {
                       >
                         <Image
                           source={{ uri: image }}
-                          className="w-full h-full rounded-xl"
+                          className="w-full h-full rounded-2xl"
                           resizeMode="contain"
                         />
                       </View>
