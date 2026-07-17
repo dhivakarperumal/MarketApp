@@ -16,11 +16,10 @@ export const CategorySection = () => {
     return result;
   };
 
-  const categorySlides = chunkArray(categories, 8);
-
   const { categoriesCache, setCategoriesCache } = useStore();
   const [categories, setCategories] = useState(categoriesCache || []);
   const [loading, setLoading] = useState(!categoriesCache || categoriesCache.length === 0);
+  const categorySlides = chunkArray(categories, 8);
 
   const fetchCategories = async () => {
     try {
