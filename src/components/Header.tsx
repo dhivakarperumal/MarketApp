@@ -61,7 +61,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
         colors={["#16A34A", "#22C55E", "#34D399"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        className="rounded-b-[30px] overflow-hidden"
+        className="overflow-hidden"
       >
         {/* Decorative Background */}
         <View className="absolute -top-16 -right-12 w-44 h-44 rounded-full bg-white/10" />

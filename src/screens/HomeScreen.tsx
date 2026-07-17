@@ -9,13 +9,18 @@ import { ProductSwiper } from '../components/ProductsSwiper';
 
 export const HomeScreen = () => {
   return (
-    <ScrollView className="flex-1 bg-white">
-      <View className="-pt-10 pb-4">
+    <ScrollView className="flex-1">
+      <View className="pb-4">
         <Hero />
-        <CategorySection />
+
+        {/* lift the category card up so it overlaps the hero image */}
+        <View style={{ marginTop: -60 }}>
+          <CategorySection />
+        </View>
+
         <ProductSwiper />
         <AboutSection />
-        <Banner1/>
+        <Banner1 />
         <Features />
 
       </View>
