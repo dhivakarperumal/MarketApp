@@ -15,9 +15,7 @@ interface StoreContextData {
   wishlist: any[];
   fetchWishlist: () => Promise<void>;
   toggleWishlist: (product: any) => Promise<void>;
-  cart: any[];
-  fetchCart: () => Promise<void>;
-  addToCart: (product: any, qty?: number) => Promise<void>;
+  removeFromWishlist: (productId: any) => Promise<void>;
   updateCartQuantity: (cartId: any, qty: number) => Promise<void>;
   removeFromCart: (cartId: any) => Promise<void>;
   budgetMode: boolean;
@@ -130,7 +128,6 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
       if (exists) {
         await api.delete(`/wishlist/${userId}/${productId}`);
       } else {
-        // prepare payload similar to web: minimal fields
         await api.post('/wishlist', {
           user_id: userId,
           product_id: productId,
@@ -143,8 +140,18 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const removeFromWishlist = async (productId: any) => {
+    if (!userId) return;
+    try {
+      await api.delete(`/wishlist/${userId}/${productId}`);
+      await fetchWishlist();
+    } catch (err) {
+      console.error('Remove from wishlist error:', err);
+    }
+  };
+
   return (
-    <StoreContext.Provider value={{ categoriesCache, setCategoriesCache, wishlist, fetchWishlist, toggleWishlist, cart, fetchCart, addToCart, updateCartQuantity, removeFromCart, budgetMode, budgetAmount, updateBudget }}>
+    <StoreContext.Provider value={{ categoriesCache, setCategoriesCache, wishlist, fetchWishlist, toggleWishlist, removeFromWishlist, cart, fetchCart, addToCart, updateCartQuantity, removeFromCart, budgetMode, budgetAmount, updateBudget }}>
       {children}
     </StoreContext.Provider>
   );
