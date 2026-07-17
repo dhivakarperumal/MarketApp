@@ -18,6 +18,11 @@ interface StoreContextData {
   cart: any[];
   fetchCart: () => Promise<void>;
   addToCart: (product: any, qty?: number) => Promise<void>;
+  updateCartQuantity: (cartId: any, qty: number) => Promise<void>;
+  removeFromCart: (cartId: any) => Promise<void>;
+  budgetMode: boolean;
+  budgetAmount: number;
+  updateBudget: (mode: boolean, amount?: number) => Promise<void>;
 }
 
 const StoreContext = createContext<StoreContextData | undefined>(undefined);
@@ -60,6 +65,36 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
       console.error('Fetch cart error:', err);
       setCart([]);
     }
+  };
+
+  const updateCartQuantity = async (cartId: any, qty: number) => {
+    if (!userId) return;
+    try {
+      await api.put(`/cart/${cartId}`, { quantity: qty });
+      await fetchCart();
+    } catch (err) {
+      console.error('Update cart quantity error:', err);
+    }
+  };
+
+  const removeFromCart = async (cartId: any) => {
+    if (!userId) return;
+    try {
+      await api.delete(`/cart/${cartId}`);
+      await fetchCart();
+    } catch (err) {
+      console.error('Remove from cart error:', err);
+    }
+  };
+
+  // Budget settings persisted locally
+  const [budgetMode, setBudgetMode] = useState<boolean>(false);
+  const [budgetAmount, setBudgetAmount] = useState<number>(0);
+
+  const updateBudget = async (mode: boolean, amount?: number) => {
+    setBudgetMode(mode);
+    if (typeof amount === 'number') setBudgetAmount(amount);
+    // persist in backend or AsyncStorage if needed
   };
 
   const addToCart = async (product: any, qty = 1) => {
@@ -109,7 +144,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <StoreContext.Provider value={{ categoriesCache, setCategoriesCache, wishlist, fetchWishlist, toggleWishlist, cart, fetchCart, addToCart }}>
+    <StoreContext.Provider value={{ categoriesCache, setCategoriesCache, wishlist, fetchWishlist, toggleWishlist, cart, fetchCart, addToCart, updateCartQuantity, removeFromCart, budgetMode, budgetAmount, updateBudget }}>
       {children}
     </StoreContext.Provider>
   );

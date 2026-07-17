@@ -11,6 +11,7 @@ import {
   FlatList,
   ActivityIndicator,
   RefreshControl,
+  TextInput,
 } from "react-native";
 
 import api from "../services/api";
@@ -22,6 +23,7 @@ import {
   Minus,
   Trash2,
 } from "lucide-react-native";
+import { useStore } from "../context/StoreContext";
 
 import { Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -53,7 +55,6 @@ export const CartScreen = () => {
   const { user } = useContext(AuthContext);
   const navigation = useNavigation<any>();
 
-  const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -61,13 +62,15 @@ export const CartScreen = () => {
   // Fetch Cart
   //-----------------------------------
 
-  const fetchCart = async () => {
+  const { cart, fetchCart, updateCartQuantity, removeFromCart, budgetMode, budgetAmount, updateBudget } = useStore();
+  const [localBudgetMode, setLocalBudgetMode] = useState<boolean>(budgetMode);
+  const [localBudgetAmount, setLocalBudgetAmount] = useState<number>(budgetAmount || 0);
+  const fetchCartLocal = async () => {
+    setLoading(true);
     try {
-      const response = await api.get(`/cart/${user.id}`);
-
-      setCart(response.data || []);
-    } catch (error) {
-      console.log("Cart Error :", error);
+      await fetchCart();
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -79,8 +82,13 @@ export const CartScreen = () => {
   //-----------------------------------
 
   useEffect(() => {
-    fetchCart();
+    fetchCartLocal();
   }, []);
+
+  useEffect(() => {
+    setLocalBudgetMode(budgetMode);
+    setLocalBudgetAmount(budgetAmount || 0);
+  }, [budgetMode, budgetAmount]);
 
   //-----------------------------------
   // Pull To Refresh
@@ -88,7 +96,7 @@ export const CartScreen = () => {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    fetchCart();
+    fetchCartLocal();
   }, []);
 
   //-----------------------------------
@@ -146,31 +154,13 @@ export const CartScreen = () => {
     );
   }
 
-  const updateQuantity = async (
-    item: CartItem,
-    newQty: number
-  ) => {
+  const updateQuantity = async (item: any, newQty: number) => {
     if (newQty < 1) return;
-
-    try {
-      await api.put(`/cart/${item.id}`, {
-        quantity: newQty,
-      });
-
-      fetchCart();
-    } catch (err) {
-      console.log(err);
-    }
+    await updateCartQuantity(item.id, newQty);
   };
 
-  const removeItem = async (id: number) => {
-    try {
-      await api.delete(`/cart/${id}`);
-
-      fetchCart();
-    } catch (err) {
-      console.log(err);
-    }
+  const removeItem = async (id: any) => {
+    await removeFromCart(id);
   };
 
   //-----------------------------------
@@ -389,40 +379,84 @@ export const CartScreen = () => {
 
           <View className="mt-5">
 
-            <View className="flex-row justify-between mb-3">
-              <Text className="text-slate-500">
-                Subtotal
-              </Text>
+            {/* Budget Controls */}
+            <View className="mt-2 rounded-[1.75rem] border border-green-100 bg-white p-4 mb-3">
+              <Text className="mb-3 text-lg font-bold text-slate-900">Budget Settings</Text>
+              <View className="flex-row items-center gap-3">
+                <TouchableOpacity onPress={() => { setLocalBudgetMode(false); updateBudget(false, localBudgetAmount); }} className="flex-row items-center gap-2">
+                  <View style={{ width: 18, height: 18, borderRadius: 9, borderWidth: 1, borderColor: '#d1fae5', backgroundColor: !localBudgetMode ? '#0e6827' : '#fff' }} />
+                  <Text className="text-sm font-medium text-slate-700">Without Budget</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => { setLocalBudgetMode(true); updateBudget(true, localBudgetAmount); }} className="flex-row items-center gap-2">
+                  <View style={{ width: 18, height: 18, borderRadius: 9, borderWidth: 1, borderColor: '#d1fae5', backgroundColor: localBudgetMode ? '#0e6827' : '#fff' }} />
+                  <Text className="text-sm font-medium text-slate-700">With Budget</Text>
+                </TouchableOpacity>
+              </View>
 
-              <Text className="font-semibold">
-                ₹{subtotal.toFixed(2)}
-              </Text>
+              {localBudgetMode && (
+                <View className="mt-4 flex-row gap-2 items-center">
+                  <View style={{ flex: 1 }}>
+                    <View style={{ position: 'relative' }}>
+                      <Text style={{ position: 'absolute', left: 12, top: 10, color: '#94a3b8' }}>₹</Text>
+                      <TextInput
+                        keyboardType="numeric"
+                        value={String(localBudgetAmount)}
+                        onChangeText={(t) => setLocalBudgetAmount(Number(t))}
+                        placeholder="Enter budget"
+                        style={{ paddingLeft: 24, borderRadius: 12, borderWidth: 1, borderColor: '#e5e7eb', height: 44 }}
+                      />
+                    </View>
+                  </View>
+                  <TouchableOpacity onPress={async () => { await updateBudget(true, localBudgetAmount); }} className="rounded-xl bg-[#0e6827] px-4 py-2">
+                    <Text className="text-sm font-semibold text-white">Save</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
 
-            <View className="flex-row justify-between mb-3">
+            {/* Budget Usage Panel */}
+            {localBudgetMode && (
+              <View className="mt-2 rounded-xl p-4 bg-gray-50 border border-gray-100 mb-3">
+                <View className="flex-row justify-between text-sm mb-2">
+                  <Text className="font-medium text-slate-700">Budget Usage</Text>
+                  <Text className="font-semibold text-slate-900">₹{subtotal.toFixed(0)} / ₹{localBudgetAmount}</Text>
+                </View>
+                <View className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                  <View
+                    className={`${subtotal > localBudgetAmount ? 'bg-red-500' : subtotal === localBudgetAmount ? 'bg-amber-500' : 'bg-[#0e6827]'}`}
+                    style={{ width: `${Math.min((subtotal / (localBudgetAmount || 1)) * 100, 100)}%`, height: '100%' }}
+                  />
+                </View>
+                <View className="mt-2 text-xs font-medium">
+                  {subtotal > localBudgetAmount ? (
+                    <Text className="text-red-500">You have exceeded your budget by ₹{(subtotal - localBudgetAmount).toFixed(2)}. Please remove items.</Text>
+                  ) : subtotal === localBudgetAmount ? (
+                    <Text className="text-amber-600">You have reached your budget limit.</Text>
+                  ) : (
+                    <Text className="text-green-600">You can still buy items worth ₹{(localBudgetAmount - subtotal).toFixed(2)}.</Text>
+                  )}
+                </View>
+              </View>
+            )}
 
-              <Text className="text-slate-500">
-                Delivery
-              </Text>
+            <View className="mt-3">
 
-              <Text className="text-green-600 font-bold">
-                FREE
-              </Text>
+              <View className="flex-row justify-between mb-3">
+                <Text className="text-slate-500">Subtotal</Text>
+                <Text className="font-semibold">₹{subtotal.toFixed(2)}</Text>
+              </View>
+
+              <View className="flex-row justify-between mb-3">
+                <Text className="text-slate-500">Delivery</Text>
+                <Text className="text-green-600 font-bold">FREE</Text>
+              </View>
+
+              <View className="border-t border-slate-200 pt-4 flex-row justify-between">
+                <Text className="text-lg font-bold">Total</Text>
+                <Text className="text-xl font-extrabold text-green-700">₹{subtotal.toFixed(2)}</Text>
+              </View>
 
             </View>
-
-            <View className="border-t border-slate-200 pt-4 flex-row justify-between">
-
-              <Text className="text-lg font-bold">
-                Total
-              </Text>
-
-              <Text className="text-xl font-extrabold text-green-700">
-                ₹{subtotal.toFixed(2)}
-              </Text>
-
-            </View>
-
           </View>
         </View>
       </View>
