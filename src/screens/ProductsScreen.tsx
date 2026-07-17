@@ -125,7 +125,7 @@ export const ProductsScreen = () => {
   }
 
   return (
-    <View className="flex-1 bg-slate-50">
+    <View className="flex-1 py-5 bg-slate-50">
       <ScrollView showsVerticalScrollIndicator={false}>
 
         {/* Products Grid */}
