@@ -40,9 +40,7 @@ export const Hero = () => {
   return (
     <View
       style={{
-        height: 300,
-        zIndex: 10,
-        elevation: 10,
+        height: 340,
       }}
     >
       <Swiper

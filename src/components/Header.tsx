@@ -70,7 +70,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
         <View className="absolute top-14 right-36 w-2 h-2 rounded-full bg-white/20" />
         <View className="absolute bottom-6 left-24 w-2 h-2 rounded-full bg-white/25" />
 
-        <View className="px-5 pt-4 pb-6 flex-row justify-between items-center">
+        <View className="px-5 pt-4 pb-3 flex-row justify-between items-center">
           {/* Left */}
           <View className="flex-1 flex-row items-center">
 
