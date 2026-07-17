@@ -1,7 +1,7 @@
 import React from "react";
 import {
   View,
- Text,
+  Text,
   ImageBackground,
   TouchableOpacity,
   Dimensions,
@@ -38,7 +38,13 @@ const banners = [
 
 export const Hero = () => {
   return (
-    <View style={{ height: 300 }}>
+    <View
+      style={{
+        height: 300,
+        zIndex: 10,
+        elevation: 10,
+      }}
+    >
       <Swiper
         autoplay
         autoplayTimeout={4}
