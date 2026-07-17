@@ -13,6 +13,7 @@ import {
 import { Star, ShoppingCart, Zap, TrendingUp, Heart, Share2, QrCode } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import QuickView from './QuickView';
+import { useStore } from '../context/StoreContext';
 
 type Product = {
     id: number | string;
@@ -21,6 +22,7 @@ type Product = {
     mrp?: string;
     offer?: string;
     thumbnail_image?: string;
+    product_images?: string[];
     rating?: string;
     review_count?: number;
     status?: string;
@@ -44,7 +46,8 @@ const ProductCard: React.FC<{ product: Product; onPress?: () => void }> = ({ pro
     const offerPercentage = parseFloat(String(product.offer || '0')) || 0;
     const sellingPrice = parseFloat(String(product.selling_price || '0')) || 0;
     const mrpPrice = parseFloat(String(product.mrp || '0')) || 0;
-    const [isInWishlist, setIsInWishlist] = useState(false);
+    const { wishlist, toggleWishlist } = useStore();
+    const isInWishlist = wishlist.some((w) => w.product_id === product.id || w.id === product.id);
     const [showQR, setShowQR] = useState(false);
     const [quickView, setQuickView] = useState(false);
 
@@ -62,13 +65,17 @@ const ProductCard: React.FC<{ product: Product; onPress?: () => void }> = ({ pro
 
     const navigation = useNavigation<any>();
 
-    const handleToggleWishlist = () => {
-        setIsInWishlist((s) => !s);
-        Alert.alert(isInWishlist ? 'Removed' : 'Added', `${product.name} ${isInWishlist ? 'removed from' : 'added to'} wishlist`);
+    const handleToggleWishlist = async () => {
+        try {
+            await toggleWishlist(product);
+        } catch (err) {
+            console.error('Wishlist toggle failed', err);
+        }
     };
 
     const handleShare = async () => {
-        const productUrl = `${Platform.OS === 'web' ? window.location.origin : 'https://example.com'}/products/${product.id}`;
+        const origin = Platform.OS === 'web' && typeof window !== 'undefined' ? window.location.origin : 'https://example.com';
+        const productUrl = `${origin}/products/${product.id}`;
         try {
             await Share.share({ message: `${product.name} - ${productUrl}`, title: product.name });
         } catch (err) {
@@ -95,7 +102,7 @@ const ProductCard: React.FC<{ product: Product; onPress?: () => void }> = ({ pro
             <View className="relative w-full h-40 bg-gray-100">
                 <TouchableOpacity onPress={() => navigation.navigate('ProductDetails', { id: product.id, product })} activeOpacity={0.9}>
                     <Image
-                        source={{ uri: imageSrc }}
+                        source={{ uri: imageSrc || undefined }}
                         className="w-full h-full"
                         resizeMode="cover"
                     />
@@ -161,7 +168,7 @@ const ProductCard: React.FC<{ product: Product; onPress?: () => void }> = ({ pro
                     <View className="bg-white rounded-xl p-6 w-full max-w-md">
                         <Text className="font-semibold text-lg mb-3">Scan to view product</Text>
                         <ScrollView className="mb-4">
-                            <Text className="text-sm text-slate-600 break-words">{`${Platform.OS === 'web' ? window.location.origin : 'https://example.com'}/products/${product.id}`}</Text>
+                            <Text className="text-sm text-slate-600 break-words">{`${Platform.OS === 'web' && typeof window !== 'undefined' ? window.location.origin : 'https://example.com'}/products/${product.id}`}</Text>
                         </ScrollView>
                         <View className="flex-row justify-end">
                             <TouchableOpacity onPress={() => setShowQR(false)} className="px-4 py-2 rounded-lg bg-slate-100">
