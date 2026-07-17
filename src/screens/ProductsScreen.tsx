@@ -10,6 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import { Star, ShoppingCart, Zap, TrendingUp } from 'lucide-react-native';
+import ProductCard from '../components/ProductCard';
 import api from '../services/api';
 
 interface Product {
@@ -87,78 +88,7 @@ export const ProductsScreen = () => {
   };
 
   const renderProductCard = ({ item }: { item: Product }) => {
-    const offerPercentage = parseFloat(item.offer);
-    const sellingPrice = parseFloat(item.selling_price);
-    const mrpPrice = parseFloat(item.mrp);
-
-    return (
-      <TouchableOpacity className="bg-white rounded-xl shadow-sm m-2 overflow-hidden flex-1 max-w-1/2">
-        {/* Product Image */}
-        <View className="relative w-full h-40 bg-gray-100">
-          {item.thumbnail_image ? (
-            <Image
-              source={{ uri: item.thumbnail_image }}
-              className="w-full h-full"
-              resizeMode="cover"
-            />
-          ) : (
-            <View className="w-full h-full items-center justify-center">
-              <ShoppingCart size={40} color="#ccc" />
-            </View>
-          )}
-          {renderProductBadges(item)}
-        </View>
-
-        {/* Product Info */}
-        <View className="p-3 flex-1 justify-between">
-          <View>
-            <Text className="text-sm font-bold text-slate-900 mb-1" numberOfLines={2}>
-              {item.name}
-            </Text>
-            
-            {/* Rating */}
-            {parseFloat(item.rating) > 0 && (
-              <View className="flex-row items-center gap-1 mb-2">
-                <Star size={14} color="#fbbf24" fill="#fbbf24" />
-                <Text className="text-xs font-semibold text-slate-700">
-                  {parseFloat(item.rating).toFixed(1)}
-                </Text>
-                <Text className="text-xs text-slate-500">({item.review_count})</Text>
-              </View>
-            )}
-
-            {/* Price */}
-            <View className="flex-row items-center gap-2 mb-2">
-              <Text className="text-lg font-bold text-green-600">₹{sellingPrice.toFixed(2)}</Text>
-              <Text className="text-sm line-through text-slate-500">₹{mrpPrice.toFixed(2)}</Text>
-              {offerPercentage > 0 && (
-                <Text className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded font-bold">
-                  {offerPercentage.toFixed(0)}% OFF
-                </Text>
-              )}
-            </View>
-
-            {/* Delivery Info */}
-            {item.delivery_time && (
-              <Text className="text-xs text-green-600 font-semibold mb-2">
-                📦 {item.delivery_time}
-              </Text>
-            )}
-
-            {/* Stock Status */}
-            <Text className={`text-xs font-semibold ${parseFloat(item.stock_quantity) > 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {parseFloat(item.stock_quantity) > 0 ? 'In Stock' : 'Out of Stock'}
-            </Text>
-          </View>
-
-          {/* Add to Cart Button */}
-          <TouchableOpacity className="bg-green-600 py-2 rounded-lg mt-3 flex-row items-center justify-center gap-2">
-            <ShoppingCart size={16} color="white" />
-            <Text className="text-white font-bold text-sm">Add</Text>
-          </TouchableOpacity>
-        </View>
-      </TouchableOpacity>
-    );
+    return <ProductCard product={item} onPress={() => { /* navigate to product detail if needed */ }} />;
   };
 
   if (loading) {
