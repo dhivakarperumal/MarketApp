@@ -15,6 +15,9 @@ interface StoreContextData {
   wishlist: any[];
   fetchWishlist: () => Promise<void>;
   toggleWishlist: (product: any) => Promise<void>;
+  cart: any[];
+  fetchCart: () => Promise<void>;
+  addToCart: (product: any, qty?: number) => Promise<void>;
 }
 
 const StoreContext = createContext<StoreContextData | undefined>(undefined);
@@ -22,6 +25,7 @@ const StoreContext = createContext<StoreContextData | undefined>(undefined);
 export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const [categoriesCache, setCategoriesCache] = useState<CategoryItem[]>([]);
   const [wishlist, setWishlist] = useState<any[]>([]);
+  const [cart, setCart] = useState<any[]>([]);
   const auth = React.useContext(AuthContext);
   const userId = auth?.user?.user_id || auth?.user?.id || null;
 
@@ -41,7 +45,41 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     fetchWishlist();
+    fetchCart();
   }, [userId]);
+
+  const fetchCart = async () => {
+    if (!userId) {
+      setCart([]);
+      return;
+    }
+    try {
+      const res = await api.get(`/cart/${userId}`);
+      setCart(res.data || []);
+    } catch (err) {
+      console.error('Fetch cart error:', err);
+      setCart([]);
+    }
+  };
+
+  const addToCart = async (product: any, qty = 1) => {
+    if (!userId) {
+      console.warn('User not logged in - cannot add to cart');
+      return;
+    }
+    const productId = product?.id || product?.product_id;
+    try {
+      await api.post('/cart', {
+        user_id: userId,
+        product_id: productId,
+        quantity: qty,
+        price: product?.offer_price || product?.selling_price || product?.price || 0,
+      });
+      await fetchCart();
+    } catch (err) {
+      console.error('Add to cart error:', err);
+    }
+  };
 
   const toggleWishlist = async (product: any) => {
     if (!userId) {
@@ -71,7 +109,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <StoreContext.Provider value={{ categoriesCache, setCategoriesCache, wishlist, fetchWishlist, toggleWishlist }}>
+    <StoreContext.Provider value={{ categoriesCache, setCategoriesCache, wishlist, fetchWishlist, toggleWishlist, cart, fetchCart, addToCart }}>
       {children}
     </StoreContext.Provider>
   );

@@ -15,24 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import QuickView from './QuickView';
 import { useStore } from '../context/StoreContext';
 
-type Product = {
-    id: number | string;
-    name?: string;
-    selling_price?: string;
-    mrp?: string;
-    offer?: string;
-    thumbnail_image?: string;
-    product_images?: string[];
-    rating?: string;
-    review_count?: number;
-    status?: string;
-    featured_product?: boolean;
-    best_seller?: boolean;
-    todays_deal?: boolean;
-    delivery_time?: string;
-    stock_quantity?: string;
-    product_code?: string;
-};
+// product is treated as any to accommodate varying API shapes
 
 const resolveImage = (url?: string | null) => {
     if (!url || typeof url !== 'string') return null;
@@ -42,7 +25,7 @@ const resolveImage = (url?: string | null) => {
     return trimmed;
 };
 
-const ProductCard: React.FC<{ product: Product; onPress?: () => void }> = ({ product, onPress }) => {
+const ProductCard: React.FC<{ product: any; onPress?: () => void }> = ({ product, onPress }) => {
     const offerPercentage = parseFloat(String(product.offer || '0')) || 0;
     const sellingPrice = parseFloat(String(product.selling_price || '0')) || 0;
     const mrpPrice = parseFloat(String(product.mrp || '0')) || 0;
@@ -52,12 +35,13 @@ const ProductCard: React.FC<{ product: Product; onPress?: () => void }> = ({ pro
     const [quickView, setQuickView] = useState(false);
 
     const imageSrc =
-        Array.isArray(product.product_images) && product.product_images.length > 0
-            ? resolveImage(product.product_images[0])
-            : resolveImage(product.thumbnail_image) ||
+        Array.isArray((product as any).product_images) && (product as any).product_images.length > 0
+            ? resolveImage((product as any).product_images[0])
+            : resolveImage((product as any).thumbnail_image) ||
             `https://ui-avatars.com/api/?name=${encodeURIComponent(
                 product?.name || "Product"
             )}&background=d1fae5&color=065f46&size=400`;
+    const imageUri: string | undefined = imageSrc ? imageSrc : undefined;
 
     const handleAdd = () => {
         Alert.alert('Add to cart', `Added "${product.name}" to cart`);
@@ -74,7 +58,7 @@ const ProductCard: React.FC<{ product: Product; onPress?: () => void }> = ({ pro
     };
 
     const handleShare = async () => {
-        const origin = Platform.OS === 'web' && typeof window !== 'undefined' ? window.location.origin : 'https://example.com';
+        const origin = Platform.OS === 'web' && typeof globalThis !== 'undefined' && (globalThis as any).location?.origin ? (globalThis as any).location.origin : 'https://example.com';
         const productUrl = `${origin}/products/${product.id}`;
         try {
             await Share.share({ message: `${product.name} - ${productUrl}`, title: product.name });
@@ -102,7 +86,7 @@ const ProductCard: React.FC<{ product: Product; onPress?: () => void }> = ({ pro
             <View className="relative w-full h-40 bg-gray-100">
                 <TouchableOpacity onPress={() => navigation.navigate('ProductDetails', { id: product.id, product })} activeOpacity={0.9}>
                     <Image
-                        source={{ uri: imageSrc || undefined }}
+                        source={{ uri: imageUri }}
                         className="w-full h-full"
                         resizeMode="cover"
                     />
@@ -168,7 +152,7 @@ const ProductCard: React.FC<{ product: Product; onPress?: () => void }> = ({ pro
                     <View className="bg-white rounded-xl p-6 w-full max-w-md">
                         <Text className="font-semibold text-lg mb-3">Scan to view product</Text>
                         <ScrollView className="mb-4">
-                            <Text className="text-sm text-slate-600 break-words">{`${Platform.OS === 'web' && typeof window !== 'undefined' ? window.location.origin : 'https://example.com'}/products/${product.id}`}</Text>
+                            <Text className="text-sm text-slate-600 break-words">{`${Platform.OS === 'web' && typeof globalThis !== 'undefined' && (globalThis as any).location?.origin ? (globalThis as any).location.origin : 'https://example.com'}/products/${product.id}`}</Text>
                         </ScrollView>
                         <View className="flex-row justify-end">
                             <TouchableOpacity onPress={() => setShowQR(false)} className="px-4 py-2 rounded-lg bg-slate-100">

@@ -3,6 +3,7 @@ import { Modal, View, Text, TouchableOpacity, Image, ScrollView, Dimensions } fr
 import Swiper from 'react-native-swiper';
 import { useNavigation } from '@react-navigation/native';
 import { Star, ShoppingCart, Heart } from 'lucide-react-native';
+import { useStore } from '../context/StoreContext';
 
 type Props = {
   visible: boolean;
@@ -40,6 +41,8 @@ const normalizeImageList = (value: any) => {
 const QuickView: React.FC<Props> = ({ visible, product, onClose, onAdd }) => {
   const navigation = useNavigation<any>();
   const [qty, setQty] = useState(1);
+  const { wishlist, toggleWishlist, addToCart } = useStore();
+  const isInWishlist = wishlist.some((w: any) => w.product_id === product.id || w.id === product.id);
 
   const images = useMemo(() => {
     if (!product) return [];
@@ -115,7 +118,7 @@ const QuickView: React.FC<Props> = ({ visible, product, onClose, onAdd }) => {
             </View>
 
             <View style={{ flexDirection: 'row', marginTop: 16, gap: 8 }}>
-              <TouchableOpacity onPress={() => { onAdd?.(qty); }} style={{ flex: 1, backgroundColor: '#16a34a', padding: 12, borderRadius: 10, alignItems: 'center' }}>
+              <TouchableOpacity onPress={async () => { await addToCart(product, qty); onClose(); }} style={{ flex: 1, backgroundColor: '#16a34a', padding: 12, borderRadius: 10, alignItems: 'center' }}>
                 <Text style={{ color: 'white', fontWeight: '700' }}>Add to Cart</Text>
               </TouchableOpacity>
 
@@ -125,8 +128,8 @@ const QuickView: React.FC<Props> = ({ visible, product, onClose, onAdd }) => {
             </View>
 
             <View style={{ marginTop: 12, flexDirection: 'row', justifyContent: 'flex-end', gap: 8 }}>
-              <TouchableOpacity onPress={() => Alert.alert('Wishlist', 'Wishlist toggled')} style={{ padding: 8 }}>
-                <Heart size={18} color="#9ca3af" />
+              <TouchableOpacity onPress={async () => { await toggleWishlist(product); }} style={{ padding: 8 }}>
+                <Heart size={18} color={isInWishlist ? '#ef4444' : '#9ca3af'} />
               </TouchableOpacity>
             </View>
           </ScrollView>
