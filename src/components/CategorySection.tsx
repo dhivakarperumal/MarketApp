@@ -79,7 +79,7 @@ export const CategorySection = () => {
         <View style={{ height: 300 }}>
           <Swiper
             autoplay
-            autoplayTimeout={4}
+            autoplayTimeout={6}
             loop
             showsButtons={false}
             showsPagination={false}

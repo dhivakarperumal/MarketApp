@@ -45,7 +45,7 @@ export const Hero = () => {
     >
       <Swiper
         autoplay
-        autoplayTimeout={10}
+        autoplayTimeout={20}
         showsPagination={false}
         loop
         showsButtons={false}
