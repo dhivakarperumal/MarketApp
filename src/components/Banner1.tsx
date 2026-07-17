@@ -11,7 +11,7 @@ import LinearGradient from "react-native-linear-gradient";
 
 const { width } = Dimensions.get("window");
 
-const CARD_WIDTH = (width - 48) / 2;
+const CARD_WIDTH = width - 32;
 
 interface Banner {
   id: number;
@@ -28,7 +28,7 @@ const banners: Banner[] = [
     id: 1,
     title: "100% ORGANIC",
     subtitle: "Fresh & Healthy",
-    desc: "Farm Fresh Vegetables",
+    desc: "🌿 Freshness Guaranteed • Shop Today",
     button: "Shop",
     image: require("../assets/bannersm1.png"),
     colors: ["#ECFDF5", "#BBF7D0"],
@@ -37,7 +37,7 @@ const banners: Banner[] = [
     id: 2,
     title: "COMBO",
     subtitle: "More Savings",
-    desc: "Best Offers",
+    desc: "💰 Save More • Shop Smarter",
     button: "Shop",
     image: require("../assets/banner2.png"),
     colors: ["#FEFCE8", "#FDE68A"],
@@ -46,7 +46,7 @@ const banners: Banner[] = [
     id: 3,
     title: "SUPER",
     subtitle: "Top Brands",
-    desc: "Best Prices",
+    desc: "🛍️ Premium Groceries • Affordable Prices",
     button: "Shop",
     image: require("../assets/bannersm4.png"),
     colors: ["#FFF7ED", "#FED7AA"],
@@ -55,7 +55,7 @@ const banners: Banner[] = [
     id: 4,
     title: "FREE",
     subtitle: "Delivery",
-    desc: "Above ₹499",
+    desc: "🚚 Fast Delivery • Fresh Every Day",
     button: "Order",
     image: require("../assets/withoubgbanner3.png"),
     colors: ["#EFF6FF", "#BFDBFE"],
@@ -66,75 +66,69 @@ export const Banner1 = () => {
   return (
     <FlatList
       data={banners}
-      numColumns={2}
       scrollEnabled={false}
       keyExtractor={(item) => item.id.toString()}
       contentContainerStyle={{
         paddingHorizontal: 16,
         paddingVertical: 16,
       }}
-      columnWrapperStyle={{
-        justifyContent: "space-between",
-        marginBottom: 14,
-      }}
       renderItem={({ item }) => (
         <LinearGradient
           colors={item.colors}
           style={{
             width: CARD_WIDTH,
-            height: 180,
-            borderRadius: 22,
+            height: 200,
+            borderRadius: 24,
             overflow: "hidden",
+            marginBottom: 16,
           }}
         >
-          {/* Content */}
-          <View className="flex-1 p-4 justify-between">
+          <View className="flex-1 p-5 justify-center">
 
-            <View style={{ width: "58%" }}>
-              <Text className="text-sm font-extrabold text-gray-900">
+            <View style={{ width: "55%" }}>
+              <Text className="text-xl font-extrabold text-gray-900">
                 {item.title}
               </Text>
 
-              <Text className="text-xs font-semibold text-gray-700 mt-1">
+              <Text className="text-base font-semibold text-gray-700 mt-2">
                 {item.subtitle}
               </Text>
 
-              <Text className="text-[11px] text-gray-500 mt-1">
+              <Text className="text-sm text-gray-600 mt-2">
                 {item.desc}
               </Text>
 
-              <TouchableOpacity className="bg-green-600 rounded-full px-3 py-2 mt-3 self-start">
-                <Text className="text-white text-xs font-bold">
+              <TouchableOpacity className="bg-green-600 rounded-full px-5 py-3 mt-5 self-start">
+                <Text className="text-white font-bold">
                   {item.button}
                 </Text>
               </TouchableOpacity>
             </View>
 
-            {/* Image */}
             <Image
               source={item.image}
               resizeMode="contain"
               style={{
                 position: "absolute",
-                right: -8,
+                right: 5,
                 bottom: 0,
-                width: CARD_WIDTH * 0.72,
-                height: 140,
+                width: CARD_WIDTH * 0.48,
+                height: 180,
               }}
             />
 
-            {/* Decorative Circle */}
             <View
               style={{
                 position: "absolute",
-                right: -30,
-                bottom: -30,
-                width: 90,
-                height: 90,
-                borderRadius: 45,
+                right: -40,
+                bottom: -40,
+                width: 130,
+                height: 130,
+                borderRadius: 60,
                 backgroundColor: "rgba(255,255,255,0.25)",
               }}
             />
+
           </View>
         </LinearGradient>
       )}

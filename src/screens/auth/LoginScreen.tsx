@@ -1,14 +1,31 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useCallback } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { ShoppingCart, ShieldCheck, Leaf, Mail, Lock, Eye, EyeOff } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import api from '../../services/api';
 import { AuthContext } from '../../context/AuthContext';
+import { RefreshControl } from "react-native";
 
 export const LoginScreen = () => {
   const navigation = useNavigation<any>();
   const { login } = useContext(AuthContext);
-  
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+
+    // Reset form or perform any refresh logic
+    setForm({
+      identifier: "",
+      password: "",
+    });
+
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  }, []);
+
   const [form, setForm] = useState({ identifier: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,42 +40,108 @@ export const LoginScreen = () => {
       return;
     }
 
+    // Dummy Login
+    if (
+      form.identifier === "asdfghj" &&
+      form.password === "123456"
+    ) {
+      const dummyUser = {
+        id: 1,
+        name: "Dummy User",
+        email: "dummy@priyam.com",
+        role: "customer",
+      };
+
+      await login("dummy_token_123456", dummyUser);
+
+      Alert.alert("Success", "Dummy Login Successful");
+      return;
+    }
+
     setIsLoading(true);
+
     try {
       const response = await api.post("/auth/login", {
         identifier: form.identifier,
         password: form.password,
       });
-      
+
       if (response.data && response.data.token && response.data.user) {
         await login(response.data.token, response.data.user);
-        // Navigation will happen automatically via App.tsx when user context updates
       } else {
-        Alert.alert("Login Failed", response.data?.message || "Invalid response from server.");
+        Alert.alert(
+          "Login Failed",
+          response.data?.message || "Invalid response from server."
+        );
       }
     } catch (error: any) {
-      console.error("Login Error:", error);
-      const errorMessage = 
-        error.response?.data?.message || 
-        error.message || 
-        "An error occurred during login. Please check your credentials and try again.";
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "An error occurred during login.";
+
       Alert.alert("Login Failed", errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // const handleSubmit = async () => {
+  //   if (!form.identifier || !form.password) {
+  //     Alert.alert("Error", "Please fill in all fields.");
+  //     return;
+  //   }
+
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await api.post("/auth/login", {
+  //       identifier: form.identifier,
+  //       password: form.password,
+  //     });
+
+  //     if (response.data && response.data.token && response.data.user) {
+  //       await login(response.data.token, response.data.user);
+  //       // Navigation will happen automatically via App.tsx when user context updates
+  //     } else {
+  //       Alert.alert("Login Failed", response.data?.message || "Invalid response from server.");
+  //     }
+  //   } catch (error: any) {
+  //     console.error("Login Error:", error);
+  //     const errorMessage =
+  //       error.response?.data?.message ||
+  //       error.message ||
+  //       "An error occurred during login. Please check your credentials and try again.";
+  //     Alert.alert("Login Failed", errorMessage);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
-      className="flex-1 bg-slate-50"
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 20}
+      style={{ flex: 1, backgroundColor: '#f8fafc' }}
     >
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} bounces={false} showsVerticalScrollIndicator={false}>
-        
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#16a34a"]}
+            tintColor="#16a34a"
+          />
+        }
+      >
+
         {/* Top Image Section */}
         <View className="h-64 relative bg-green-900">
-          <Image 
-            source={{ uri: "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1974&auto=format&fit=crop" }} 
+          <Image
+            source={{ uri: "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1974&auto=format&fit=crop" }}
             className="absolute inset-0 w-full h-full opacity-60"
             resizeMode="cover"
           />
@@ -73,7 +156,7 @@ export const LoginScreen = () => {
 
         {/* Form Container */}
         <View className="flex-1 bg-white -mt-6 rounded-t-3xl px-6 pt-8 pb-10 shadow-lg">
-          
+
           <View className="flex-row justify-between items-center mb-8">
             <View>
               <Text className="text-3xl font-bold text-slate-900 flex-row items-center">
@@ -81,7 +164,7 @@ export const LoginScreen = () => {
               </Text>
               <Text className="text-slate-500 text-sm mt-1">Sign in to continue to Priyam</Text>
             </View>
-            
+
             <View className="flex-row items-center gap-1 bg-green-50 px-2 py-1.5 rounded-lg border border-green-100">
               <ShieldCheck color="#16a34a" size={16} />
               <View>
@@ -92,7 +175,7 @@ export const LoginScreen = () => {
 
           {/* Inputs */}
           <View className="space-y-3 mb-8">
-            
+
             <View>
               <Text className="text-slate-700 font-bold mt-3 mb-2 ml-1 text-sm">Email or Phone</Text>
               <View className="relative justify-center">
@@ -124,7 +207,7 @@ export const LoginScreen = () => {
                   secureTextEntry={!showPassword}
                   className="w-full pl-12 pr-12 py-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800 text-base"
                 />
-                <TouchableOpacity 
+                <TouchableOpacity
                   className="absolute right-4 z-10 p-2"
                   onPress={() => setShowPassword(!showPassword)}
                 >
@@ -132,14 +215,14 @@ export const LoginScreen = () => {
                 </TouchableOpacity>
               </View>
             </View>
-            
+
             <TouchableOpacity className="items-end mt-2">
               <Text className="text-green-600 font-bold text-sm">Forgot Password?</Text>
             </TouchableOpacity>
           </View>
 
           {/* Login Button */}
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={handleSubmit}
             disabled={isLoading}
             className={`w-full py-4 rounded-2xl flex-row items-center justify-center gap-2 shadow-sm ${isLoading ? 'bg-green-400' : 'bg-green-600'}`}
