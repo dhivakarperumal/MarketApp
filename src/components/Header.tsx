@@ -17,6 +17,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AuthContext } from "../context/AuthContext";
+import { useStore } from "../context/StoreContext";
 
 interface HeaderProps {
   title: string;
@@ -27,6 +28,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
 
   const navigation = useNavigation<any>();
   const { user, logout } = useContext(AuthContext);
+  const { wishlist } = useStore();
 
   const userInitial = user?.username
     ? user.username.charAt(0).toUpperCase()
@@ -103,9 +105,16 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
           <View className="flex-row items-center">
             <TouchableOpacity
               onPress={() => navigation.navigate("Wishlist")}
-              className="w-11 h-11 rounded-full bg-white/90 items-center justify-center mr-3"
+              className="relative w-11 h-11 rounded-full bg-white/90 items-center justify-center mr-3"
             >
               <Heart size={22} color="#16A34A" strokeWidth={2.5} />
+              {wishlist.length > 0 && (
+                <View className="absolute -top-1 -right-1 h-5 min-w-[20px] rounded-full bg-[#ffc107] px-1.5 items-center justify-center">
+                  <Text className="text-[10px] font-bold text-slate-900">
+                    {wishlist.length > 99 ? '99+' : wishlist.length}
+                  </Text>
+                </View>
+              )}
             </TouchableOpacity>
 
             <TouchableOpacity
