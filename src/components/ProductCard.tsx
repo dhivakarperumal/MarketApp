@@ -93,11 +93,13 @@ const ProductCard: React.FC<{ product: Product; onPress?: () => void }> = ({ pro
             }}
         >
             <View className="relative w-full h-40 bg-gray-100">
-                <Image
-                    source={{ uri: imageSrc }}
-                    className="w-full h-full"
-                    resizeMode="cover"
-                />
+                <TouchableOpacity onPress={() => navigation.navigate('ProductDetails', { id: product.id, product })} activeOpacity={0.9}>
+                    <Image
+                        source={{ uri: imageSrc }}
+                        className="w-full h-full"
+                        resizeMode="cover"
+                    />
+                </TouchableOpacity>
                 {/* Offer Badge top-left */}
                 {offerPercentage > 0 && (
                     <View className="absolute top-2 left-2 z-20 bg-red-600 px-3 py-1 rounded-full">
@@ -115,7 +117,11 @@ const ProductCard: React.FC<{ product: Product; onPress?: () => void }> = ({ pro
 
             <View className="p-3 flex-1 justify-between">
                 <View>
-                    <Text className="text-sm font-bold text-slate-900 mb-1" numberOfLines={2}>
+                    <Text
+                        className="text-sm font-bold text-slate-900 mb-1"
+                        numberOfLines={2}
+                        onPress={() => navigation.navigate('ProductDetails', { id: product.id, product })}
+                    >
                         {product.name}
                     </Text>
 
