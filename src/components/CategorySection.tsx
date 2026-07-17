@@ -106,26 +106,26 @@ export const CategorySection = () => {
                       className="w-[30%] mb-5 items-center"
                     >
                       <View
-                        className="w-full bg-white rounded-3xl border border-green-100 items-center py-4 px-2"
+                        className="w-full bg-white rounded-2xl border border-gray-100 items-center py-3 px-2"
                         style={{
                           elevation: 4,
-                          shadowColor: "#16A34A",
+                          shadowColor: "#000",
                           shadowOpacity: 0.08,
                           shadowRadius: 8,
                           shadowOffset: { width: 0, height: 3 },
                         }}
                       >
-                        <View className="w-20 h-20 bg-green-50 rounded-2xl items-center justify-center">
+                        <View className="w-24 h-24 bg-gray-50 rounded-lg items-center justify-center">
                           <Image
                             source={{ uri: image }}
-                            className="w-16 h-16"
+                            className="w-20 h-20"
                             resizeMode="contain"
                           />
                         </View>
 
                         <Text
                           numberOfLines={1}
-                          className="mt-3 text-[13px] font-bold text-gray-800 text-center"
+                          className="mt-2 text-[13px] font-extrabold text-gray-800 text-center leading-4 px-1"
                         >
                           {name}
                         </Text>
