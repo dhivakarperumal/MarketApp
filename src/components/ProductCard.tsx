@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { Star, ShoppingCart, Zap, TrendingUp, Heart, Share2, QrCode } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
+import QuickView from './QuickView';
 
 type Product = {
     id: number | string;
@@ -165,31 +166,8 @@ const ProductCard: React.FC<{ product: Product; onPress?: () => void }> = ({ pro
                 </View>
             </Modal>
 
-            {/* Quick View Modal */}
-            <Modal visible={quickView} transparent animationType="slide">
-                <View className="flex-1 bg-black/60 items-center justify-center p-4">
-                    <View className="bg-white rounded-xl w-full max-w-lg p-4">
-                        <View className="flex-row justify-between items-start mb-3">
-                            <Text className="text-lg font-bold">{product.name}</Text>
-                            <TouchableOpacity onPress={() => setQuickView(false)} className="px-2 py-1">
-                                <Text className="text-slate-600">Close</Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        <Image source={{ uri: imageSrc }} className="w-full h-48 mb-3" resizeMode="cover" />
-
-                        <Text className="text-sm text-slate-700 mb-2">Price: ₹{sellingPrice.toFixed(2)}</Text>
-                        {mrpPrice > 0 && <Text className="text-sm line-through text-slate-500 mb-2">MRP: ₹{mrpPrice.toFixed(2)}</Text>}
-                        {product.description ? <Text className="text-sm text-slate-600">{product.description}</Text> : <Text className="text-sm text-slate-400">No description available.</Text>}
-
-                        <View className="mt-4 flex-row justify-end gap-2">
-                            <TouchableOpacity onPress={() => { handleAdd(); setQuickView(false); }} className="bg-green-600 px-4 py-2 rounded-lg">
-                                <Text className="text-white font-bold">Add</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
+            {/* Quick View Modal Component */}
+            <QuickView visible={quickView} product={product} onClose={() => setQuickView(false)} onAdd={(qty) => { handleAdd(); setQuickView(false); }} />
         </TouchableOpacity>
     );
 };
