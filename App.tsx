@@ -30,6 +30,7 @@ const RootNavigator = () => {
               name="Wishlist"
               component={Wishlist}
             />
+             <Stack.Screen name="ProductDetails" component={require('./src/screens/ProductDetails').default} />
           </>
         ) : (
           <>

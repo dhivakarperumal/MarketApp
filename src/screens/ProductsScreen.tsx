@@ -88,7 +88,7 @@ export const ProductsScreen = () => {
   };
 
   const renderProductCard = ({ item }: { item: Product }) => {
-    return <ProductCard product={item} onPress={() => { /* navigate to product detail if needed */ }} />;
+    return <ProductCard product={item} />;
   };
 
   if (loading) {

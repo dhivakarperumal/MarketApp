@@ -10,7 +10,8 @@ import {
     Platform,
     ScrollView,
 } from 'react-native';
-import { Star, ShoppingCart, Zap, TrendingUp, Heart, Plus, Share2, QrCode, ArrowRight } from 'lucide-react-native';
+import { Star, ShoppingCart, Zap, TrendingUp, Heart, Share2, QrCode } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
 
 type Product = {
     id: number | string;
@@ -57,6 +58,8 @@ const ProductCard: React.FC<{ product: Product; onPress?: () => void }> = ({ pro
     const handleAdd = () => {
         Alert.alert('Add to cart', `Added "${product.name}" to cart`);
     };
+
+    const navigation = useNavigation<any>();
 
     const handleToggleWishlist = () => {
         setIsInWishlist((s) => !s);
@@ -139,7 +142,7 @@ const ProductCard: React.FC<{ product: Product; onPress?: () => void }> = ({ pro
 
                 </View>
 
-                <TouchableOpacity onPress={() => setQuickView(true)} className="mt-3 border border-green-600 rounded-lg py-3 flex-row items-center justify-center">
+                <TouchableOpacity onPress={() => navigation.navigate('ProductDetails', { id: product.id, product })} className="mt-3 border border-green-600 rounded-lg py-3 flex-row items-center justify-center">
                     <Text className="text-green-600 font-semibold">Quick View</Text>
                     <Text className="text-green-600 ml-2">→</Text>
                 </TouchableOpacity>
