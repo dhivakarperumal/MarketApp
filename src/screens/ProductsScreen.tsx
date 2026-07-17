@@ -45,7 +45,7 @@ export const ProductsScreen = () => {
       setLoading(true);
       setError(null);
       const response = await api.get('/products');
-      
+
       if (response.data && Array.isArray(response.data)) {
         setProducts(response.data);
       } else if (response.data && response.data.data) {
@@ -135,8 +135,14 @@ export const ProductsScreen = () => {
           keyExtractor={(item) => item.id.toString()}
           numColumns={2}
           scrollEnabled={false}
-          columnWrapperStyle={{ justifyContent: 'space-between' }}
-          contentContainerStyle={{ paddingVertical: 8 }}
+          columnWrapperStyle={{
+            justifyContent: "space-between",
+            paddingHorizontal: 8,
+          }}
+          contentContainerStyle={{
+            paddingVertical: 8,
+            paddingHorizontal: 4,
+          }}
         />
       </ScrollView>
     </View>
