@@ -197,11 +197,6 @@ export const ProductsScreen = () => {
   return (
     <View className="flex-1 bg-slate-50">
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View className="bg-green-600 px-4 py-4">
-          <Text className="text-white text-2xl font-bold">Products</Text>
-          <Text className="text-green-100 text-sm">{products.length} items available</Text>
-        </View>
 
         {/* Products Grid */}
         <FlatList
