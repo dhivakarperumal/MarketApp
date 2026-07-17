@@ -169,23 +169,7 @@ export const CartScreen = () => {
 
   return (
     <View className="flex-1 bg-slate-100">
-
-      {/* Header */}
-
-      <View className="bg-white px-5 pt-5 pb-4">
-
-        <Text className="text-3xl font-bold">
-          My Cart
-        </Text>
-
-        <Text className="text-slate-500 mt-1">
-          {cart.length} Items
-        </Text>
-
-      </View>
-
       {/* Cart List */}
-
       <View className="flex-1">
 
         <FlatList
