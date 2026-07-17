@@ -10,7 +10,7 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import { Star, ShoppingCart, Zap, TrendingUp, Heart, Plus, Share2, QrCode } from 'lucide-react-native';
+import { Star, ShoppingCart, Zap, TrendingUp, Heart, Plus, Share2, QrCode, ArrowRight } from 'lucide-react-native';
 
 type Product = {
   id: number | string;
@@ -46,8 +46,13 @@ const ProductCard: React.FC<{ product: Product; onPress?: () => void }> = ({ pro
   const [showQR, setShowQR] = useState(false);
   const [quickView, setQuickView] = useState(false);
 
-  const imageSrc = resolveImage(product.thumbnail_image) ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(product?.name || 'Product')}&background=d1fae5&color=065f46&size=400`;
+  const imageSrc =
+  Array.isArray(product.product_images) && product.product_images.length > 0
+    ? resolveImage(product.product_images[0])
+    : resolveImage(product.thumbnail_image) ||
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        product?.name || "Product"
+      )}&background=d1fae5&color=065f46&size=400`;
 
   const handleAdd = () => {
     Alert.alert('Add to cart', `Added "${product.name}" to cart`);
@@ -79,24 +84,19 @@ const ProductCard: React.FC<{ product: Product; onPress?: () => void }> = ({ pro
           className="w-full h-full"
           resizeMode="cover"
         />
-        {/* Top-right action buttons (wishlist, quick view, share, QR) */}
-        <View className="absolute top-2 right-2 flex-col gap-2 z-10">
-          <TouchableOpacity onPress={handleToggleWishlist} className="bg-white p-2 rounded-full shadow-md">
-            <Heart size={16} color={isInWishlist ? '#ef4444' : '#374151'} />
-          </TouchableOpacity>
+        {/* Offer Badge top-left */}
+        {offerPercentage > 0 && (
+          <View className="absolute top-2 left-2 z-20 bg-red-600 px-3 py-1 rounded-full">
+            <Text className="text-white text-xs font-bold">{offerPercentage.toFixed(0)}% OFF</Text>
+          </View>
+        )}
 
-          <TouchableOpacity onPress={() => setQuickView(true)} className="bg-white p-2 rounded-full shadow-md">
-            <Plus size={16} color="#374151" />
-          </TouchableOpacity>
+        {/* Heart icon top-right */}
+        <TouchableOpacity onPress={handleToggleWishlist} className="absolute top-2 right-2 z-20 bg-white p-2 rounded-full shadow">
+          <Heart size={18} color={isInWishlist ? '#ef4444' : '#9ca3af'} />
+        </TouchableOpacity>
 
-          <TouchableOpacity onPress={handleShare} className="bg-white p-2 rounded-full shadow-md">
-            <Share2 size={16} color="#374151" />
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => setShowQR(true)} className="bg-white p-2 rounded-full shadow-md">
-            <QrCode size={16} color="#374151" />
-          </TouchableOpacity>
-        </View>
+        
       </View>
 
       <View className="p-3 flex-1 justify-between">
@@ -116,29 +116,22 @@ const ProductCard: React.FC<{ product: Product; onPress?: () => void }> = ({ pro
           )}
 
           <View className="flex-row items-center gap-2 mb-2">
-            <Text className="text-lg font-bold text-green-600">₹{sellingPrice.toFixed(2)}</Text>
+            <Text className="text-xl font-extrabold text-slate-900">₹{sellingPrice.toFixed(2)}</Text>
             {mrpPrice > 0 && (
-              <Text className="text-sm line-through text-slate-500">₹{mrpPrice.toFixed(2)}</Text>
+              <Text className="text-sm line-through text-slate-400">₹{mrpPrice.toFixed(2)}</Text>
             )}
-            {offerPercentage > 0 && (
-              <Text className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded font-bold">
-                {offerPercentage.toFixed(0)}% OFF
-              </Text>
-            )}
+            
           </View>
 
           {product.delivery_time && (
             <Text className="text-xs text-green-600 font-semibold mb-2">📦 {product.delivery_time}</Text>
           )}
 
-          <Text className={`text-xs font-semibold ${parseFloat(String(product.stock_quantity || '0')) > 0 ? 'text-green-600' : 'text-red-600'}`}>
-            {parseFloat(String(product.stock_quantity || '0')) > 0 ? 'In Stock' : 'Out of Stock'}
-          </Text>
         </View>
 
-        <TouchableOpacity onPress={handleAdd} className="bg-green-600 py-2 rounded-lg mt-3 flex-row items-center justify-center gap-2">
-          <ShoppingCart size={16} color="white" />
-          <Text className="text-white font-bold text-sm">Add</Text>
+        <TouchableOpacity onPress={() => setQuickView(true)} className="mt-3 border border-green-600 rounded-lg py-3 flex-row items-center justify-center">
+          <Text className="text-green-600 font-semibold">Quick View</Text>
+          <Text className="text-green-600 ml-2">→</Text>
         </TouchableOpacity>
       </View>
       
