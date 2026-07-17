@@ -47,26 +47,30 @@ export const CategorySection = () => {
 
   return (
     <View className="px-4 py-6 bg-white">
-      <View className="flex-row justify-between items-center mb-5">
-        <Text className="text-xl font-bold text-gray-900">
-          Shop By Category
-        </Text>
-
-        <TouchableOpacity activeOpacity={0.8}>
-          <Text className="text-green-600 font-semibold">
-            View All
+      <View className="flex-row justify-between items-end mb-6">
+        <View>
+          <Text className="text-[24px] font-black text-gray-900">
+            Shop by <Text className="text-green-600">Category</Text>
           </Text>
-        </TouchableOpacity>
+
+          <View className="w-16 h-1 bg-green-600 rounded-full mt-2" />
+        </View>
+
+        {/* <TouchableOpacity activeOpacity={0.8}>
+          <Text className="text-green-600 font-bold text-base">
+            View All →
+          </Text>
+        </TouchableOpacity> */}
       </View>
 
       {loading ? (
         <View className="flex-row flex-wrap justify-between">
-          {Array.from({ length: 8 }).map((_, index) => (
+          {Array.from({ length: 6 }).map((_, index) => (
             <View
               key={index}
               className="w-[30%] mb-6 items-center"
             >
-              <View className="w-16 h-16 rounded-2xl bg-gray-200 mb-2" />
+              <View className="w-24 h-24 rounded-2xl bg-gray-200 mb-2" />
               <View className="w-12 h-3 rounded-full bg-gray-200" />
             </View>
           ))}
@@ -78,10 +82,7 @@ export const CategorySection = () => {
             autoplayTimeout={4}
             loop
             showsButtons={false}
-            showsPagination
-            dotColor="#D1D5DB"
-            activeDotColor="#16A34A"
-            paginationStyle={{ bottom: -5 }}
+            showsPagination={false}
           >
             {categorySlides.map((slide, slideIndex) => (
               <View
@@ -101,35 +102,34 @@ export const CategorySection = () => {
                   return (
                     <TouchableOpacity
                       key={cat?.id || `${name}-${index}`}
-                      className="w-[30%] mb-6 items-center"
-                      activeOpacity={0.85}
+                      activeOpacity={0.9}
+                      className="w-[30%] mb-5 items-center"
                     >
                       <View
-                        className="w-24 h-24 rounded-3xl bg-white border border-gray-100 p-1.5 mb-3"
+                        className="w-full bg-white rounded-3xl border border-green-100 items-center py-4 px-2"
                         style={{
-                          elevation: 3,
-                          shadowColor: "#000",
+                          elevation: 4,
+                          shadowColor: "#16A34A",
                           shadowOpacity: 0.08,
-                          shadowRadius: 6,
-                          shadowOffset: {
-                            width: 0,
-                            height: 2,
-                          },
+                          shadowRadius: 8,
+                          shadowOffset: { width: 0, height: 3 },
                         }}
                       >
-                        <Image
-                          source={{ uri: image }}
-                          className="w-full h-full rounded-2xl"
-                          resizeMode="contain"
-                        />
-                      </View>
+                        <View className="w-20 h-20 bg-green-50 rounded-2xl items-center justify-center">
+                          <Image
+                            source={{ uri: image }}
+                            className="w-16 h-16"
+                            resizeMode="contain"
+                          />
+                        </View>
 
-                      <Text
-                        numberOfLines={2}
-                        className="text-xs font-semibold text-gray-700 text-center"
-                      >
-                        {name}
-                      </Text>
+                        <Text
+                          numberOfLines={1}
+                          className="mt-3 text-[13px] font-bold text-gray-800 text-center"
+                        >
+                          {name}
+                        </Text>
+                      </View>
                     </TouchableOpacity>
                   );
                 })}
