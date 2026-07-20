@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Image, TextInput, Modal, ActivityIndicator } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Image, TextInput, Modal, ActivityIndicator, StatusBar } from "react-native";
 import { Package, Truck, CheckCircle, Clock, XCircle, ChevronLeft } from "lucide-react-native";
 import { AuthContext } from "../context/AuthContext";
 import api from "../services/api";
@@ -48,7 +48,7 @@ const StatusBadge = ({ status }: { status: string }) => {
   );
 };
 
-const OrdersScreen = () => {
+export const OrdersScreen = () => {
   const { user } = useContext(AuthContext) as any;
   const navigation = useNavigation<any>();
 
@@ -113,26 +113,31 @@ const OrdersScreen = () => {
 
   return (
     <View className="flex-1 bg-[#FDFBF7]">
-      {/* Header */}
-      <View className="bg-white px-4 py-4 border-b border-gray-100 shadow-sm z-10">
-        <View className="flex-row items-center pt-8">
-          <TouchableOpacity onPress={() => navigation.canGoBack() ? navigation.goBack() : navigation.navigate("Main", { screen: "Home" })} className="p-2 -ml-2">
-            <ChevronLeft size={24} color="#333" />
+      <StatusBar barStyle="light-content" backgroundColor="#16a34a" />
+      {/* Premium Header */}
+      <View className="bg-green-600 pb-8 pt-12 px-4 rounded-b-[40px] z-10 shadow-sm shadow-green-700/20">
+        <View className="flex-row items-center mb-6">
+          <TouchableOpacity 
+            onPress={() => navigation.canGoBack() ? navigation.goBack() : navigation.navigate("Main", { screen: "Home" })} 
+            className="w-10 h-10 bg-white/20 rounded-full items-center justify-center mr-4"
+          >
+            <ChevronLeft size={24} color="#ffffff" />
           </TouchableOpacity>
-          <Text className="text-2xl font-bold text-gray-900 ml-2">My Orders</Text>
+          <Text className="text-xl font-bold text-white">My Orders</Text>
         </View>
-        <View className="flex-row items-center gap-2 mt-4">
+        <View className="flex-row items-center gap-2">
           <TextInput
             placeholder="Enter Order ID"
-            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl bg-white text-black"
+            placeholderTextColor="#cbd5e1"
+            className="flex-1 px-4 py-3 border border-green-500 rounded-xl bg-white/10 text-white font-medium"
             value={trackOrderId}
             onChangeText={setTrackOrderId}
           />
           <TouchableOpacity
             onPress={handleTrackOrder}
-            className="bg-[#0e6827] px-5 py-3 rounded-xl justify-center items-center"
+            className="bg-white px-5 py-3 rounded-xl justify-center items-center shadow-sm"
           >
-            <Text className="text-white font-semibold">Track</Text>
+            <Text className="text-green-700 font-bold">Track</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -373,5 +378,3 @@ const OrdersScreen = () => {
     </View>
   );
 };
-
-export default OrdersScreen;

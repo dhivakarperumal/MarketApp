@@ -5,7 +5,11 @@ import {
   FlatList,
   Image,
   ActivityIndicator,
+  TouchableOpacity,
+  StatusBar
 } from 'react-native';
+import { ArrowLeft } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
 
@@ -24,6 +28,7 @@ interface WishlistItem {
 
 export const Wishlist = () => {
   const { user } = useContext(AuthContext);
+  const navigation = useNavigation();
 
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,58 +53,76 @@ export const Wishlist = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <View className="flex-1 justify-center items-center bg-white">
-        <ActivityIndicator size="large" color="#16a34a" />
-      </View>
-    );
-  }
-
   return (
-    <View className="flex-1 bg-gray-100 p-4">
-      <FlatList
-        data={wishlist}
-        keyExtractor={(item) => item.id.toString()}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View className="flex-1 justify-center items-center mt-20">
-            <Text className="text-lg font-semibold text-gray-500">
-              Your wishlist is empty
-            </Text>
-          </View>
-        }
-        renderItem={({ item }) => (
-          <View className="bg-white rounded-2xl p-4 mb-4 shadow">
+    <View className="flex-1 bg-slate-50">
+      <StatusBar barStyle="light-content" backgroundColor="#16a34a" />
+      {/* Header Background */}
+      <View className="bg-green-600 pb-10 pt-6 px-4 rounded-b-[40px] z-10 shadow-sm shadow-green-700/20">
+        <View className="flex-row items-center">
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()} 
+            className="w-10 h-10 bg-white/20 rounded-full items-center justify-center mr-4"
+          >
+            <ArrowLeft size={22} color="#ffffff" />
+          </TouchableOpacity>
+          <Text className="text-xl font-bold text-white">My Wishlist</Text>
+        </View>
+      </View>
+      
+      {loading ? (
+        <View className="flex-1 justify-center items-center">
+          <ActivityIndicator size="large" color="#16a34a" />
+        </View>
+      ) : (
+        <View className="flex-1 px-4 -mt-6">
+          <FlatList
+            data={wishlist}
+            keyExtractor={(item) => item.id.toString()}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={wishlist.length === 0 ? { flex: 1, justifyContent: 'center' } : { paddingBottom: 20 }}
+            ListEmptyComponent={
+              <View className="items-center justify-center py-10 mt-10">
+                <Text className="text-lg font-semibold text-slate-500">
+                  Your wishlist is empty
+                </Text>
+              </View>
+            }
+            renderItem={({ item }) => (
+              <View className="bg-white rounded-2xl p-4 mb-4 shadow-sm shadow-slate-200 border border-slate-100">
+                <Image
+                  source={{ uri: item.product_image }}
+                  className="w-full h-48 rounded-xl bg-slate-100"
+                  resizeMode="cover"
+                />
 
-            <Image
-              source={{ uri: item.product_image }}
-              className="w-full h-44 rounded-xl"
-              resizeMode="cover"
-            />
+                <Text
+                  className="text-lg font-bold text-slate-800 mt-3"
+                  numberOfLines={2}
+                >
+                  {item.product_name}
+                </Text>
 
-            <Text
-              className="text-lg font-bold text-gray-800 mt-3"
-              numberOfLines={2}
-            >
-              {item.product_name}
-            </Text>
+                <View className="flex-row items-center mt-2">
+                  <Text className="text-green-700 text-xl font-bold mr-2">
+                    ₹{item.price}
+                  </Text>
+                  {item.mrp && item.mrp !== item.price && (
+                    <Text className="text-slate-400 line-through text-sm">
+                      ₹{item.mrp}
+                    </Text>
+                  )}
+                </View>
 
-            <Text className="text-green-700 text-xl font-bold mt-2">
-              ₹{item.price}
-            </Text>
-
-            <Text className="text-gray-400 line-through">
-              ₹{item.mrp}
-            </Text>
-
-            <Text className="text-gray-600 mt-1">
-              Size: {item.variant_size}
-            </Text>
-
-          </View>
-        )}
-      />
+                {item.variant_size && (
+                  <Text className="text-slate-500 mt-1 font-medium text-sm">
+                    Size: {item.variant_size}
+                  </Text>
+                )}
+              </View>
+            )}
+          />
+        </View>
+      )}
     </View>
   );
 };
