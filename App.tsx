@@ -10,7 +10,6 @@ import { RegisterScreen } from './src/screens/auth/RegisterScreen';
 
 import { ProfileScreen } from './src/screens/ProfileScreen';
 import { OrdersScreen } from './src/screens/OrdersScreen';
-import { WishlistScreen } from './src/screens/WishlistScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
 import { HelpSupportScreen } from './src/screens/HelpSupportScreen';
 import { Wishlist } from './src/pages/Wishlist';
@@ -40,7 +39,6 @@ const RootNavigator = () => {
           </>
             <Stack.Screen name="Profile" component={ProfileScreen} />
             <Stack.Screen name="Orders" component={OrdersScreen} />
-            <Stack.Screen name="Wishlist" component={WishlistScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
           </>
