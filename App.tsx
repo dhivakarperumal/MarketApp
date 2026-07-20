@@ -32,6 +32,7 @@ const RootNavigator = () => {
             />
              <Stack.Screen name="ProductDetails" component={require('./src/screens/ProductDetails').default} />
              <Stack.Screen name="Checkout" component={require('./src/screens/CheckoutScreen').default} />
+             <Stack.Screen name="Orders" component={require('./src/screens/OrdersScreen').default} />
           </>
         ) : (
           <>

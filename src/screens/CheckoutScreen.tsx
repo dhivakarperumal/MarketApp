@@ -376,7 +376,7 @@ const CheckoutScreen = () => {
         await clearCart();
       }
       Toast.show({ type: "success", text1: "Order Placed Successfully!" });
-      navigation.navigate("Main", { screen: "Home" });
+      navigation.replace("Orders");
     } catch (error) {
       Alert.alert("Order failed", "An error occurred while placing the order.");
     }

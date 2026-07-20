@@ -21,6 +21,7 @@ interface StoreContextData {
   budgetMode: boolean;
   budgetAmount: number;
   updateBudget: (mode: boolean, amount?: number) => Promise<void>;
+  clearCart: () => Promise<void>;
 }
 
 const StoreContext = createContext<StoreContextData | undefined>(undefined);
@@ -90,6 +91,24 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const clearCart = async () => {
+    if (!userId) return;
+    try {
+      await api.delete(`/cart/clear/${userId}`);
+      setCart([]);
+    } catch (err) {
+      console.error('Clear cart error, trying fallback:', err);
+      try {
+        for (const item of cart) {
+          await api.delete(`/cart/${item.id}`);
+        }
+        setCart([]);
+      } catch (fallbackErr) {
+        console.error('Fallback clear cart error:', fallbackErr);
+      }
+    }
+  };
+
   // Budget settings persisted locally
   const [budgetMode, setBudgetMode] = useState<boolean>(false);
   const [budgetAmount, setBudgetAmount] = useState<number>(0);
@@ -156,7 +175,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <StoreContext.Provider value={{ categoriesCache, setCategoriesCache, wishlist, fetchWishlist, toggleWishlist, removeFromWishlist, cart, fetchCart, addToCart, updateCartQuantity, removeFromCart, budgetMode, budgetAmount, updateBudget }}>
+    <StoreContext.Provider value={{ categoriesCache, setCategoriesCache, wishlist, fetchWishlist, toggleWishlist, removeFromWishlist, cart, fetchCart, addToCart, updateCartQuantity, removeFromCart, clearCart, budgetMode, budgetAmount, updateBudget }}>
       {children}
     </StoreContext.Provider>
   );
