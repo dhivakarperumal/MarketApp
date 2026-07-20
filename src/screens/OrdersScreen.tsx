@@ -115,7 +115,7 @@ export const OrdersScreen = () => {
     <View className="flex-1 bg-[#FDFBF7]">
       <StatusBar barStyle="light-content" backgroundColor="#16a34a" />
       {/* Premium Header */}
-      <View className="bg-green-600 pb-5 pt-10 px-4 rounded-b-[40px] z-10 shadow-sm shadow-green-700/20">
+      <View className="bg-green-600 pb-6 pt-2 px-4 rounded-b-[40px] z-10 shadow-sm shadow-green-700/20">
         <View className="flex-row items-center mb-4">
           <TouchableOpacity 
             onPress={() => navigation.canGoBack() ? navigation.goBack() : navigation.navigate("Main", { screen: "Home" })} 
