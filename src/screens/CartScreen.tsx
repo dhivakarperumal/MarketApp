@@ -345,7 +345,7 @@ export const CartScreen = () => {
         {/* Order Summary */}
 
         <View
-          className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl px-5 pt-5 pb-8"
+          className="absolute mb-20 bottom-0 left-0 right-0 bg-white rounded-t-3xl px-5 pt-5 pb-8"
           style={{
             elevation: 18,
             shadowColor: "#000",
@@ -444,7 +444,7 @@ export const CartScreen = () => {
                 onPress={() => navigation.navigate("Checkout")}
                 className="bg-[#0e6827] mt-4 py-4 rounded-xl items-center"
               >
-                <Text className="text-white font-bold text-lg">Proceed to Checkout</Text>
+                <Text className="text-white  font-bold text-lg">Proceed to Checkout</Text>
               </TouchableOpacity>
 
             </View>
