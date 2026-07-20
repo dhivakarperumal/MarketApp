@@ -39,7 +39,7 @@ export const ProductSection: React.FC<ProductSectionProps> = ({ title, highlight
   return (
     <View className="bg-white mt-4 pb-4">
       <SectionHeading title={title} highlight={highlight} />
-      <View style={{ height: 360, marginTop: 10 }}>
+      <View style={{ height: 350, marginTop: 10 }}>
         <Swiper
           autoplay
           autoplayTimeout={5}
@@ -50,11 +50,11 @@ export const ProductSection: React.FC<ProductSectionProps> = ({ title, highlight
           {productSlides.map((slide, slideIndex) => (
             <View
               key={slideIndex}
-              className="flex-row justify-start px-3"
+              className="flex-row justify-start px-3 h-full"
               style={{ gap: 12 }}
             >
               {slide.map((item: any, index: number) => (
-                <View key={item.id || index} style={{ flex: 1, maxWidth: '48%' }}>
+                <View key={item.id || index} style={{ flex: 1, maxWidth: '48%', height: '100%' }}>
                   <ProductCard product={item} />
                 </View>
               ))}
