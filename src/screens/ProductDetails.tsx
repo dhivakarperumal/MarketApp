@@ -84,7 +84,14 @@ export const ProductDetails = () => {
       try {
         const res = await api.get(`/products/${id}`);
         if (!mounted) return;
-        setProduct(res.data || res.data?.data || null);
+        const data = res.data || res.data?.data || null;
+        setProduct(data);
+        if (data?.variants?.length > 0) {
+          setSelectedVariant(data.variants[0]);
+          if (data.variants[0].selectedSizes?.[0]) {
+            setSelectedSize(data.variants[0].selectedSizes[0]);
+          }
+        }
       } catch (err) {
         console.error(err);
         Alert.alert('Error', 'Failed to load product');
@@ -93,6 +100,12 @@ export const ProductDetails = () => {
       }
     };
     fetchProduct();
+    if (product && product.variants?.length > 0 && !selectedVariant) {
+        setSelectedVariant(product.variants[0]);
+        if (product.variants[0].selectedSizes?.[0]) {
+          setSelectedSize(product.variants[0].selectedSizes[0]);
+        }
+    }
     return () => {
       mounted = false;
     };

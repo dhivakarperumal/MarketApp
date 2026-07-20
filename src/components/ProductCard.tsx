@@ -134,9 +134,9 @@ const ProductCard: React.FC<{ product: any; onPress?: () => void }> = ({ product
 
                     </View>
 
-                    {product.delivery_time && (
+                    {/* {product.delivery_time && (
                         <Text className="text-xs text-green-600 font-semibold mb-2">📦 {product.delivery_time}</Text>
-                    )}
+                    )} */}
 
                 </View>
 
