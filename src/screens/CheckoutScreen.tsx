@@ -548,9 +548,25 @@ const CheckoutScreen = () => {
             <Text className="text-slate-500">Subtotal</Text>
             <Text className="text-slate-800 font-medium">₹{subtotal.toFixed(2)}</Text>
           </View>
+          {discountAmount > 0 && (
+            <View className="flex-row justify-between mb-2">
+              <Text className="text-green-600">Discount ({appliedCoupon?.code})</Text>
+              <Text className="text-green-600 font-medium">-₹{discountAmount.toFixed(2)}</Text>
+            </View>
+          )}
+          {calculatedTax > 0 && (
+            <View className="flex-row justify-between mb-2">
+              <Text className="text-slate-500">
+                Tax {taxSettings?.tax_mode === 'Tax Inclusive' ? '(Inclusive)' : ''}
+              </Text>
+              <Text className="text-slate-800 font-medium">₹{calculatedTax.toFixed(2)}</Text>
+            </View>
+          )}
           <View className="flex-row justify-between mb-2">
             <Text className="text-slate-500">Delivery</Text>
-            <Text className="text-slate-800 font-medium">₹{shipping.toFixed(2)}</Text>
+            <Text className="text-slate-800 font-medium">
+              {shipping === 0 ? "FREE" : `₹${shipping.toFixed(2)}`}
+            </Text>
           </View>
           <View className="flex-row justify-between mb-4 border-t border-gray-100 pt-3">
             <Text className="text-lg font-bold text-slate-800">Total</Text>
