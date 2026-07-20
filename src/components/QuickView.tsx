@@ -71,67 +71,65 @@ const QuickView: React.FC<Props> = ({ visible, product, onClose, onAdd }) => {
   if (!product) return null;
 
   return (
-    <Modal visible={visible} transparent animationType="fade">
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', padding: 16 }}>
-        <View style={{ backgroundColor: 'white', borderRadius: 16, overflow: 'hidden', maxHeight: '90%' }}>
-          <View style={{ padding: 12, borderBottomWidth: 1, borderColor: '#eee', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text style={{ fontSize: 18, fontWeight: '700' }}>{product.name}</Text>
-            <TouchableOpacity onPress={onClose} style={{ padding: 8 }}>
-              <Text style={{ color: '#444' }}>Close</Text>
+    <Modal visible={visible} transparent animationType="slide">
+      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' }}>
+        <View style={{ backgroundColor: 'white', borderTopLeftRadius: 24, borderTopRightRadius: 24, overflow: 'hidden', maxHeight: '90%' }}>
+          <View style={{ padding: 16, borderBottomWidth: 1, borderColor: '#eee', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Text style={{ fontSize: 18, fontWeight: '700', flex: 1 }} numberOfLines={1}>{product.name}</Text>
+            <TouchableOpacity onPress={onClose} style={{ padding: 8, backgroundColor: '#f3f4f6', borderRadius: 20 }}>
+              <Text style={{ color: '#444', fontWeight: 'bold' }}>X</Text>
             </TouchableOpacity>
           </View>
 
           <View style={{ height: 260 }}>
             <Swiper autoplay loop showsPagination dotColor="#e5e7eb" activeDotColor="#16a34a">
               {images.map((img: string, idx: number) => (
-                <Image key={idx} source={{ uri: img }} style={{ width: width - 64, height: 260, resizeMode: 'cover' }} />
+                <Image key={idx} source={{ uri: img }} style={{ width: width, height: 260, resizeMode: 'cover' }} />
               ))}
             </Swiper>
           </View>
 
-          <ScrollView style={{ padding: 12 }}>
+          <ScrollView style={{ padding: 16 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
               <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 16, fontWeight: '700', marginBottom: 6 }}>{product.name}</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                  <Star size={14} color="#fbbf24" />
-                  <Text style={{ color: '#666' }}>{product.rating || '0.0'}</Text>
+                  <Star size={14} color="#fbbf24" fill="#fbbf24" />
+                  <Text style={{ color: '#666' }}>{parseFloat(String(product.rating || '0.0')).toFixed(1)}</Text>
                   <Text style={{ color: '#999' }}>({product.review_count || 0})</Text>
                 </View>
               </View>
               <View style={{ alignItems: 'flex-end' }}>
-                <Text style={{ fontSize: 18, fontWeight: '800', color: '#064e3b' }}>₹{product.offer_price || product.selling_price || product.price}</Text>
+                <Text style={{ fontSize: 20, fontWeight: '800', color: '#16a34a' }}>₹{product.offer_price || product.selling_price || product.price}</Text>
                 {product.mrp ? <Text style={{ textDecorationLine: 'line-through', color: '#9ca3af' }}>₹{product.mrp}</Text> : null}
               </View>
             </View>
 
-            <Text style={{ marginTop: 10, color: '#444' }}>{product.description || 'No description available.'}</Text>
+            <Text style={{ marginTop: 12, color: '#444', lineHeight: 20 }}>{product.description || 'No description available.'}</Text>
 
-            <View style={{ flexDirection: 'row', marginTop: 12, alignItems: 'center', gap: 8 }}>
-              <TouchableOpacity onPress={() => setQty((q) => Math.max(1, q - 1))} style={{ padding: 8, backgroundColor: '#f3f4f6', borderRadius: 8 }}>
-                <Text>-</Text>
+            <View style={{ flexDirection: 'row', marginTop: 16, alignItems: 'center', justifyContent: 'space-between' }}>
+               <Text style={{ fontWeight: '600' }}>Quantity</Text>
+               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#f3f4f6', borderRadius: 12, paddingHorizontal: 4 }}>
+                <TouchableOpacity onPress={() => setQty((q) => Math.max(1, q - 1))} style={{ padding: 12 }}>
+                  <Text style={{ fontSize: 18, fontWeight: 'bold' }}>-</Text>
+                </TouchableOpacity>
+                <Text style={{ fontWeight: '700', fontSize: 16 }}>{qty}</Text>
+                <TouchableOpacity onPress={() => setQty((q) => q + 1)} style={{ padding: 12 }}>
+                  <Text style={{ fontSize: 18, fontWeight: 'bold' }}>+</Text>
+                </TouchableOpacity>
+               </View>
+            </View>
+
+            <View style={{ flexDirection: 'row', marginTop: 24, gap: 12, paddingBottom: 24 }}>
+              <TouchableOpacity onPress={async () => { await addToCart(product, null, null, qty); onClose(); }} style={{ flex: 1, backgroundColor: '#16a34a', padding: 14, borderRadius: 12, alignItems: 'center', shadowColor: '#16a34a', shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }}>
+                <Text style={{ color: 'white', fontWeight: '800', fontSize: 16 }}>Add to Cart</Text>
               </TouchableOpacity>
-              <Text style={{ fontWeight: '700' }}>{qty}</Text>
-              <TouchableOpacity onPress={() => setQty((q) => q + 1)} style={{ padding: 8, backgroundColor: '#f3f4f6', borderRadius: 8 }}>
-                <Text>+</Text>
+
+              <TouchableOpacity onPress={() => { onClose(); navigation.navigate('ProductDetails', { id: product.id, product }); }} style={{ flex: 1, backgroundColor: '#fbbf24', padding: 14, borderRadius: 12, alignItems: 'center', shadowColor: '#fbbf24', shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }}>
+                <Text style={{ color: '#000', fontWeight: '800', fontSize: 16 }}>Buy Now</Text>
               </TouchableOpacity>
             </View>
 
-            <View style={{ flexDirection: 'row', marginTop: 16, gap: 8 }}>
-              <TouchableOpacity onPress={async () => { await addToCart(product, qty); onClose(); }} style={{ flex: 1, backgroundColor: '#16a34a', padding: 12, borderRadius: 10, alignItems: 'center' }}>
-                <Text style={{ color: 'white', fontWeight: '700' }}>Add to Cart</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={() => { onClose(); navigation.navigate('ProductDetails', { id: product.id, product }); }} style={{ flex: 1, borderWidth: 1, borderColor: '#16a34a', padding: 12, borderRadius: 10, alignItems: 'center' }}>
-                <Text style={{ color: '#16a34a', fontWeight: '700' }}>View Details</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={{ marginTop: 12, flexDirection: 'row', justifyContent: 'flex-end', gap: 8 }}>
-              <TouchableOpacity onPress={async () => { await toggleWishlist(product); }} style={{ padding: 8 }}>
-                <Heart size={18} color={isInWishlist ? '#ef4444' : '#9ca3af'} />
-              </TouchableOpacity>
-            </View>
           </ScrollView>
         </View>
       </View>
