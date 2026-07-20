@@ -1,7 +1,7 @@
 import React from "react";
 import {
   View,
- Text,
+  Text,
   ImageBackground,
   TouchableOpacity,
   Dimensions,
@@ -38,10 +38,15 @@ const banners = [
 
 export const Hero = () => {
   return (
-    <View style={{ height: 300 }}>
+    <View
+      style={{
+        height: 340,
+      }}
+    >
       <Swiper
         autoplay
-        autoplayTimeout={4}
+        autoplayTimeout={20}
+        showsPagination={false}
         loop
         showsButtons={false}
         dotColor="#ffffff88"
@@ -59,9 +64,9 @@ export const Hero = () => {
           >
             <LinearGradient
               colors={[
-                "rgba(0,0,0,0.55)",
+                "rgba(0,0,0,0.30)",
+                "rgba(0,0,0,0.15)",
                 "rgba(0,0,0,0.35)",
-                "rgba(0,0,0,0.65)",
               ]}
               style={{
                 flex: 1,
@@ -69,50 +74,91 @@ export const Hero = () => {
                 paddingHorizontal: 25,
               }}
             >
-              <Text
-                style={{
-                  color: "#fff",
-                  fontSize: 34,
-                  fontWeight: "800",
-                }}
-              >
-                {item.title}
-              </Text>
+              <View style={{ maxWidth: width * 0.75 }}>
+                {/* <View
+                  style={{
+                    alignSelf: "flex-start",
+                    backgroundColor: "rgba(22,163,74,0.95)",
+                    paddingHorizontal: 14,
+                    paddingVertical: 6,
+                    borderRadius: 20,
+                    marginBottom: 14,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#fff",
+                      fontSize: 12,
+                      fontWeight: "700",
+                      letterSpacing: 1,
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Fresh & Healthy
+                  </Text>
+                </View> */}
 
-              <Text
-                style={{
-                  color: "#fff",
-                  fontSize: 17,
-                  marginTop: 10,
-                }}
-              >
-                {item.subtitle}
-              </Text>
-
-              <TouchableOpacity
-                style={{
-                  marginTop: 25,
-                  backgroundColor: "#16a34a",
-                  paddingHorizontal: 22,
-                  paddingVertical: 14,
-                  borderRadius: 30,
-                  alignSelf: "flex-start",
-                  flexDirection: "row",
-                  alignItems: "center",
-                }}
-              >
                 <Text
                   style={{
                     color: "#fff",
-                    fontWeight: "700",
-                    marginRight: 8,
+                    fontSize: 38,
+                    fontWeight: "900",
+                    lineHeight: 44,
+                    letterSpacing: -1,
+                    textShadowColor: "rgba(0,0,0,0.35)",
+                    textShadowOffset: { width: 0, height: 2 },
+                    textShadowRadius: 8,
                   }}
                 >
-                  Shop Now
+                  {item.title}
                 </Text>
 
-                <ArrowRight color="white" size={18} />
-              </TouchableOpacity>
+                <Text
+                  style={{
+                    color: "rgba(255,255,255,0.95)",
+                    fontSize: 17,
+                    lineHeight: 26,
+                    marginTop: 14,
+                    textShadowColor: "rgba(0,0,0,0.25)",
+                    textShadowOffset: { width: 0, height: 1 },
+                    textShadowRadius: 4,
+                  }}
+                >
+                  {item.subtitle}
+                </Text>
+
+                <TouchableOpacity
+                  activeOpacity={0.85}
+                  style={{
+                    marginTop: 28,
+                    backgroundColor: "#16a34a",
+                    paddingHorizontal: 24,
+                    paddingVertical: 14,
+                    borderRadius: 30,
+                    alignSelf: "flex-start",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    shadowColor: "#16a34a",
+                    shadowOpacity: 0.35,
+                    shadowRadius: 12,
+                    shadowOffset: { width: 0, height: 6 },
+                    elevation: 6,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#fff",
+                      fontWeight: "800",
+                      fontSize: 16,
+                      marginRight: 8,
+                    }}
+                  >
+                    Shop Now
+                  </Text>
+
+                  <ArrowRight color="#fff" size={18} />
+                </TouchableOpacity>
+              </View>
             </LinearGradient>
           </ImageBackground>
         ))}
