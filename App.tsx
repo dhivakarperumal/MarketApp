@@ -9,6 +9,7 @@ import { LoginScreen } from './src/screens/auth/LoginScreen';
 import { RegisterScreen } from './src/screens/auth/RegisterScreen';
 
 import { ProfileScreen } from './src/screens/ProfileScreen';
+import { EditProfileScreen } from './src/screens/EditProfileScreen';
 import { OrdersScreen } from './src/screens/OrdersScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
 import { HelpSupportScreen } from './src/screens/HelpSupportScreen';
@@ -40,6 +41,7 @@ const RootNavigator = () => {
              <Stack.Screen name="Checkout" component={require('./src/screens/CheckoutScreen').default} />
           </>
             <Stack.Screen name="Profile" component={ProfileScreen} />
+            <Stack.Screen name="EditProfile" component={EditProfileScreen} />
             <Stack.Screen name="Orders" component={OrdersScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />

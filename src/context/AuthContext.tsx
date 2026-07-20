@@ -19,6 +19,7 @@ interface AuthContextData {
   isLoading: boolean;
   login: (token: string, userData: User) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser?: (userData: User) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextData>({} as AuthContextData);
@@ -67,8 +68,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
+  async function updateUser(userData: User) {
+    try {
+      await AsyncStorage.setItem('userData', JSON.stringify(userData));
+      setUser(userData);
+    } catch (e) {
+      console.error('Update user error', e);
+      throw new Error('Failed to save user data.');
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
