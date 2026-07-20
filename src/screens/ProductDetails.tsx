@@ -126,28 +126,39 @@ export const ProductDetails = () => {
     ? Math.round(((currentMrp - displayPrice) / currentMrp) * 100)
     : 0;
   const variants = Array.isArray(product.variants) ? product.variants : [];
+  
+  let comboItems = [];
+  try {
+    if (Array.isArray(product.combo_items)) comboItems = product.combo_items;
+    else if (typeof product.combo_items === 'string') comboItems = JSON.parse(product.combo_items || '[]');
+  } catch (e) {
+    comboItems = [];
+  }
 
   return (
     <View className="flex-1 bg-white">
-      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
+      <StatusBar barStyle="light-content" backgroundColor="#16a34a" />
 
-      {/* Floating Header */}
-      <View className="absolute top-0 left-0 right-0 z-20 flex-row items-center justify-between px-4 pt-10 pb-3">
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          className="w-10 h-10 bg-white rounded-full items-center justify-center shadow-md shadow-black/20"
-        >
-          <ArrowLeft size={22} color="#1e293b" />
-        </TouchableOpacity>
+      {/* Premium Header */}
+      <View className="bg-green-600 pb-5 pt-5 px-4 rounded-b-[40px] z-20 shadow-sm shadow-green-700/20 flex-row items-center justify-between">
+        <View className="flex-row items-center">
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            className="w-10 h-10 bg-white/20 rounded-full items-center justify-center mr-4"
+          >
+            <ArrowLeft size={22} color="#ffffff" />
+          </TouchableOpacity>
+          <Text className="text-xl font-bold text-white pr-4">Product Details</Text>
+        </View>
         <TouchableOpacity
           onPress={() => setWishlisted(!wishlisted)}
-          className="w-10 h-10 bg-white rounded-full items-center justify-center shadow-md shadow-black/20"
+          className="w-10 h-10 bg-white/20 rounded-full items-center justify-center"
         >
-          <Heart size={20} color={wishlisted ? '#ef4444' : '#94a3b8'} fill={wishlisted ? '#ef4444' : 'transparent'} />
+          <Heart size={20} color={wishlisted ? '#ef4444' : '#ffffff'} fill={wishlisted ? '#ef4444' : 'transparent'} />
         </TouchableOpacity>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
+      <ScrollView showsVerticalScrollIndicator={false} bounces={false} className="pt-2">
         {/* Image Swiper */}
         <View className="h-80 bg-slate-100">
           <Swiper autoplay loop showsPagination dotColor="#e2e8f0" activeDotColor="#16a34a">
@@ -204,6 +215,25 @@ export const ProductDetails = () => {
                   );
                 })}
               </ScrollView>
+            </View>
+          )}
+
+          {/* Combo Items */}
+          {comboItems.length > 0 && (
+            <View className="mb-5">
+              <Text className="text-sm font-bold text-slate-700 mb-3">Combo Includes</Text>
+              <View className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                {comboItems.map((item: any, idx: number) => {
+                  const itemName = typeof item === 'string' ? item : (item.name || item.product_name || item.item_name || 'Item');
+                  const itemQty = typeof item === 'object' && item.quantity ? ` x${item.quantity}` : '';
+                  return (
+                    <View key={idx} className={`flex-row items-center ${idx !== comboItems.length - 1 ? 'mb-2.5' : ''}`}>
+                      <View className="w-1.5 h-1.5 rounded-full bg-green-500 mr-3" />
+                      <Text className="text-slate-600 flex-1 text-sm font-medium">{itemName}{itemQty}</Text>
+                    </View>
+                  );
+                })}
+              </View>
             </View>
           )}
 
