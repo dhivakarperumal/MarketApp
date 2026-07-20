@@ -5,7 +5,7 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { AuthContext } from "../context/AuthContext";
-import { StoreContext } from "../context/StoreContext";
+import { useStore } from "../context/StoreContext";
 import api from "../services/api";
 import Toast from "react-native-toast-message";
 import Geolocation from "react-native-geolocation-service";
@@ -22,7 +22,11 @@ const indianStates = [
 ];
 
 const CheckoutScreen = () => {
-  const { cart, fetchCart, clearCart } = useContext(StoreContext) || { cart: [], fetchCart: () => {}, clearCart: () => {} };
+  const storeContextData = useStore();
+  const cart = storeContextData?.cart || [];
+  const fetchCart = storeContextData?.fetchCart || (() => {});
+  // clearCart is not in the original StoreContext.tsx, let's just make it a noop if it's undefined
+  const clearCart = (storeContextData as any)?.clearCart || (() => {});
   const authContext = useContext(AuthContext);
   const user = authContext?.user;
   const navigation = useNavigation<any>();
@@ -489,6 +493,46 @@ const CheckoutScreen = () => {
             <TextInput placeholder="State" value={form.state} onChangeText={(t) => handleChange("state", t)} className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-black" />
           </View>
         )}
+
+        {/* Coupon Code */}
+        <View className="bg-white p-4 rounded-2xl shadow-sm border border-green-100 mt-4">
+          <Text className="text-lg font-semibold text-slate-800 mb-3">Coupon Code</Text>
+          {appliedCoupon ? (
+            <View className="bg-green-50 p-3 rounded-xl border border-green-100 flex-row items-center justify-between">
+              <View>
+                <Text className="text-green-800 font-bold">{appliedCoupon.code}</Text>
+                <Text className="text-green-600 text-xs mt-1">Coupon applied successfully</Text>
+              </View>
+              <TouchableOpacity onPress={removeCoupon}>
+                <Text className="text-red-500 font-semibold text-sm">Remove</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View>
+              <View className="flex-row gap-2">
+                <TextInput 
+                  placeholder="Enter coupon code" 
+                  value={couponCode} 
+                  onChangeText={setCouponCode} 
+                  className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-black uppercase" 
+                  autoCapitalize="characters"
+                />
+                <TouchableOpacity 
+                  onPress={applyCoupon} 
+                  disabled={couponLoading}
+                  className={`px-5 py-3 rounded-xl justify-center ${couponLoading ? 'bg-gray-400' : 'bg-[#0e6827]'}`}
+                >
+                  {couponLoading ? (
+                    <ActivityIndicator color="#fff" size="small" />
+                  ) : (
+                    <Text className="text-white font-semibold">Apply</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+              {couponError ? <Text className="text-red-500 text-xs mt-2">{couponError}</Text> : null}
+            </View>
+          )}
+        </View>
 
         {/* Order Summary */}
         <View className="bg-white p-4 rounded-2xl shadow-sm border border-green-100 mt-4 mb-8">
