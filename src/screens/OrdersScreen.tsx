@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { View, Text, ScrollView, TouchableOpacity, Image, TextInput, Modal, ActivityIndicator, StatusBar } from "react-native";
-import { Package, Truck, CheckCircle, Clock, XCircle, ChevronLeft } from "lucide-react-native";
+import { Package, Truck, CheckCircle, Clock, XCircle, ArrowLeft } from "lucide-react-native";
 import { AuthContext } from "../context/AuthContext";
 import api from "../services/api";
 import Toast from "react-native-toast-message";
@@ -115,13 +115,13 @@ export const OrdersScreen = () => {
     <View className="flex-1 bg-[#FDFBF7]">
       <StatusBar barStyle="light-content" backgroundColor="#16a34a" />
       {/* Premium Header */}
-      <View className="bg-green-600 pb-8 pt-12 px-4 rounded-b-[40px] z-10 shadow-sm shadow-green-700/20">
-        <View className="flex-row items-center mb-6">
+      <View className="bg-green-600 pb-5 pt-10 px-4 rounded-b-[40px] z-10 shadow-sm shadow-green-700/20">
+        <View className="flex-row items-center mb-4">
           <TouchableOpacity 
             onPress={() => navigation.canGoBack() ? navigation.goBack() : navigation.navigate("Main", { screen: "Home" })} 
             className="w-10 h-10 bg-white/20 rounded-full items-center justify-center mr-4"
           >
-            <ChevronLeft size={24} color="#ffffff" />
+            <ArrowLeft size={22} color="#ffffff" />
           </TouchableOpacity>
           <Text className="text-xl font-bold text-white">My Orders</Text>
         </View>

@@ -40,6 +40,7 @@ const RootNavigator = () => {
             <Stack.Screen name="Orders" component={OrdersScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
+            <Stack.Screen name="Addresses" component={require('./src/screens/AddressScreen').AddressScreen} />
           </>
         ) : (
           <>

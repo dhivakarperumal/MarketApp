@@ -67,7 +67,7 @@ export const MoreScreen = () => {
           title="Delivery Addresses"
           iconColor="#f97316"
           iconBg="bg-orange-50"
-          onPress={() => {}}
+          onPress={() => navigation.navigate('Addresses')}
         />
 
         <View className="mt-6 mb-3 ml-2">

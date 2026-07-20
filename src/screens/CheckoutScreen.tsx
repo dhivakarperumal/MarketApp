@@ -504,6 +504,50 @@ const CheckoutScreen = () => {
               <Text className="text-lg font-bold text-slate-800 ml-2">Shipping Address</Text>
             </View>
 
+            {/* Saved Address Selector */}
+            {addresses.length > 0 && (
+              <View className="mb-4">
+                <Text className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Saved Addresses</Text>
+                {addresses.map((addr: any) => (
+                  <TouchableOpacity
+                    key={addr.id}
+                    onPress={() => {
+                      setSelectedAddress(addr.id);
+                      setForm((prev: any) => ({
+                        ...prev,
+                        customer_name: addr.customer_name || "",
+                        customer_email: addr.customer_email || "",
+                        customer_phone: addr.customer_phone || "",
+                        street_address: addr.street_address || "",
+                        city: addr.city || "",
+                        district: addr.district || "",
+                        state: addr.state || "",
+                        country: addr.country || "India",
+                        zip_code: addr.zip_code || "",
+                      }));
+                    }}
+                    className={`flex-row items-center p-3 mb-2 rounded-xl border ${selectedAddress === addr.id ? "border-green-600 bg-green-50" : "border-slate-200 bg-slate-50"}`}
+                  >
+                    <View className={`w-9 h-9 rounded-full items-center justify-center mr-3 ${selectedAddress === addr.id ? "bg-green-100" : "bg-slate-100"}`}>
+                      <MapPin size={18} color={selectedAddress === addr.id ? "#16a34a" : "#94a3b8"} />
+                    </View>
+                    <View className="flex-1">
+                      <View className="flex-row items-center">
+                        <Text className={`font-bold text-sm ${selectedAddress === addr.id ? "text-green-700" : "text-slate-700"}`}>{addr.address_type || "Home"}</Text>
+                        {addr.is_default ? <View className="ml-2 bg-green-100 px-1.5 py-0.5 rounded"><Text className="text-[9px] font-bold text-green-700">DEFAULT</Text></View> : null}
+                      </View>
+                      <Text className="text-xs text-slate-500 mt-0.5" numberOfLines={1}>{addr.street_address}, {addr.city}</Text>
+                    </View>
+                    <View className={`w-5 h-5 rounded-full border-2 items-center justify-center ${selectedAddress === addr.id ? "border-green-600" : "border-slate-300"}`}>
+                      {selectedAddress === addr.id && <View className="w-2.5 h-2.5 rounded-full bg-green-600" />}
+                    </View>
+                  </TouchableOpacity>
+                ))}
+                <View className="h-px bg-slate-100 my-3" />
+                <Text className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Or Enter Manually</Text>
+              </View>
+            )}
+
             <View className="flex-row items-start bg-slate-50 border border-slate-200 rounded-xl px-3 mb-3">
               <MapPin color="#94a3b8" size={18} className="mt-4" />
               <TextInput placeholder="Street Address (House No, Building, Street)" placeholderTextColor="#94a3b8" value={form.street_address} onChangeText={(t) => handleChange("street_address", t)} className="flex-1 py-3.5 px-3 text-sm text-slate-800 font-medium" multiline />
