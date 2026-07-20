@@ -144,7 +144,7 @@ export const AddressScreen = () => {
       <StatusBar barStyle="light-content" backgroundColor="#16a34a" />
 
       {/* Header */}
-      <View className="bg-green-600 pb-5 pt-10 px-4 rounded-b-[40px] z-10 shadow-sm shadow-green-700/20">
+      <View className="bg-green-600 pb-5 pt-5 px-4 rounded-b-[40px] z-10 shadow-sm shadow-green-700/20">
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center">
             <TouchableOpacity

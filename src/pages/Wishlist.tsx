@@ -57,7 +57,7 @@ export const Wishlist = () => {
     <View className="flex-1 bg-slate-50">
       <StatusBar barStyle="light-content" backgroundColor="#16a34a" />
       {/* Header Background */}
-      <View className="bg-green-600 pb-10 pt-10 px-4 rounded-b-[40px] z-10 shadow-sm shadow-green-700/20">
+      <View className="bg-green-600 pb-5 pt-5 px-4 rounded-b-[40px] z-10 shadow-sm shadow-green-700/20">
         <View className="flex-row items-center mb-2">
           <TouchableOpacity 
             onPress={() => navigation.goBack()} 
