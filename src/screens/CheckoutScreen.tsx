@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { 
   View, Text, ScrollView, TextInput, TouchableOpacity, 
-  ActivityIndicator, Alert, PermissionsAndroid, Platform, Image
+  ActivityIndicator, Alert, PermissionsAndroid, Platform, Image, StatusBar
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { AuthContext } from "../context/AuthContext";
@@ -10,7 +10,7 @@ import api from "../services/api";
 import Toast from "react-native-toast-message";
 import Geolocation from "react-native-geolocation-service";
 import RazorpayCheckout from "react-native-razorpay";
-import { MapPin, Package, CreditCard, Shield, CheckCircle, User, Mail, Phone, Home, Building2, Map, Navigation } from "lucide-react-native";
+import { MapPin, Package, CreditCard, Shield, CheckCircle, User, Mail, Phone, Home, Building2, Map, Navigation, ArrowLeft } from "lucide-react-native";
 
 const indianStates = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
@@ -424,8 +424,24 @@ const CheckoutScreen = () => {
   };
 
   return (
-    <ScrollView className="flex-1 bg-[#f7f8f3]">
-      <View className="p-4 space-y-4">
+    <View className="flex-1 bg-[#f7f8f3]">
+      <StatusBar barStyle="light-content" backgroundColor="#16a34a" />
+      
+      {/* Premium Header */}
+      <View className="bg-green-600 pb-5 pt-5 px-4 rounded-b-[40px] z-20 shadow-sm shadow-green-700/20 flex-row items-center justify-between">
+        <View className="flex-row items-center">
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            className="w-10 h-10 bg-white/20 rounded-full items-center justify-center mr-4"
+          >
+            <ArrowLeft size={22} color="#ffffff" />
+          </TouchableOpacity>
+          <Text className="text-xl font-bold text-white pr-4">Checkout</Text>
+        </View>
+      </View>
+
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <View className="p-4 space-y-4">
         
         {/* Order Type */}
         <View className="bg-white p-4 rounded-2xl shadow-sm border border-green-100">
@@ -670,8 +686,8 @@ const CheckoutScreen = () => {
           </TouchableOpacity>
         </View>
 
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
