@@ -13,10 +13,13 @@ import Swiper from 'react-native-swiper';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import api from '../services/api';
 import { Star, ShoppingCart, ArrowLeft, Heart } from 'lucide-react-native';
+import { useStore } from '../context/StoreContext';
+import Toast from 'react-native-toast-message';
 
 export const ProductDetails = () => {
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
+  const { addToCart } = useStore();
   const id = route.params?.id || route.params?.productId || null;
 
   const [product, setProduct] = useState<any>(route.params?.product || null);
@@ -273,14 +276,29 @@ export const ProductDetails = () => {
       {/* Sticky Bottom Buttons */}
       <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-5 py-4 flex-row gap-3">
         <TouchableOpacity
-          onPress={() => Alert.alert('Added', `Added ${product.name} x${quantity} to cart`)}
+          onPress={async () => {
+            const itemToAdd = {
+              ...product,
+              ...currentItem,
+              id: product.id || product.product_id,
+              variant_size: currentItem !== product ? `${currentItem.quantity || currentItem.weight_volume || ''} ${currentItem.unit || ''}`.trim() : null
+            };
+            await addToCart(itemToAdd, quantity);
+            Toast.show({ type: 'success', text1: 'Added to Cart', text2: `${product.name} x${quantity}` });
+          }}
           className="flex-1 flex-row items-center justify-center bg-green-50 border border-green-500 py-3.5 rounded-2xl"
         >
           <ShoppingCart size={18} color="#16a34a" />
           <Text className="text-green-700 font-bold ml-2">Add to Cart</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => Alert.alert('Buy', 'Buy now flow')}
+          onPress={() => {
+            navigation.navigate('Checkout', {
+              product: product,
+              variant: selectedVariant,
+              quantity: quantity
+            });
+          }}
           className="flex-1 bg-green-600 py-3.5 rounded-2xl items-center justify-center"
         >
           <Text className="text-white font-bold text-base">Buy Now</Text>

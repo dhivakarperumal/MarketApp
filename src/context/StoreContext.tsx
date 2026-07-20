@@ -131,6 +131,8 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         product_id: productId,
         quantity: qty,
         price: product?.offer_price || product?.selling_price || product?.price || 0,
+        variant_size: product?.variant_size || null,
+        variant_color: product?.variant_color || null,
       });
       await fetchCart();
     } catch (err) {

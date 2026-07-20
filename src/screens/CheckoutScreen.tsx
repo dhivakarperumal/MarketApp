@@ -685,7 +685,7 @@ const CheckoutScreen = () => {
             <Text className="text-white font-bold text-lg">Place Order</Text>
           </TouchableOpacity>
         </View>
-
+      </View>
       </ScrollView>
     </View>
   );
