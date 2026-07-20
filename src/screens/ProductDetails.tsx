@@ -128,6 +128,7 @@ export const ProductDetails = () => {
   const discount = currentMrp && displayPrice
     ? Math.round(((currentMrp - displayPrice) / currentMrp) * 100)
     : 0;
+  const stock = Number(currentItem.total_stock ?? currentItem.stock ?? product.total_stock ?? product.stock ?? 0);
   const variants = Array.isArray(product.variants) ? product.variants : [];
   
   let comboItems = [];
@@ -185,16 +186,24 @@ export const ProductDetails = () => {
           <Text className="text-slate-400 text-sm mb-4">({product.review_count || 0} reviews)</Text>
 
           {/* Price Row */}
-          <View className="flex-row items-center mb-5">
-            <Text className="text-2xl font-bold text-green-700 mr-3">₹{displayPrice}</Text>
-            {currentMrp && (
-              <Text className="text-base line-through text-slate-400 mr-2">₹{currentMrp}</Text>
-            )}
-            {discount > 0 && (
-              <View className="bg-green-100 px-2 py-0.5 rounded-md">
-                <Text className="text-green-700 text-xs font-bold">{discount}% OFF</Text>
-              </View>
-            )}
+          <View className="flex-row items-center justify-between mb-5">
+            <View className="flex-row items-center">
+              <Text className="text-2xl font-bold text-green-700 mr-3">₹{displayPrice}</Text>
+              {currentMrp && (
+                <Text className="text-base line-through text-slate-400 mr-2">₹{currentMrp}</Text>
+              )}
+              {discount > 0 && (
+                <View className="bg-green-100 px-2 py-0.5 rounded-md">
+                  <Text className="text-green-700 text-xs font-bold">{discount}% OFF</Text>
+                </View>
+              )}
+            </View>
+            
+            <View className={`px-3 py-1 rounded-full ${stock > 0 ? (stock < 10 ? 'bg-orange-100' : 'bg-green-100') : 'bg-red-100'}`}>
+               <Text className={`text-xs font-bold ${stock > 0 ? (stock < 10 ? 'text-orange-700' : 'text-green-700') : 'text-red-700'}`}>
+                 {stock > 0 ? `${stock} in stock` : 'Out of Stock'}
+               </Text>
+            </View>
           </View>
 
           {/* Variants Selector */}
@@ -255,17 +264,19 @@ export const ProductDetails = () => {
               <TouchableOpacity
                 onPress={() => setQuantity((q) => Math.max(1, q - 1))}
                 className="w-10 h-10 items-center justify-center"
+                disabled={stock === 0}
               >
-                <Text className="text-xl font-bold text-slate-600">−</Text>
+                <Text className={`text-xl font-bold ${stock === 0 ? 'text-slate-300' : 'text-slate-600'}`}>−</Text>
               </TouchableOpacity>
               <View className="w-10 h-10 items-center justify-center border-l border-r border-slate-200">
-                <Text className="font-bold text-slate-800">{quantity}</Text>
+                <Text className={`font-bold ${stock === 0 ? 'text-slate-400' : 'text-slate-800'}`}>{stock === 0 ? 0 : quantity}</Text>
               </View>
               <TouchableOpacity
-                onPress={() => setQuantity((q) => q + 1)}
+                onPress={() => setQuantity((q) => Math.min(stock, q + 1))}
                 className="w-10 h-10 items-center justify-center"
+                disabled={stock === 0 || quantity >= stock}
               >
-                <Text className="text-xl font-bold text-green-600">+</Text>
+                <Text className={`text-xl font-bold ${stock === 0 || quantity >= stock ? 'text-slate-300' : 'text-green-600'}`}>+</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -286,10 +297,11 @@ export const ProductDetails = () => {
             await addToCart(itemToAdd, quantity);
             Toast.show({ type: 'success', text1: 'Added to Cart', text2: `${product.name} x${quantity}` });
           }}
-          className="flex-1 flex-row items-center justify-center bg-green-50 border border-green-500 py-3.5 rounded-2xl"
+          disabled={stock === 0}
+          className={`flex-1 flex-row items-center justify-center border py-3.5 rounded-2xl ${stock === 0 ? 'bg-slate-100 border-slate-200' : 'bg-green-50 border-green-500'}`}
         >
-          <ShoppingCart size={18} color="#16a34a" />
-          <Text className="text-green-700 font-bold ml-2">Add to Cart</Text>
+          <ShoppingCart size={18} color={stock === 0 ? "#94a3b8" : "#16a34a"} />
+          <Text className={`font-bold ml-2 ${stock === 0 ? 'text-slate-400' : 'text-green-700'}`}>Add to Cart</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
@@ -299,9 +311,10 @@ export const ProductDetails = () => {
               quantity: quantity
             });
           }}
-          className="flex-1 bg-green-600 py-3.5 rounded-2xl items-center justify-center"
+          disabled={stock === 0}
+          className={`flex-1 py-3.5 rounded-2xl items-center justify-center ${stock === 0 ? 'bg-slate-200' : 'bg-green-600'}`}
         >
-          <Text className="text-white font-bold text-base">Buy Now</Text>
+          <Text className={`font-bold text-base ${stock === 0 ? 'text-slate-400' : 'text-white'}`}>Buy Now</Text>
         </TouchableOpacity>
       </View>
     </View>
