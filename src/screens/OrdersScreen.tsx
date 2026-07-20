@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, RefreshControl, StatusBar } from 'react-native';
 import { ArrowLeft, Package } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import api from '../services/api';
+import { AuthContext } from '../context/AuthContext';
 
 export const OrdersScreen = () => {
   const navigation = useNavigation();
+  const { user } = useContext(AuthContext);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,9 +15,19 @@ export const OrdersScreen = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await api.get('/orders');
-      // Adjust based on typical API response structure (could be response.data.orders)
-      setOrders(response.data.orders || response.data || []);
+      // Request with user_id param in case the backend supports it
+      const response = await api.get('/orders', {
+        params: { user_id: user?.user_id }
+      });
+      
+      let fetchedOrders = response.data.orders || response.data || [];
+      
+      // Filter locally to guarantee we only show this user's orders
+      if (user && user.user_id && Array.isArray(fetchedOrders)) {
+        fetchedOrders = fetchedOrders.filter((order: any) => order.user_id === user.user_id);
+      }
+      
+      setOrders(fetchedOrders);
       setError(null);
     } catch (err: any) {
       console.error('Failed to fetch orders', err);
@@ -36,12 +48,19 @@ export const OrdersScreen = () => {
   };
 
   return (
-    <View className="flex-1 bg-white">
-      <View className="flex-row items-center p-4 border-b border-slate-100">
-        <TouchableOpacity onPress={() => navigation.goBack()} className="mr-4">
-          <ArrowLeft size={24} color="#0f172a" />
-        </TouchableOpacity>
-        <Text className="text-xl font-bold text-slate-900">My Orders</Text>
+    <View className="flex-1 bg-slate-50">
+      <StatusBar barStyle="light-content" backgroundColor="#16a34a" />
+      {/* Header Background */}
+      <View className="bg-green-600 pb-10 pt-6 px-4 rounded-b-[40px] z-10 shadow-sm shadow-green-700/20">
+        <View className="flex-row items-center">
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()} 
+            className="w-10 h-10 bg-white/20 rounded-full items-center justify-center mr-4"
+          >
+            <ArrowLeft size={22} color="#ffffff" />
+          </TouchableOpacity>
+          <Text className="text-xl font-bold text-white">My Orders</Text>
+        </View>
       </View>
       
       {loading ? (
