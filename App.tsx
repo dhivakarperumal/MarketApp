@@ -31,6 +31,7 @@ const RootNavigator = () => {
               component={Wishlist}
             />
              <Stack.Screen name="ProductDetails" component={require('./src/screens/ProductDetails').default} />
+             <Stack.Screen name="Checkout" component={require('./src/screens/CheckoutScreen').default} />
           </>
         ) : (
           <>
@@ -43,12 +44,15 @@ const RootNavigator = () => {
   );
 };
 
+import Toast from 'react-native-toast-message';
+
 function App() {
   return (
     <SafeAreaProvider>
       <AuthProvider>
         <StoreProvider>
           <RootNavigator />
+          <Toast />
         </StoreProvider>
       </AuthProvider>
     </SafeAreaProvider>

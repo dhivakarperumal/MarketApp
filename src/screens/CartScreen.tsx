@@ -440,6 +440,13 @@ export const CartScreen = () => {
                 <Text className="text-xl font-extrabold text-green-700">₹{subtotal.toFixed(2)}</Text>
               </View>
 
+              <TouchableOpacity 
+                onPress={() => navigation.navigate("Checkout")}
+                className="bg-[#0e6827] mt-4 py-4 rounded-xl items-center"
+              >
+                <Text className="text-white font-bold text-lg">Proceed to Checkout</Text>
+              </TouchableOpacity>
+
             </View>
           </View>
         </View>
