@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, Text, FlatList, ActivityIndicator } from 'react-native';
+import { View, ScrollView, Text, ActivityIndicator } from 'react-native';
 import { CategorySection } from '../components/CategorySection';
 import { AboutSection } from '../components/AboutSection';
 import { Features } from '../components/Feature';
 import { Banner1 } from '../components/Banner1';
 import { Hero } from '../components/Hero';
-import ProductCard from '../components/ProductCard';
+import { ProductSection } from '../components/ProductSection';
 import api from '../services/api';
 
 export const HomeScreen = () => {
@@ -21,7 +21,8 @@ export const HomeScreen = () => {
         const data = Array.isArray(response.data) ? response.data : (response.data?.products || response.data?.data || []);
         
         const regular = data.filter((p: any) => String(p.type) !== '1');
-        const latest = [...regular].sort((a: any, b: any) => b.id - a.id).slice(0, 6);
+        // Fetch up to 12 latest products
+        const latest = [...regular].sort((a: any, b: any) => b.id - a.id).slice(0, 12);
         setLatestProducts(latest);
 
         const offers = [...regular].sort((a: any, b: any) => {
@@ -43,19 +44,6 @@ export const HomeScreen = () => {
     fetchHomeData();
   }, []);
 
-  const SectionHeading = ({ title, highlight }: { title: string, highlight: string }) => (
-    <View className="px-4 py-4 bg-white mt-2">
-      <View className="flex-row justify-between items-end">
-        <View>
-          <Text className="text-[24px] font-black text-gray-900">
-            {title} <Text className="text-green-600">{highlight}</Text>
-          </Text>
-          <View className="w-16 h-1 bg-green-600 rounded-full mt-2" />
-        </View>
-      </View>
-    </View>
-  );
-
   return (
     <ScrollView className="flex-1 bg-slate-50">
       <View className="pb-4">
@@ -70,60 +58,32 @@ export const HomeScreen = () => {
         ) : (
           <>
             {/* Latest Products */}
-            {latestProducts.length > 0 && (
-              <View className="bg-white">
-                <SectionHeading title="Latest" highlight="Products" />
-                <View className="flex-row flex-wrap justify-between px-2 pt-2">
-                  {latestProducts.map(product => (
-                    <View key={product.id} style={{ width: '50%' }}>
-                      <ProductCard product={product} />
-                    </View>
-                  ))}
-                </View>
-              </View>
-            )}
+            <ProductSection 
+              title="Latest" 
+              highlight="Products" 
+              products={latestProducts} 
+              itemWidth={170} 
+            />
 
             <AboutSection />
 
             {/* Top Offers */}
-            {topOffers.length > 0 && (
-              <View className="bg-white mt-4 pb-4">
-                <SectionHeading title="Top" highlight="Offers" />
-                <FlatList 
-                  data={topOffers}
-                  keyExtractor={(item) => item.id.toString()}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 10 }}
-                  renderItem={({ item }) => (
-                    <View style={{ width: 170 }}>
-                      <ProductCard product={item} />
-                    </View>
-                  )}
-                />
-              </View>
-            )}
+            <ProductSection 
+              title="Top" 
+              highlight="Offers" 
+              products={topOffers} 
+              itemWidth={170} 
+            />
 
             <Banner1 />
 
             {/* Combos */}
-            {combos.length > 0 && (
-              <View className="bg-white mt-4 pb-4">
-                <SectionHeading title="Combo" highlight="Products" />
-                <FlatList 
-                  data={combos}
-                  keyExtractor={(item) => item.id.toString()}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 10 }}
-                  renderItem={({ item }) => (
-                    <View style={{ width: 190 }}>
-                      <ProductCard product={item} />
-                    </View>
-                  )}
-                />
-              </View>
-            )}
+            <ProductSection 
+              title="Combo" 
+              highlight="Products" 
+              products={combos} 
+              itemWidth={190} 
+            />
             
             <Features />
           </>
