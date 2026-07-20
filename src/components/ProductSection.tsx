@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, FlatList } from 'react-native';
+import { View, Text } from 'react-native';
+import Swiper from 'react-native-swiper';
 import ProductCard from './ProductCard';
 
 interface ProductSectionProps {
@@ -22,24 +23,45 @@ const SectionHeading = ({ title, highlight }: { title: string, highlight: string
   </View>
 );
 
-export const ProductSection: React.FC<ProductSectionProps> = ({ title, highlight, products, itemWidth = 170 }) => {
+export const ProductSection: React.FC<ProductSectionProps> = ({ title, highlight, products, itemWidth = '48%' as any }) => {
   if (!products || products.length === 0) return null;
+
+  const chunkArray = (arr: any[], size: number) => {
+    const result = [];
+    for (let i = 0; i < arr.length; i += size) {
+      result.push(arr.slice(i, i + size));
+    }
+    return result;
+  };
+
+  const productSlides = chunkArray(products, 2);
 
   return (
     <View className="bg-white mt-4 pb-4">
       <SectionHeading title={title} highlight={highlight} />
-      <FlatList 
-        data={products}
-        keyExtractor={(item) => item.id.toString()}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 10 }}
-        renderItem={({ item }) => (
-          <View style={{ width: itemWidth }}>
-            <ProductCard product={item} />
-          </View>
-        )}
-      />
+      <View style={{ height: 360, marginTop: 10 }}>
+        <Swiper
+          autoplay
+          autoplayTimeout={5}
+          loop
+          showsButtons={false}
+          showsPagination={false}
+        >
+          {productSlides.map((slide, slideIndex) => (
+            <View
+              key={slideIndex}
+              className="flex-row justify-start px-3"
+              style={{ gap: 12 }}
+            >
+              {slide.map((item: any, index: number) => (
+                <View key={item.id || index} style={{ flex: 1, maxWidth: '48%' }}>
+                  <ProductCard product={item} />
+                </View>
+              ))}
+            </View>
+          ))}
+        </Swiper>
+      </View>
     </View>
   );
 };
