@@ -16,7 +16,7 @@ interface StoreContextData {
   fetchWishlist: () => Promise<void>;
   toggleWishlist: (product: any) => Promise<void>;
   removeFromWishlist: (productId: any) => Promise<void>;
-  updateCartQuantity: (cartId: any, qty: number) => Promise<void>;
+  updateCartQuantity: (cartId: any, qty: number, item?: any) => Promise<void>;
   removeFromCart: (cartId: any) => Promise<void>;
   budgetMode: boolean;
   budgetAmount: number;
@@ -65,10 +65,15 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const updateCartQuantity = async (cartId: any, qty: number) => {
+  const updateCartQuantity = async (cartId: any, qty: number, item?: any) => {
     if (!userId) return;
     try {
-      await api.put(`/cart/${cartId}`, { quantity: qty });
+      const payload: any = { quantity: qty };
+      if (item && item.price) {
+        payload.price = item.price;
+        payload.total_price = Number(item.price) * qty;
+      }
+      await api.put(`/cart/${cartId}`, payload);
       await fetchCart();
     } catch (err) {
       console.error('Update cart quantity error:', err);
