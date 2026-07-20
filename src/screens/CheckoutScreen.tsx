@@ -10,7 +10,7 @@ import api from "../services/api";
 import Toast from "react-native-toast-message";
 import Geolocation from "react-native-geolocation-service";
 import RazorpayCheckout from "react-native-razorpay";
-import { MapPin, Package, CreditCard, Shield, CheckCircle } from "lucide-react-native";
+import { MapPin, Package, CreditCard, Shield, CheckCircle, User, Mail, Phone, Home, Building2, Map, Navigation } from "lucide-react-native";
 
 const indianStates = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
@@ -475,22 +475,55 @@ const CheckoutScreen = () => {
         )}
 
         {/* Customer Form */}
-        <View className="bg-white p-4 rounded-2xl shadow-sm border border-green-100 mt-4">
-          <Text className="text-lg font-semibold text-slate-800 mb-3">Customer Details</Text>
-          <TextInput placeholder="Full Name" value={form.customer_name} onChangeText={(t) => handleChange("customer_name", t)} className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 mb-3 text-sm text-black" />
-          <TextInput placeholder="Email" value={form.customer_email} onChangeText={(t) => handleChange("customer_email", t)} className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 mb-3 text-sm text-black" />
-          <TextInput placeholder="Phone Number" value={form.customer_phone} onChangeText={(t) => handleChange("customer_phone", t)} className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-black" keyboardType="phone-pad" />
+        <View className="bg-white p-5 rounded-3xl shadow-sm shadow-slate-100 border border-slate-100 mt-4">
+          <View className="flex-row items-center mb-4">
+            <User color="#0e6827" size={20} />
+            <Text className="text-lg font-bold text-slate-800 ml-2">Customer Details</Text>
+          </View>
+          
+          <View className="flex-row items-center bg-slate-50 border border-slate-200 rounded-xl px-3 mb-3">
+            <User color="#94a3b8" size={18} />
+            <TextInput placeholder="Full Name" placeholderTextColor="#94a3b8" value={form.customer_name} onChangeText={(t) => handleChange("customer_name", t)} className="flex-1 py-3.5 px-3 text-sm text-slate-800 font-medium" />
+          </View>
+          
+          <View className="flex-row items-center bg-slate-50 border border-slate-200 rounded-xl px-3 mb-3">
+            <Mail color="#94a3b8" size={18} />
+            <TextInput placeholder="Email Address" placeholderTextColor="#94a3b8" value={form.customer_email} onChangeText={(t) => handleChange("customer_email", t)} className="flex-1 py-3.5 px-3 text-sm text-slate-800 font-medium" keyboardType="email-address" autoCapitalize="none" />
+          </View>
+          
+          <View className="flex-row items-center bg-slate-50 border border-slate-200 rounded-xl px-3">
+            <Phone color="#94a3b8" size={18} />
+            <TextInput placeholder="Phone Number" placeholderTextColor="#94a3b8" value={form.customer_phone} onChangeText={(t) => handleChange("customer_phone", t)} className="flex-1 py-3.5 px-3 text-sm text-slate-800 font-medium" keyboardType="phone-pad" />
+          </View>
         </View>
 
         {deliveryMethod === "delivery" && (
-          <View className="bg-white p-4 rounded-2xl shadow-sm border border-green-100 mt-4">
-            <Text className="text-lg font-semibold text-slate-800 mb-3">Shipping Address</Text>
-            <TextInput placeholder="Street Address" value={form.street_address} onChangeText={(t) => handleChange("street_address", t)} className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 mb-3 text-sm text-black" multiline />
-            <View className="flex-row gap-3 mb-3">
-              <TextInput placeholder="City" value={form.city} onChangeText={(t) => handleChange("city", t)} className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-black" />
-              <TextInput placeholder="Zip Code" value={form.zip_code} onChangeText={(t) => handleChange("zip_code", t)} className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-black" />
+          <View className="bg-white p-5 rounded-3xl shadow-sm shadow-slate-100 border border-slate-100 mt-4">
+            <View className="flex-row items-center mb-4">
+              <Home color="#0e6827" size={20} />
+              <Text className="text-lg font-bold text-slate-800 ml-2">Shipping Address</Text>
             </View>
-            <TextInput placeholder="State" value={form.state} onChangeText={(t) => handleChange("state", t)} className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-black" />
+
+            <View className="flex-row items-start bg-slate-50 border border-slate-200 rounded-xl px-3 mb-3">
+              <MapPin color="#94a3b8" size={18} className="mt-4" />
+              <TextInput placeholder="Street Address (House No, Building, Street)" placeholderTextColor="#94a3b8" value={form.street_address} onChangeText={(t) => handleChange("street_address", t)} className="flex-1 py-3.5 px-3 text-sm text-slate-800 font-medium" multiline />
+            </View>
+            
+            <View className="flex-row gap-3 mb-3">
+              <View className="flex-1 flex-row items-center bg-slate-50 border border-slate-200 rounded-xl px-3">
+                <Building2 color="#94a3b8" size={18} />
+                <TextInput placeholder="City" placeholderTextColor="#94a3b8" value={form.city} onChangeText={(t) => handleChange("city", t)} className="flex-1 py-3.5 px-2 text-sm text-slate-800 font-medium" />
+              </View>
+              <View className="flex-1 flex-row items-center bg-slate-50 border border-slate-200 rounded-xl px-3">
+                <Navigation color="#94a3b8" size={18} />
+                <TextInput placeholder="Zip Code" placeholderTextColor="#94a3b8" value={form.zip_code} onChangeText={(t) => handleChange("zip_code", t)} className="flex-1 py-3.5 px-2 text-sm text-slate-800 font-medium" keyboardType="number-pad" />
+              </View>
+            </View>
+
+            <View className="flex-row items-center bg-slate-50 border border-slate-200 rounded-xl px-3">
+              <Map color="#94a3b8" size={18} />
+              <TextInput placeholder="State" placeholderTextColor="#94a3b8" value={form.state} onChangeText={(t) => handleChange("state", t)} className="flex-1 py-3.5 px-3 text-sm text-slate-800 font-medium" />
+            </View>
           </View>
         )}
 
