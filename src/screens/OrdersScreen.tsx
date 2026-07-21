@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Image, TextInput, Modal, ActivityIndicator, StatusBar } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Image, TextInput, Modal, ActivityIndicator, StatusBar, RefreshControl } from "react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Package, Truck, CheckCircle, Clock, XCircle, ArrowLeft } from "lucide-react-native";
 import { AuthContext } from "../context/AuthContext";
@@ -58,6 +58,7 @@ export const OrdersScreen = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [loadingOrder, setLoadingOrder] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [trackOrderId, setTrackOrderId] = useState("");
   const insets = useSafeAreaInsets();
 
@@ -93,11 +94,32 @@ export const OrdersScreen = () => {
         console.error("Failed to load orders", error);
       } finally {
         setLoading(false);
+        setRefreshing(false);
       }
     };
 
     if (user?.user_id || user?.id) fetchOrders();
   }, [user]);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    const fetchOrders = async () => {
+      try {
+        const res = await api.get("/orders");
+        const allOrders = res.data || [];
+        const userOrders = allOrders.filter(
+          (order: any) => order.user_id === user?.user_id || order.user_id === user?.id
+        );
+        userOrders.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        setOrders(userOrders);
+      } catch (error) {
+        console.error("Failed to load orders", error);
+      } finally {
+        setRefreshing(false);
+      }
+    };
+    if (user?.user_id || user?.id) fetchOrders();
+  };
 
   const openOrderDetails = async (order: any) => {
     setLoadingOrder(true);
@@ -152,7 +174,13 @@ export const OrdersScreen = () => {
            <ActivityIndicator size="large" color="#0e6827" />
         </View>
       ) : (
-        <ScrollView className="flex-1 p-4" contentContainerStyle={{ paddingBottom: 40 }}>
+        <ScrollView 
+          className="flex-1 p-4" 
+          contentContainerStyle={{ paddingBottom: 40 }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#16a34a"]} />
+          }
+        >
           {orders.length === 0 ? (
             <Text className="text-gray-500 text-center mt-10">No orders found</Text>
           ) : (

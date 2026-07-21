@@ -1,147 +1,103 @@
 import React from "react";
-import {
-    View,
-    TouchableOpacity,
-    Text,
-} from "react-native";
+import { View, TouchableOpacity, Text } from "react-native";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import {
-    Home,
-    Package,
-    ShoppingCart,
-    Layers,
-    Menu,
+  Home,
+  LayoutGrid,
+  Search,
+  ShoppingCart,
+  User,
 } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function CustomTabBar({
-    state,
-    navigation,
-}: BottomTabBarProps) {
-    const insets = useSafeAreaInsets();
+const TAB_CONFIG: Record<string, { icon: any; label: string }> = {
+  Home:     { icon: Home,         label: "Home"     },
+  Category: { icon: LayoutGrid,   label: "Category" },
+  Search:   { icon: Search,       label: "Search"   },
+  Cart:     { icon: ShoppingCart, label: "Cart"     },
+  Profile:  { icon: User,         label: "Profile"  },
+};
 
-    const getIcon = (routeName: string) => {
-        switch (routeName) {
-            case "Home":
-                return Home;
-            case "Products":
-                return Package;
-            case "Cart":
-                return ShoppingCart;
-            case "Combo":
-                return Layers;
-            case "More":
-                return Menu;
-            default:
-                return Home;
-        }
-    };
+export default function CustomTabBar({ state, navigation }: BottomTabBarProps) {
+  const insets = useSafeAreaInsets();
 
-    return (
-        <View
+  return (
+    <View
+      style={{
+        position: "absolute",
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height: 64 + insets.bottom,
+        paddingBottom: insets.bottom,
+        backgroundColor: "#ffffff",
+        borderTopWidth: 1,
+        borderTopColor: "#e2e8f0",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-around",
+        paddingHorizontal: 4,
+        elevation: 20,
+        shadowColor: "#000",
+        shadowOpacity: 0.08,
+        shadowRadius: 12,
+        shadowOffset: { width: 0, height: -4 },
+      }}>
+      {state.routes.map((route, index) => {
+        const focused = state.index === index;
+        const cfg = TAB_CONFIG[route.name] ?? { icon: Home, label: route.name };
+        const Icon = cfg.icon;
+
+        const onPress = () => {
+          const event = navigation.emit({
+            type: "tabPress",
+            target: route.key,
+            canPreventDefault: true,
+          });
+          if (!focused && !event.defaultPrevented) {
+            navigation.navigate(route.name);
+          }
+        };
+
+        return (
+          <TouchableOpacity
+            key={route.key}
+            activeOpacity={0.8}
+            onPress={onPress}
             style={{
-                position: "absolute",
-                left: 14,
-                right: 14,
-                bottom: insets.bottom,
-
-                height: 82,
-
-                backgroundColor: "rgba(255,255,255,0.92)",
-                borderWidth: 1,
-                borderColor: "rgba(255,255,255,0.5)",
-
-                borderRadius: 30,
-
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-
-                paddingHorizontal: 12,
-
-                elevation: 18,
-                shadowColor: "#000",
-                shadowOpacity: 0.14,
-                shadowRadius: 16,
-                shadowOffset: {
-                    width: 0,
-                    height: 8,
-                },
-            }}
-        >
-            {state.routes.map((route, index) => {
-                const focused = state.index === index;
-
-                const Icon = getIcon(route.name);
-
-                const onPress = () => {
-                    const event = navigation.emit({
-                        type: "tabPress",
-                        target: route.key,
-                        canPreventDefault: true,
-                    });
-
-                    if (!focused && !event.defaultPrevented) {
-                        navigation.navigate(route.name);
-                    }
-                };
-
-                return (
-                    <TouchableOpacity
-                        key={route.key}
-                        activeOpacity={0.85}
-                        onPress={onPress}
-                        style={{
-                            flex: focused ? 1.8 : 1,
-                            alignItems: "center",
-                            justifyContent: "center",
-                        }}
-                    >
-                        {focused ? (
-                            <View
-                                style={{
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-
-                                    backgroundColor: "#16A34A",
-
-                                    height: 52,
-
-                                    borderRadius: 26,
-
-                                    paddingHorizontal: 18,
-
-                                    minWidth: 110,
-                                }}
-                            >
-                                <Icon
-                                    color="#FFFFFF"
-                                    size={22}
-                                    strokeWidth={2.5}
-                                />
-
-                                <Text
-                                    style={{
-                                        color: "#FFFFFF",
-                                        fontSize: 15,
-                                        fontWeight: "700",
-                                        marginLeft: 8,
-                                    }}
-                                >
-                                    {route.name}
-                                </Text>
-                            </View>
-                        ) : (
-                            <Icon
-                                color="#94A3B8"
-                                size={27}
-                                strokeWidth={2.4}
-                            />
-                        )}
-                    </TouchableOpacity>
-                );
-            })}
-        </View>
-    );
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+              paddingVertical: 6,
+            }}>
+            {focused ? (
+              <View
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "#16A34A",
+                  height: 48,
+                  width: 48,
+                  borderRadius: 24,
+                }}>
+                <Icon color="#FFFFFF" size={24} strokeWidth={2.5} />
+              </View>
+            ) : (
+              <View style={{ alignItems: "center" }}>
+                <Icon color="#94A3B8" size={22} strokeWidth={2} style={{ marginBottom: 3 }} />
+                <Text
+                  style={{
+                    color: "#94A3B8",
+                    fontSize: 11,
+                    fontWeight: "500",
+                  }}>
+                  {cfg.label}
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
 }

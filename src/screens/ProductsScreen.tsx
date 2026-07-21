@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  RefreshControl,
 } from 'react-native';
 import { Star, ShoppingCart, Zap, TrendingUp } from 'lucide-react-native';
 import ProductCard from '../components/ProductCard';
@@ -35,6 +36,7 @@ export const ProductsScreen = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -60,7 +62,13 @@ export const ProductsScreen = () => {
       Alert.alert('Error', errorMessage);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchProducts();
   };
 
   const renderProductBadges = (product: Product) => {
@@ -126,7 +134,12 @@ export const ProductsScreen = () => {
 
   return (
     <View className="flex-1 py-5 bg-slate-50">
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#16a34a"]} />
+        }
+      >
 
         {/* Products Grid */}
         <FlatList

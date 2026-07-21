@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import api from '../services/api';
+import api, { clearTokenCache } from '../services/api';
 
 interface User {
   id: number;
@@ -20,6 +20,8 @@ interface AuthContextData {
   login: (token: string, userData: User) => Promise<void>;
   logout: () => Promise<void>;
   updateUser?: (userData: User) => Promise<void>;
+  hasSeenOnboarding: boolean;
+  completeOnboarding: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextData>({} as AuthContextData);
@@ -27,6 +29,7 @@ export const AuthContext = createContext<AuthContextData>({} as AuthContextData)
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
 
   useEffect(() => {
     loadStorageData();
@@ -34,8 +37,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   async function loadStorageData() {
     try {
-      const storedToken = await AsyncStorage.getItem('userToken');
-      const storedUser = await AsyncStorage.getItem('userData');
+      const [storedToken, storedUser, onboardingFlag] = await Promise.all([
+        AsyncStorage.getItem('userToken'),
+        AsyncStorage.getItem('userData'),
+        AsyncStorage.getItem('has_seen_onboarding'),
+      ]);
+
+      if (onboardingFlag === 'true') {
+        setHasSeenOnboarding(true);
+      }
 
       if (storedToken && storedUser) {
         setUser(JSON.parse(storedUser));
@@ -60,6 +70,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   async function logout() {
     try {
+      clearTokenCache(); // Clear in-memory token cache immediately
       await AsyncStorage.removeItem('userToken');
       await AsyncStorage.removeItem('userData');
       setUser(null);
@@ -78,8 +89,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
+  async function completeOnboarding() {
+    try {
+      await AsyncStorage.setItem('has_seen_onboarding', 'true');
+      setHasSeenOnboarding(true);
+    } catch (e) {
+      console.error('Failed to save onboarding flag', e);
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, isLoading, login, logout, updateUser, hasSeenOnboarding, completeOnboarding }}>
       {children}
     </AuthContext.Provider>
   );

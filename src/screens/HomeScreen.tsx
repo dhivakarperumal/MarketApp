@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, Text, ActivityIndicator } from 'react-native';
+import { View, ScrollView, Text, ActivityIndicator, RefreshControl } from 'react-native';
 import { CategorySection } from '../components/CategorySection';
 import { AboutSection } from '../components/AboutSection';
 import { Features } from '../components/Feature';
@@ -13,11 +13,11 @@ export const HomeScreen = () => {
   const [topOffers, setTopOffers] = useState<any[]>([]);
   const [combos, setCombos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    const fetchHomeData = async () => {
-      try {
-        const response = await api.get('/products');
+  const fetchHomeData = async () => {
+    try {
+      const response = await api.get('/products');
         const data = Array.isArray(response.data) ? response.data : (response.data?.products || response.data?.data || []);
         
         const regular = data.filter((p: any) => String(p.type) !== '1');
@@ -39,13 +39,26 @@ export const HomeScreen = () => {
         console.error("Home Data Fetch Error", error);
       } finally {
         setLoading(false);
+        setRefreshing(false);
       }
     };
+
+  useEffect(() => {
     fetchHomeData();
   }, []);
 
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchHomeData();
+  };
+
   return (
-    <ScrollView className="flex-1 bg-slate-50" contentContainerStyle={{ paddingBottom: 120 }}>
+    <ScrollView 
+      className="flex-1 bg-slate-50"
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#16a34a"]} />
+      }
+    >
       <View className="pb-4">
         <Hero />
 
