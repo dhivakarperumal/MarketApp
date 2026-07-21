@@ -4,7 +4,6 @@ import api from '../services/api';
 import { useStore } from '../context/StoreContext';
 
 const { width } = Dimensions.get('window');
-// Calculate exact width for 3 items: Screen width minus 32 (padding) minus 32 (two 16px gaps) divided by 3
 const ITEM_WIDTH = (width - 64) / 3;
 
 const defaultImage = 'https://images.unsplash.com/photo-1610030469983-98e550d6193c';
