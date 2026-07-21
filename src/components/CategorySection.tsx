@@ -1,7 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, Image, TouchableOpacity, FlatList, Animated } from 'react-native';
+import { View, Text, Image, TouchableOpacity, FlatList, Animated, Dimensions } from 'react-native';
 import api from '../services/api';
 import { useStore } from '../context/StoreContext';
+
+const { width } = Dimensions.get('window');
+// Calculate exact width for 3 items: Screen width minus 32 (padding) minus 32 (two 16px gaps) divided by 3
+const ITEM_WIDTH = (width - 64) / 3;
 
 const defaultImage = 'https://images.unsplash.com/photo-1610030469983-98e550d6193c';
 
@@ -62,16 +66,24 @@ export const CategorySection = () => {
   const topRowCategories = categories.slice(0, halfLength);
   const bottomRowCategories = categories.slice(halfLength);
 
+  // Duplicate arrays to simulate infinite scrolling without rewinding
+  const infiniteTopRow = Array(100).fill(topRowCategories).flat();
+  const infiniteBottomRow = Array(100).fill(bottomRowCategories).flat();
+
   // Auto-slide logic
   useEffect(() => {
-    if (topRowCategories.length === 0 || bottomRowCategories.length === 0) return;
+    if (infiniteTopRow.length === 0 || infiniteBottomRow.length === 0) return;
 
     let topIndex = 0;
     let bottomIndex = 0;
 
     const interval = setInterval(() => {
-      topIndex = (topIndex + 1) % topRowCategories.length;
-      bottomIndex = (bottomIndex + 1) % bottomRowCategories.length;
+      topIndex += 1;
+      bottomIndex += 1;
+
+      // Prevent out of bounds if the user somehow leaves the app open for a very long time
+      if (topIndex >= infiniteTopRow.length) topIndex = 0;
+      if (bottomIndex >= infiniteBottomRow.length) bottomIndex = 0;
 
       topListRef.current?.scrollToIndex({
         index: topIndex,
@@ -85,11 +97,11 @@ export const CategorySection = () => {
     }, 3000); // Slides every 3 seconds
 
     return () => clearInterval(interval);
-  }, [topRowCategories.length, bottomRowCategories.length]);
+  }, [infiniteTopRow.length, infiniteBottomRow.length]);
 
   const getItemLayout = (_: any, index: number) => ({
-    length: 128, // 112 (w-28) + 16 (gap)
-    offset: 128 * index,
+    length: ITEM_WIDTH + 16, // item width + 16 (gap)
+    offset: (ITEM_WIDTH + 16) * index,
     index,
   });
 
@@ -104,9 +116,10 @@ export const CategorySection = () => {
 
     return (
       <TouchableOpacity
-        key={cat?.id || `${name}-${index}`}
+        key={`${cat?.id || name}-${index}`}
         activeOpacity={0.9}
-        className="w-28 items-center"
+        className="items-center"
+        style={{ width: ITEM_WIDTH }}
       >
         <View
           className="w-full bg-white rounded-2xl border border-gray-100 items-center py-3 px-2"
@@ -140,8 +153,9 @@ export const CategorySection = () => {
   const renderSkeletonCard = (key: number) => (
     <Animated.View
       key={key}
-      className="w-28 bg-white rounded-2xl border border-gray-100 items-center py-3 px-2"
+      className="bg-white rounded-2xl border border-gray-100 items-center py-3 px-2"
       style={{
+        width: ITEM_WIDTH,
         opacity: pulseAnim,
         elevation: 2,
         shadowColor: "#000",
@@ -169,31 +183,31 @@ export const CategorySection = () => {
       {loading ? (
         <View className="flex-col gap-y-6">
           <View className="flex-row gap-4 px-4">
-            {Array.from({ length: 5 }).map((_, index) => renderSkeletonCard(index))}
+            {Array.from({ length: 4 }).map((_, index) => renderSkeletonCard(index))}
           </View>
           <View className="flex-row gap-4 px-4 -ml-8">
-            {Array.from({ length: 5 }).map((_, index) => renderSkeletonCard(index + 5))}
+            {Array.from({ length: 4 }).map((_, index) => renderSkeletonCard(index + 4))}
           </View>
         </View>
       ) : (
         <View className="flex-col gap-y-6">
           <FlatList
             ref={topListRef}
-            data={topRowCategories}
+            data={infiniteTopRow}
             horizontal
             showsHorizontalScrollIndicator={false}
-            keyExtractor={(item, index) => item?.id?.toString() || `top-${index}`}
+            keyExtractor={(item, index) => item?.id ? `${item.id}-${index}` : `top-${index}`}
             contentContainerStyle={{ paddingHorizontal: 16, gap: 16 }}
             renderItem={renderCategoryItem}
             getItemLayout={getItemLayout}
           />
           <FlatList
             ref={bottomListRef}
-            data={bottomRowCategories}
+            data={infiniteBottomRow}
             horizontal
             inverted
             showsHorizontalScrollIndicator={false}
-            keyExtractor={(item, index) => item?.id?.toString() || `bottom-${index}`}
+            keyExtractor={(item, index) => item?.id ? `${item.id}-${index}` : `bottom-${index}`}
             contentContainerStyle={{ paddingHorizontal: 16, gap: 16 }}
             renderItem={renderCategoryItem}
             getItemLayout={getItemLayout}
