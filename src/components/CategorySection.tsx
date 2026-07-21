@@ -118,16 +118,20 @@ export const CategorySection = () => {
         key={`${cat?.id || name}-${index}`}
         activeOpacity={0.9}
         className="items-center"
-        style={{ width: ITEM_WIDTH }}
+        style={{ width: ITEM_WIDTH,  marginBottom: 12 }}
+        
       >
+       
         <View
           className="w-full bg-white rounded-2xl border border-gray-100 items-center py-3 px-2"
           style={{
             elevation: 4,
             shadowColor: "#000",
             shadowOpacity: 0.08,
-            shadowRadius: 8,
-            shadowOffset: { width: 0, height: 3 },
+            shadowRadius: 12,
+            shadowOffset: { width: 0, height: 6 },
+            shadowOpacity: 0.12,
+            elevation: 8,
           }}
         >
           <View className="w-20 h-20 bg-gray-50 rounded-lg items-center justify-center">
@@ -169,7 +173,10 @@ export const CategorySection = () => {
   );
 
   return (
-    <View className="py-6 bg-white overflow-hidden">
+    <View
+      className="py-6 bg-white"
+      style={{ overflow: 'visible' }}
+    >
       <View className="px-4 flex-row justify-between items-end mb-6">
         <View>
           <Text className="text-[24px] font-black text-gray-900">
