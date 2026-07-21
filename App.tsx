@@ -15,6 +15,7 @@ import { EditProfileScreen } from './src/screens/EditProfileScreen';
 import { OrdersScreen } from './src/screens/OrdersScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
 import { HelpSupportScreen } from './src/screens/HelpSupportScreen';
+import { AboutScreen } from './src/screens/AboutScreen';
 import { Wishlist } from './src/pages/Wishlist';
 import { StoreProvider } from './src/context/StoreContext';
 import { ErrorBoundary } from './src/components/ErrorBoundary';
@@ -50,6 +51,7 @@ const RootNavigator = () => {
             <Stack.Screen name="Orders" component={OrdersScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
+            <Stack.Screen name="About" component={AboutScreen} />
             <Stack.Screen name="Addresses" component={require('./src/screens/AddressScreen').AddressScreen} />
           </>
         ) : (
