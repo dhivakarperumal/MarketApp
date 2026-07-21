@@ -9,6 +9,7 @@ import {
   StatusBar
 } from 'react-native';
 import { ArrowLeft, Trash2, ShoppingCart } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
@@ -29,6 +30,7 @@ interface WishlistItem {
 export const Wishlist = () => {
   const { user } = useContext(AuthContext);
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
 
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,10 +56,13 @@ export const Wishlist = () => {
   };
 
   return (
-    <View className="flex-1 bg-slate-50">
+    <View className="flex-1 bg-slate-50" style={{ paddingBottom: insets.bottom }}>
       <StatusBar barStyle="light-content" backgroundColor="#16a34a" />
       {/* Header Background */}
-      <View className="bg-green-600 pb-5 pt-5 px-4 rounded-b-[40px] z-10 shadow-sm shadow-green-700/20">
+      <View 
+        className="bg-green-600 pb-5 px-4 rounded-b-[40px] z-10 shadow-sm shadow-green-700/20"
+        style={{ paddingTop: insets.top > 0 ? insets.top + 10 : 20 }}
+      >
         <View className="flex-row items-center mb-2">
           <TouchableOpacity 
             onPress={() => navigation.goBack()} 
