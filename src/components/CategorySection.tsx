@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, Image, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, Image, TouchableOpacity, FlatList, Animated } from 'react-native';
 import api from '../services/api';
 import { useStore } from '../context/StoreContext';
 
@@ -12,6 +12,7 @@ export const CategorySection = () => {
 
   const topListRef = useRef<FlatList>(null);
   const bottomListRef = useRef<FlatList>(null);
+  const pulseAnim = useRef(new Animated.Value(0.3)).current;
 
   const fetchCategories = async () => {
     try {
@@ -37,6 +38,25 @@ export const CategorySection = () => {
   useEffect(() => {
     fetchCategories();
   }, [categoriesCache, setCategoriesCache]);
+
+  useEffect(() => {
+    if (loading) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 0.3,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    }
+  }, [loading, pulseAnim]);
 
   const halfLength = Math.ceil(categories.length / 2);
   const topRowCategories = categories.slice(0, halfLength);
@@ -117,8 +137,26 @@ export const CategorySection = () => {
     );
   };
 
+  const renderSkeletonCard = (key: number) => (
+    <Animated.View
+      key={key}
+      className="w-28 bg-white rounded-2xl border border-gray-100 items-center py-3 px-2"
+      style={{
+        opacity: pulseAnim,
+        elevation: 2,
+        shadowColor: "#000",
+        shadowOpacity: 0.05,
+        shadowRadius: 5,
+        shadowOffset: { width: 0, height: 2 },
+      }}
+    >
+      <View className="w-20 h-20 bg-gray-100 rounded-lg mb-3" />
+      <View className="w-16 h-3 bg-gray-200 rounded-full" />
+    </Animated.View>
+  );
+
   return (
-    <View className="py-6 bg-white">
+    <View className="py-6 bg-white overflow-hidden">
       <View className="px-4 flex-row justify-between items-end mb-6">
         <View>
           <Text className="text-[24px] font-black text-gray-900">
@@ -129,16 +167,13 @@ export const CategorySection = () => {
       </View>
 
       {loading ? (
-        <View className="px-4 flex-row flex-wrap justify-between">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <View
-              key={index}
-              className="w-[30%] mb-6 items-center"
-            >
-              <View className="w-24 h-24 rounded-2xl bg-gray-200 mb-2" />
-              <View className="w-12 h-3 rounded-full bg-gray-200" />
-            </View>
-          ))}
+        <View className="flex-col gap-y-6">
+          <View className="flex-row gap-4 px-4">
+            {Array.from({ length: 5 }).map((_, index) => renderSkeletonCard(index))}
+          </View>
+          <View className="flex-row gap-4 px-4 -ml-8">
+            {Array.from({ length: 5 }).map((_, index) => renderSkeletonCard(index + 5))}
+          </View>
         </View>
       ) : (
         <View className="flex-col gap-y-6">
