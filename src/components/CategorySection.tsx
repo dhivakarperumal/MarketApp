@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, Image, TouchableOpacity, FlatList } from 'react-native';
 import api from '../services/api';
 import { useStore } from '../context/StoreContext';
@@ -9,6 +9,9 @@ export const CategorySection = () => {
   const { categoriesCache, setCategoriesCache } = useStore();
   const [categories, setCategories] = useState(categoriesCache || []);
   const [loading, setLoading] = useState(!categoriesCache || categoriesCache.length === 0);
+
+  const topListRef = useRef<FlatList>(null);
+  const bottomListRef = useRef<FlatList>(null);
 
   const fetchCategories = async () => {
     try {
@@ -38,6 +41,37 @@ export const CategorySection = () => {
   const halfLength = Math.ceil(categories.length / 2);
   const topRowCategories = categories.slice(0, halfLength);
   const bottomRowCategories = categories.slice(halfLength);
+
+  // Auto-slide logic
+  useEffect(() => {
+    if (topRowCategories.length === 0 || bottomRowCategories.length === 0) return;
+
+    let topIndex = 0;
+    let bottomIndex = 0;
+
+    const interval = setInterval(() => {
+      topIndex = (topIndex + 1) % topRowCategories.length;
+      bottomIndex = (bottomIndex + 1) % bottomRowCategories.length;
+
+      topListRef.current?.scrollToIndex({
+        index: topIndex,
+        animated: true,
+      });
+
+      bottomListRef.current?.scrollToIndex({
+        index: bottomIndex,
+        animated: true,
+      });
+    }, 3000); // Slides every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [topRowCategories.length, bottomRowCategories.length]);
+
+  const getItemLayout = (_: any, index: number) => ({
+    length: 128, // 112 (w-28) + 16 (gap)
+    offset: 128 * index,
+    index,
+  });
 
   const renderCategoryItem = ({ item: cat, index }: { item: any; index: number }) => {
     const name = String(cat?.name || "Category").trim();
@@ -109,14 +143,17 @@ export const CategorySection = () => {
       ) : (
         <View className="flex-col gap-y-6">
           <FlatList
+            ref={topListRef}
             data={topRowCategories}
             horizontal
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item, index) => item?.id?.toString() || `top-${index}`}
             contentContainerStyle={{ paddingHorizontal: 16, gap: 16 }}
             renderItem={renderCategoryItem}
+            getItemLayout={getItemLayout}
           />
           <FlatList
+            ref={bottomListRef}
             data={bottomRowCategories}
             horizontal
             inverted
@@ -124,6 +161,7 @@ export const CategorySection = () => {
             keyExtractor={(item, index) => item?.id?.toString() || `bottom-${index}`}
             contentContainerStyle={{ paddingHorizontal: 16, gap: 16 }}
             renderItem={renderCategoryItem}
+            getItemLayout={getItemLayout}
           />
         </View>
       )}
