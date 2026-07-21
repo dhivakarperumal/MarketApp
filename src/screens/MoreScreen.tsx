@@ -34,8 +34,8 @@ export const MoreScreen = () => {
         </View>
         <Text className="text-2xl font-bold text-slate-900">{user?.username || 'Guest User'}</Text>
         <Text className="text-slate-500 font-medium mb-4">{user?.email || 'Welcome to SuperMarket'}</Text>
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           className="bg-green-600 py-2.5 px-8 rounded-full shadow-sm shadow-green-200"
           onPress={() => navigation.navigate('Profile')}
         >
@@ -43,7 +43,9 @@ export const MoreScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false} contentContainerStyle={{
+        paddingBottom: 120, 
+      }}>
         <View className="mb-3 mt-2 ml-2">
           <Text className="text-xs font-bold text-slate-400 uppercase tracking-wider">My Activity</Text>
         </View>
@@ -73,7 +75,7 @@ export const MoreScreen = () => {
         <View className="mt-6 mb-3 ml-2">
           <Text className="text-xs font-bold text-slate-400 uppercase tracking-wider">Settings & Support</Text>
         </View>
-        
+
         <MoreItemCard
           icon={Settings}
           title="App Settings"
@@ -88,7 +90,7 @@ export const MoreScreen = () => {
           iconBg="bg-purple-50"
           onPress={() => navigation.navigate('HelpSupport')}
         />
-        
+
         <TouchableOpacity
           className="flex-row items-center justify-center bg-red-50 p-4 mt-6 mb-10 rounded-2xl border border-red-100"
           onPress={() => console.log('Logout')}

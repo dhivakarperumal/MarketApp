@@ -280,16 +280,6 @@ export const ComboScreen = () => {
   return (
     <View className="flex-1 bg-slate-50">
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View className="bg-green-700 px-4 py-6">
-          <Text className="text-white text-3xl font-bold">Combo Deals</Text>
-          <Text className="text-green-100 text-sm mt-1">
-            Bundles made for every kitchen
-          </Text>
-          <Text className="text-green-100 text-xs mt-2">
-            {allCombos.length} combo products available
-          </Text>
-        </View>
 
         {/* Combos Grid */}
         <FlatList
