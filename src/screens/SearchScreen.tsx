@@ -63,22 +63,24 @@ export const SearchScreen = () => {
 
   // ── Fetch products by category ────────────────────────────────────────────
   const fetchByCategory = async (categoryId: number) => {
-    try {
-      // Try category-specific endpoint first
-      const res = await api.get(`/products?category_id=${categoryId}`);
-      const data = Array.isArray(res.data) ? res.data : res.data?.data ?? [];
-      if (data.length > 0) return data;
-    } catch (_) {}
-
-    // Fallback: filter from all products by category_id field
-    const all = allProducts.length > 0 ? allProducts : await fetchAllProducts();
-    return all.filter((p: Product) => p.category_id === categoryId);
+    let all = allProducts;
+    if (all.length === 0) {
+      all = await fetchAllProducts();
+    }
+    // Filter locally to guarantee we only show products for this category
+    return all.filter((p: Product) => Number(p.category_id) === Number(categoryId));
   };
 
   // ── Initial load ──────────────────────────────────────────────────────────
   useEffect(() => {
     fetchAllProducts().then(data => {
-      setFiltered(data);
+      // Avoid overwriting if a category filter is active or is about to be active
+      if (!route.params?.categoryId) {
+        setActiveCategoryId((currentId) => {
+          if (!currentId) setFiltered(data);
+          return currentId;
+        });
+      }
       setLoading(false);
     });
   }, []);
