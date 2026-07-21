@@ -418,7 +418,7 @@ const CheckoutScreen = () => {
           return Toast.show({ type: "error", text1: `Insufficient stock for ${item.name}` });
         }
       } else {
-        const availableStock = item.variant_info?.stock_quantity ?? item.stock_quantity ?? item.total_stock;
+        const availableStock = item.total_stock ?? item.variant_info?.stock_quantity ?? item.stock_quantity;
         if (availableStock !== undefined && availableStock < finalConsumedStock) {
           return Toast.show({ type: "error", text1: `Insufficient stock for ${item.name}` });
         }
