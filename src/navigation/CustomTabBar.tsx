@@ -3,7 +3,7 @@ import { View, TouchableOpacity, Text } from "react-native";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import {
   Home,
-  LayoutGrid,
+  Package,
   Search,
   ShoppingCart,
   User,
@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const TAB_CONFIG: Record<string, { icon: any; label: string }> = {
   Home:     { icon: Home,         label: "Home"     },
-  Category: { icon: LayoutGrid,   label: "Category" },
+  Products: { icon: Package,      label: "Products" },
   Search:   { icon: Search,       label: "Search"   },
   Cart:     { icon: ShoppingCart, label: "Cart"     },
   Profile:  { icon: User,         label: "Profile"  },
