@@ -11,7 +11,7 @@ import Toast from "react-native-toast-message";
 import Geolocation from "react-native-geolocation-service";
 import RazorpayCheckout from "react-native-razorpay";
 import { MapPin, Package, CreditCard, Shield, CheckCircle, User, Mail, Phone, Home, Building2, Map, Navigation, ArrowLeft } from "lucide-react-native";
-
+import { calculateStockConsumptionInBaseUnits } from "../utils/stockUtils";
 const indianStates = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
   "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
@@ -166,6 +166,11 @@ const CheckoutScreen = () => {
         quantity: buyNowQuantity,
         size: buyNowSize,
         colorName: buyNowVariant?.color,
+        variant_info: buyNowVariant,
+        total_stock: buyNowProduct.total_stock,
+        stock_quantity: buyNowVariant?.stock_quantity ?? buyNowProduct.stock_quantity,
+        product_code: buyNowProduct.product_code,
+        type: buyNowProduct.type,
       },
     ]
     : cart;
@@ -354,6 +359,9 @@ const CheckoutScreen = () => {
         price: item.price,
         image: item.image,
         user_id: user?.user_id,
+        variant_info: item.variant_info || null,
+        variant_color: item.colorName || item.variant_color || null,
+        variant_size: item.size || item.variant_size || null,
       }));
 
       const orderData = {
@@ -391,6 +399,31 @@ const CheckoutScreen = () => {
       if (deliveryInfo.isError) return Toast.show({ type: "error", text1: deliveryInfo.message });
     }
     if (!checkoutItems.length) return Alert.alert("No product to checkout");
+
+    // Validate Stock
+    for (const item of checkoutItems) {
+      const consumedStock = calculateStockConsumptionInBaseUnits(
+        item.variant_info?.weight || item.variant_info?.quantity || item.variant_size || item.size || null,
+        item.variant_info?.unit || item.variant_info?.measurementUnit || item.variant_unit || null,
+        item.quantity
+      );
+      
+      const finalConsumedStock = consumedStock > 0 ? consumedStock : (parseFloat(item.quantity) || 0);
+      
+      const productCode = String(item.product_code || '').trim().toUpperCase();
+      const isComboProduct = productCode.startsWith('SPMC') || String(item.type || '').trim() === '1';
+
+      if (isComboProduct) {
+        if (item.total_stock !== undefined && item.total_stock < finalConsumedStock) {
+          return Toast.show({ type: "error", text1: `Insufficient stock for ${item.name}` });
+        }
+      } else {
+        const availableStock = item.variant_info?.stock_quantity ?? item.stock_quantity ?? item.total_stock;
+        if (availableStock !== undefined && availableStock < finalConsumedStock) {
+          return Toast.show({ type: "error", text1: `Insufficient stock for ${item.name}` });
+        }
+      }
+    }
 
     if (paymentMethod === "cash") {
       await saveOrder();
