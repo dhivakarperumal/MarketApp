@@ -9,6 +9,7 @@ import {
   Alert,
   StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import api from '../services/api';
@@ -89,9 +90,6 @@ export const ProductDetails = () => {
         setProduct(data);
         if (data?.variants?.length > 0) {
           setSelectedVariant(data.variants[0]);
-          if (data.variants[0].selectedSizes?.[0]) {
-            setSelectedSize(data.variants[0].selectedSizes[0]);
-          }
         }
       } catch (err) {
         console.error(err);
@@ -103,9 +101,6 @@ export const ProductDetails = () => {
     fetchProduct();
     if (product && product.variants?.length > 0 && !selectedVariant) {
         setSelectedVariant(product.variants[0]);
-        if (product.variants[0].selectedSizes?.[0]) {
-          setSelectedSize(product.variants[0].selectedSizes[0]);
-        }
     }
     return () => {
       mounted = false;
@@ -166,7 +161,7 @@ export const ProductDetails = () => {
   }
 
   return (
-    <View className="flex-1 bg-white">
+    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-white">
       <StatusBar barStyle="light-content" backgroundColor="#16a34a" />
 
       {/* Premium Header */}
@@ -343,9 +338,8 @@ export const ProductDetails = () => {
           <Text className={`font-bold text-base ${stock === 0 ? 'text-slate-400' : 'text-white'}`}>Buy Now</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 export default ProductDetails;
-

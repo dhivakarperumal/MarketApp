@@ -3,6 +3,7 @@ import {
   View, Text, ScrollView, TextInput, TouchableOpacity, 
   ActivityIndicator, Alert, PermissionsAndroid, Platform, Image, StatusBar
 } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { AuthContext } from "../context/AuthContext";
 import { useStore } from "../context/StoreContext";
@@ -457,7 +458,7 @@ const CheckoutScreen = () => {
   };
 
   return (
-    <View className="flex-1 bg-[#f7f8f3]">
+    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-[#f7f8f3]">
       <StatusBar barStyle="light-content" backgroundColor="#16a34a" />
       
       {/* Premium Header */}
@@ -720,7 +721,7 @@ const CheckoutScreen = () => {
         </View>
       </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 
