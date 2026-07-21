@@ -46,7 +46,7 @@ const RootNavigator = () => {
             <Stack.Screen name="Wishlist" component={Wishlist} />
             <Stack.Screen name="ProductDetails" component={require('./src/screens/ProductDetails').default} />
             <Stack.Screen name="Checkout" component={require('./src/screens/CheckoutScreen').default} />
-            <Stack.Screen name="Profile" component={ProfileScreen} />
+            <Stack.Screen name="UserProfile" component={ProfileScreen} />
             <Stack.Screen name="EditProfile" component={EditProfileScreen} />
             <Stack.Screen name="Orders" component={OrdersScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />

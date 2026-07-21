@@ -37,7 +37,7 @@ export const MoreScreen = () => {
 
         <TouchableOpacity
           className="bg-green-600 py-2.5 px-8 rounded-full shadow-sm shadow-green-200"
-          onPress={() => navigation.navigate('Profile')}
+          onPress={() => navigation.navigate('UserProfile')}
         >
           <Text className="text-white font-semibold text-base">View Full Profile</Text>
         </TouchableOpacity>

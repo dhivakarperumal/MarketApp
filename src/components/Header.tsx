@@ -138,7 +138,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
       >
         <TouchableWithoutFeedback onPress={() => setMenuVisible(false)}>
           <View
-            className="absolute top-28 right-4 w-56 bg-white rounded-3xl overflow-hidden border border-gray-100"
+            className="absolute top-20 right-4 w-56 bg-white rounded-3xl overflow-hidden border border-gray-100"
             style={{
               elevation: 12,
               shadowColor: "#000",
@@ -167,7 +167,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
               className="flex-row items-center justify-between px-5 py-4 border-b border-gray-100"
               onPress={() => {
                 setMenuVisible(false);
-                console.log("Profile");
+                navigation.navigate("UserProfile");
               }}
             >
               <View className="flex-row items-center">
