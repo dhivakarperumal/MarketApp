@@ -141,7 +141,7 @@ export const ProductDetails = () => {
   const discount = currentMrp && displayPrice
     ? Math.round(((currentMrp - displayPrice) / currentMrp) * 100)
     : 0;
-  const stock = Number(currentItem.total_stock ?? currentItem.stock ?? product.total_stock ?? product.stock ?? 0);
+  const stock = Number(currentItem.total_stock ?? currentItem.stock_quantity ?? product.total_stock ?? product.stock_quantity ?? 0);
   const variants = Array.isArray(product.variants) ? product.variants : [];
   
   let comboItems = [];

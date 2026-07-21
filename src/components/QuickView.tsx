@@ -42,7 +42,9 @@ const QuickView: React.FC<Props> = ({ visible, product, onClose, onAdd }) => {
   const navigation = useNavigation<any>();
   const [qty, setQty] = useState(1);
   const { wishlist, toggleWishlist, addToCart } = useStore();
-  const isInWishlist = wishlist.some((w: any) => w.product_id === product.id || w.id === product.id);
+  const isInWishlist = wishlist.some((w: any) => w.product_id === product?.id || w.id === product?.id);
+
+  const stock = Number(product?.total_stock ?? product?.stock_quantity ?? product?.stock ?? 0);
 
   const images = useMemo(() => {
     if (!product) return [];
@@ -106,6 +108,14 @@ const QuickView: React.FC<Props> = ({ visible, product, onClose, onAdd }) => {
             </View>
 
             <Text style={{ marginTop: 12, color: '#444', lineHeight: 20 }}>{product.description || 'No description available.'}</Text>
+            
+            <View style={{ marginTop: 8 }}>
+              {stock > 0 ? (
+                <Text style={{ color: '#16a34a', fontWeight: 'bold' }}>{stock} in stock</Text>
+              ) : (
+                <Text style={{ color: '#ef4444', fontWeight: 'bold' }}>Out of Stock</Text>
+              )}
+            </View>
 
             <View style={{ flexDirection: 'row', marginTop: 16, alignItems: 'center', justifyContent: 'space-between' }}>
                <Text style={{ fontWeight: '600' }}>Quantity</Text>
@@ -114,18 +124,18 @@ const QuickView: React.FC<Props> = ({ visible, product, onClose, onAdd }) => {
                   <Text style={{ fontSize: 18, fontWeight: 'bold' }}>-</Text>
                 </TouchableOpacity>
                 <Text style={{ fontWeight: '700', fontSize: 16 }}>{qty}</Text>
-                <TouchableOpacity onPress={() => setQty((q) => q + 1)} style={{ padding: 12 }}>
-                  <Text style={{ fontSize: 18, fontWeight: 'bold' }}>+</Text>
+                <TouchableOpacity onPress={() => setQty((q) => Math.min(stock, q + 1))} style={{ padding: 12 }} disabled={stock === 0 || qty >= stock}>
+                  <Text style={{ fontSize: 18, fontWeight: 'bold', color: (stock === 0 || qty >= stock) ? '#9ca3af' : '#000' }}>+</Text>
                 </TouchableOpacity>
                </View>
             </View>
 
             <View style={{ flexDirection: 'row', marginTop: 24, gap: 12, paddingBottom: 24 }}>
-              <TouchableOpacity onPress={async () => { await addToCart(product, null, null, qty); onClose(); }} style={{ flex: 1, backgroundColor: '#16a34a', padding: 14, borderRadius: 12, alignItems: 'center', shadowColor: '#16a34a', shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }}>
+              <TouchableOpacity disabled={stock === 0} onPress={async () => { await addToCart(product, null, null, qty); onClose(); }} style={{ flex: 1, backgroundColor: stock === 0 ? '#9ca3af' : '#16a34a', padding: 14, borderRadius: 12, alignItems: 'center', shadowColor: stock === 0 ? 'transparent' : '#16a34a', shadowOpacity: 0.3, shadowRadius: 8, elevation: stock === 0 ? 0 : 4 }}>
                 <Text style={{ color: 'white', fontWeight: '800', fontSize: 16 }}>Add to Cart</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => { onClose(); navigation.navigate('ProductDetails', { id: product.id, product }); }} style={{ flex: 1, backgroundColor: '#fbbf24', padding: 14, borderRadius: 12, alignItems: 'center', shadowColor: '#fbbf24', shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }}>
+              <TouchableOpacity disabled={stock === 0} onPress={() => { onClose(); navigation.navigate('ProductDetails', { id: product.id, product }); }} style={{ flex: 1, backgroundColor: stock === 0 ? '#d1d5db' : '#fbbf24', padding: 14, borderRadius: 12, alignItems: 'center', shadowColor: stock === 0 ? 'transparent' : '#fbbf24', shadowOpacity: 0.3, shadowRadius: 8, elevation: stock === 0 ? 0 : 4 }}>
                 <Text style={{ color: '#000', fontWeight: '800', fontSize: 16 }}>Buy Now</Text>
               </TouchableOpacity>
             </View>
