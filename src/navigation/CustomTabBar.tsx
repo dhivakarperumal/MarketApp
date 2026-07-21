@@ -41,17 +41,16 @@ export default function CustomTabBar({
         <View
             style={{
                 position: "absolute",
-                left: 14,
-                right: 14,
-                bottom: insets.bottom,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                paddingBottom: insets.bottom,
 
-                height: 82,
+                height: 82 + insets.bottom,
 
                 backgroundColor: "rgba(255,255,255,0.92)",
-                borderWidth: 1,
+                borderTopWidth: 1,
                 borderColor: "rgba(255,255,255,0.5)",
-
-                borderRadius: 30,
 
                 flexDirection: "row",
                 alignItems: "center",
