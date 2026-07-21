@@ -26,6 +26,7 @@ import {
   ChevronRight,
 } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
+import { AboutSection } from '../components/AboutSection';
 
 const APP_VERSION = '1.0.0';
 const BUILD_NUMBER = '100';
@@ -148,6 +149,8 @@ export const AboutScreen = () => {
           <View className="w-10" />
         </View>
 
+        
+
         {/* Logo + App Name */}
         <View className="items-center">
           <TouchableOpacity activeOpacity={0.9} onPress={handleLogoPress}>
@@ -186,6 +189,8 @@ export const AboutScreen = () => {
             lightning-fast delivery — all at your fingertips.
           </Text>
         </View>
+
+        <AboutSection/>
 
         {/* ── App Info ── */}
         <Text className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3 ml-1">

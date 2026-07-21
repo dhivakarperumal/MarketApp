@@ -78,8 +78,6 @@ export const HomeScreen = () => {
               itemWidth={170} 
             />
 
-            <AboutSection />
-
             {/* Top Offers */}
             <ProductSection 
               title="Top" 
