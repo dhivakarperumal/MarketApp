@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import api from '../services/api';
+import api, { clearTokenCache } from '../services/api';
 
 interface User {
   id: number;
@@ -37,9 +37,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   async function loadStorageData() {
     try {
-      const storedToken = await AsyncStorage.getItem('userToken');
-      const storedUser = await AsyncStorage.getItem('userData');
-      const onboardingFlag = await AsyncStorage.getItem('has_seen_onboarding');
+      const keys = ['userToken', 'userData', 'has_seen_onboarding'];
+      const results = await AsyncStorage.multiGet(keys);
+      
+      const storedToken = results[0][1];
+      const storedUser = results[1][1];
+      const onboardingFlag = results[2][1];
 
       if (onboardingFlag === 'true') {
         setHasSeenOnboarding(true);
@@ -68,6 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   async function logout() {
     try {
+      clearTokenCache(); // Clear in-memory token cache immediately
       await AsyncStorage.removeItem('userToken');
       await AsyncStorage.removeItem('userData');
       setUser(null);

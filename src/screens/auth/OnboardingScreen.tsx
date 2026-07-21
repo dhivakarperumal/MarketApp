@@ -1,5 +1,6 @@
 import React, { useContext, useRef, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, SafeAreaView, Dimensions, StatusBar } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import Swiper from 'react-native-swiper';
 import { AuthContext } from '../../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
@@ -68,36 +69,36 @@ export const OnboardingScreen = () => {
                     source={slide.image} 
                     className="w-32 h-32 object-contain" 
                   />
-                  <Text className="text-3xl font-bold text-green-600 mt-2">{slide.title}</Text>
-                  <Text className="text-lg font-semibold text-slate-500 mb-10">{slide.subtitle}</Text>
+                  <Text className="text-[32px] font-extrabold text-emerald-600 mt-4 tracking-tight">{slide.title}</Text>
+                  <Text className="text-xl font-bold text-slate-700 mb-10 tracking-wide">{slide.subtitle}</Text>
                   
                   <Image 
                     source={slide.basketImage} 
-                    className="w-[280px] h-[280px] object-contain" 
+                    className="w-[280px] h-[280px] object-contain shadow-sm" 
                   />
                   
-                  <View className="absolute bottom-[28%]">
-                    <Text className="text-slate-500 text-center text-sm font-medium leading-5">
+                  <View className="absolute bottom-[30%]">
+                    <Text className="text-slate-500 text-center text-base font-medium leading-6 px-6">
                       {slide.description}
                     </Text>
                   </View>
                 </>
               ) : (
                 // Second & Third Page Layout (Text top, Image bottom)
-                <View className="w-full flex-1 items-center mt-10">
-                  <Text className="text-2xl font-bold text-green-700 text-center leading-8">
+                <View className="w-full flex-1 items-center mt-12">
+                  <Text className="text-3xl font-extrabold text-emerald-600 text-center leading-10 tracking-tight">
                     {slide.title}
                   </Text>
                   <Text className="text-2xl font-bold text-slate-800 text-center mb-4 leading-8">
                     {slide.subtitle}
                   </Text>
-                  <Text className="text-slate-500 text-center text-sm font-medium mb-12 px-4 leading-5">
+                  <Text className="text-slate-500 text-center text-base font-medium mb-12 px-6 leading-6">
                     {slide.description}
                   </Text>
                   
                   <Image 
                     source={slide.image} 
-                    className="w-[300px] h-[300px] object-contain" 
+                    className="w-[320px] h-[320px] object-contain shadow-sm" 
                   />
                 </View>
               )}
@@ -106,7 +107,7 @@ export const OnboardingScreen = () => {
         </Swiper>
 
         {/* Bottom Fixed Controls */}
-        <View className="absolute bottom-10 left-0 right-0 px-6">
+        <View className="absolute bottom-10 left-0 right-0 px-8">
           <TouchableOpacity
             onPress={() => {
               if (activeIndex < 2) {
@@ -115,20 +116,27 @@ export const OnboardingScreen = () => {
                 handleComplete();
               }
             }}
-            className="bg-green-700 py-4 rounded-xl items-center shadow-sm w-full"
             activeOpacity={0.8}
+            className="w-full shadow-lg shadow-emerald-500/30"
           >
-            <Text className="text-white text-base font-bold tracking-wide">
-              {activeIndex === 2 ? 'Get Started' : 'Get Started'}
-            </Text>
+            <LinearGradient
+              colors={['#10b981', '#059669']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              className="py-4 rounded-full items-center justify-center w-full"
+            >
+              <Text className="text-white text-lg font-bold tracking-wider">
+                {activeIndex === 2 ? 'GET STARTED' : 'NEXT'}
+              </Text>
+            </LinearGradient>
           </TouchableOpacity>
 
           <TouchableOpacity 
             onPress={handleComplete} 
-            className="mt-6 py-2 items-center"
+            className="mt-5 py-3 items-center"
             activeOpacity={0.6}
           >
-            <Text className="text-slate-800 font-bold text-sm">Skip</Text>
+            <Text className="text-slate-400 font-bold text-base tracking-wide uppercase">Skip</Text>
           </TouchableOpacity>
         </View>
       </View>
