@@ -60,7 +60,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
       <SafeAreaView edges={["top"]} className="bg-green-600" />
 
       <LinearGradient
-        colors={["#16A34A", "#22C55E", "#34D399"]}
+        colors={["#2F7D5A", "#2B7A57", "#3A8F68"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         className="overflow-hidden"
