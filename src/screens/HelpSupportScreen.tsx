@@ -1,27 +1,25 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, Text, TouchableOpacity, ScrollView, StatusBar } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, MessageCircleQuestion, PhoneCall, FileText, ChevronRight } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export const HelpSupportScreen = () => {
   const navigation = useNavigation();
-  const insets = useSafeAreaInsets();
 
   return (
-    <View className="flex-1 bg-slate-50" style={{ paddingBottom: insets.bottom }}>
-      <View 
-        className="flex-row items-center px-4 pb-4 border-b border-slate-200 bg-white"
-        style={{ paddingTop: insets.top > 0 ? insets.top + 10 : 16 }}
-      >
+    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-white">
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      <View className="flex-row items-center p-4 border-b border-slate-200 bg-white">
         <TouchableOpacity onPress={() => navigation.goBack()} className="mr-4">
           <ArrowLeft size={24} color="#0f172a" />
         </TouchableOpacity>
         <Text className="text-xl font-bold text-slate-900">Help & Support</Text>
       </View>
       
-      <ScrollView className="p-4">
-        <Text className="text-2xl font-bold text-slate-800 mt-2 mb-1">How can we help you?</Text>
+      <View className="flex-1 bg-slate-50">
+        <ScrollView className="p-4">
+          <Text className="text-2xl font-bold text-slate-800 mt-2 mb-1">How can we help you?</Text>
         <Text className="text-slate-500 mb-6">Choose an option below to get assistance with your account or orders.</Text>
 
         <TouchableOpacity className="flex-row items-center bg-white p-4 mb-3 rounded-2xl shadow-sm border border-slate-100">
@@ -57,6 +55,7 @@ export const HelpSupportScreen = () => {
           <ChevronRight size={20} color="#94a3b8" />
         </TouchableOpacity>
       </ScrollView>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 };
