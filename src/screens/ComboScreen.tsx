@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  RefreshControl,
 } from 'react-native';
 import { Star, ShoppingCart, Heart, Tag, Eye } from 'lucide-react-native';
 import api from '../services/api';
@@ -72,6 +73,7 @@ export const ComboScreen = () => {
   const [allCombos, setAllCombos] = useState<Combo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchCombos();
@@ -98,7 +100,13 @@ export const ComboScreen = () => {
       Alert.alert('Error', errorMessage);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchCombos();
   };
 
   const renderComboCard = ({ item }: { item: Combo }) => {
@@ -279,7 +287,12 @@ export const ComboScreen = () => {
 
   return (
     <View className="flex-1 bg-slate-50">
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#16a34a"]} />
+        }
+      >
         {/* Header */}
         <View className="bg-green-700 px-4 py-6">
           <Text className="text-white text-3xl font-bold">Combo Deals</Text>
