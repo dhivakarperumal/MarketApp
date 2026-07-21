@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, Image, TouchableOpacity, FlatList, Animated, Dimensions } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import api from '../services/api';
 import { useStore } from '../context/StoreContext';
 
@@ -9,6 +10,7 @@ const ITEM_WIDTH = (width - 64) / 3;
 const defaultImage = 'https://images.unsplash.com/photo-1610030469983-98e550d6193c';
 
 export const CategorySection = () => {
+  const navigation = useNavigation<any>();
   const { categoriesCache, setCategoriesCache } = useStore();
   const [categories, setCategories] = useState(categoriesCache || []);
   const [loading, setLoading] = useState(!categoriesCache || categoriesCache.length === 0);
@@ -119,7 +121,12 @@ export const CategorySection = () => {
         activeOpacity={0.9}
         className="items-center"
         style={{ width: ITEM_WIDTH,  marginBottom: 12 }}
-        
+        onPress={() => {
+          navigation.navigate('Search', {
+            categoryId: cat.id,
+            categoryName: name,
+          });
+        }}
       >
        
         <View
