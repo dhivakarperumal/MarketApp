@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Switch } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft, Bell, Moon, Globe, Shield, ChevronRight } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export const SettingsScreen = () => {
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
 
   return (
-    <View className="flex-1 bg-slate-50">
-      <View className="flex-row items-center p-4 border-b border-slate-200 bg-white">
+    <View className="flex-1 bg-slate-50" style={{ paddingBottom: insets.bottom }}>
+      <View 
+        className="flex-row items-center px-4 pb-4 border-b border-slate-200 bg-white"
+        style={{ paddingTop: insets.top > 0 ? insets.top + 10 : 16 }}
+      >
         <TouchableOpacity onPress={() => navigation.goBack()} className="mr-4">
           <ArrowLeft size={24} color="#0f172a" />
         </TouchableOpacity>

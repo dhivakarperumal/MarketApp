@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, RefreshControl, Image } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft, Heart, ShoppingCart } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import api from '../services/api';
 
 export const WishlistScreen = () => {
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -35,8 +37,11 @@ export const WishlistScreen = () => {
   };
 
   return (
-    <View className="flex-1 bg-white">
-      <View className="flex-row items-center p-4 border-b border-slate-100">
+    <View className="flex-1 bg-white" style={{ paddingBottom: insets.bottom }}>
+      <View 
+        className="flex-row items-center px-4 pb-4 border-b border-slate-100"
+        style={{ paddingTop: insets.top > 0 ? insets.top + 10 : 16 }}
+      >
         <TouchableOpacity onPress={() => navigation.goBack()} className="mr-4">
           <ArrowLeft size={24} color="#0f172a" />
         </TouchableOpacity>
