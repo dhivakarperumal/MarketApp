@@ -116,7 +116,7 @@ const ProductCard: React.FC<{ product: any; onPress?: () => void }> = ({ product
                         {product.name}
                     </Text>
 
-                    {parseFloat(String(product.rating || '0')) > 0 && (
+                    {/* {parseFloat(String(product.rating || '0')) > 0 && (
                         <View className="flex-row items-center gap-1 mb-2">
                             <Star size={14} color="#fbbf24" fill="#fbbf24" />
                             <Text className="text-xs font-semibold text-slate-700">
@@ -124,10 +124,10 @@ const ProductCard: React.FC<{ product: any; onPress?: () => void }> = ({ product
                             </Text>
                             <Text className="text-xs text-slate-500">({product.review_count || 0})</Text>
                         </View>
-                    )}
+                    )} */}
 
                     <View className="flex-row items-center gap-2 mb-2">
-                        <Text className="text-xl font-extrabold text-slate-900">₹{sellingPrice.toFixed(2)}</Text>
+                        <Text className="text-xl font-extrabold text-[#2F7D5A]">₹{sellingPrice.toFixed(2)}</Text>
                         {mrpPrice > 0 && (
                             <Text className="text-sm line-through text-slate-400">₹{mrpPrice.toFixed(2)}</Text>
                         )}

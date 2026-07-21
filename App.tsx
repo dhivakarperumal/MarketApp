@@ -3,7 +3,8 @@ import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, Image, Text } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import { TabNavigator } from './src/navigation/TabNavigator';
 import { AuthProvider, AuthContext } from './src/context/AuthContext';
 import { LoginScreen } from './src/screens/auth/LoginScreen';
@@ -27,11 +28,26 @@ const RootNavigator = () => {
   const { user, isLoading, hasSeenOnboarding } = useContext(AuthContext);
 
   if (isLoading) {
-    // Show loading spinner while checking async storage
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
-        <ActivityIndicator size="large" color="#16a34a" />
-      </View>
+      <LinearGradient
+        colors={['#2F7D5A', '#2B7A57', '#1d503b']}
+        style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+      >
+        <View style={{ alignItems: 'center', elevation: 12, shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 15, shadowOffset: { width: 0, height: 8 } }}>
+          <View style={{ width: 110, height: 110, backgroundColor: '#ffffff', borderRadius: 32, justifyContent: 'center', alignItems: 'center' }}>
+            <Image 
+              source={require('./src/assets/logo.png')} 
+              style={{ width: 75, height: 75 }} 
+              resizeMode="contain" 
+            />
+          </View>
+        </View>
+        <Text style={{ marginTop: 24, fontSize: 32, fontWeight: '900', color: '#ffffff', letterSpacing: 1 }}>MarketApp</Text>
+        <Text style={{ marginTop: 6, fontSize: 16, color: 'rgba(255,255,255,0.85)', fontWeight: '500' }}>Freshness Delivered</Text>
+        <View style={{ position: 'absolute', bottom: 70 }}>
+          <ActivityIndicator size="large" color="#ffffff" />
+        </View>
+      </LinearGradient>
     );
   }
 
