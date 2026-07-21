@@ -4,6 +4,7 @@ import Swiper from 'react-native-swiper';
 import { useNavigation } from '@react-navigation/native';
 import { Star, ShoppingCart, Heart } from 'lucide-react-native';
 import { useStore } from '../context/StoreContext';
+import { calculateStockConsumptionInBaseUnits } from '../utils/stockUtils';
 
 type Props = {
   visible: boolean;
@@ -44,7 +45,19 @@ const QuickView: React.FC<Props> = ({ visible, product, onClose, onAdd }) => {
   const { wishlist, toggleWishlist, addToCart } = useStore();
   const isInWishlist = wishlist.some((w: any) => w.product_id === product?.id || w.id === product?.id);
 
-  const stock = Number(product?.total_stock ?? product?.stock_quantity ?? product?.stock ?? 0);
+  const rawStock = Number(product?.total_stock ?? product?.stock_quantity ?? product?.stock ?? 0);
+  const defaultVariant = product?.variants?.[0] || product;
+  const consumedStockForOne = calculateStockConsumptionInBaseUnits(
+    defaultVariant?.weight_volume || defaultVariant?.weight || defaultVariant?.quantity || defaultVariant?.size || null,
+    defaultVariant?.unit || defaultVariant?.measurementUnit || null,
+    1
+  );
+  const finalConsumedForOne = consumedStockForOne > 0 ? consumedStockForOne : 1;
+  const availableQty = finalConsumedForOne > 0 ? Math.floor(rawStock / finalConsumedForOne) : rawStock;
+  const stock = availableQty;
+  const isOutOfStock = stock < 1;
+  const displayStock = Number.isInteger(rawStock) ? String(rawStock) : rawStock.toFixed(3).replace(/\.0+$/, '');
+  const stockUnit = defaultVariant?.unit || product?.unit || "units";
 
   const images = useMemo(() => {
     if (!product) return [];
@@ -110,8 +123,8 @@ const QuickView: React.FC<Props> = ({ visible, product, onClose, onAdd }) => {
             <Text style={{ marginTop: 12, color: '#444', lineHeight: 20 }}>{product.description || 'No description available.'}</Text>
             
             <View style={{ marginTop: 8 }}>
-              {stock > 0 ? (
-                <Text style={{ color: '#16a34a', fontWeight: 'bold' }}>{stock} in stock</Text>
+              {!isOutOfStock ? (
+                <Text style={{ color: '#16a34a', fontWeight: 'bold' }}>Available: {displayStock} {stockUnit}</Text>
               ) : (
                 <Text style={{ color: '#ef4444', fontWeight: 'bold' }}>Out of Stock</Text>
               )}

@@ -15,6 +15,7 @@ import api from '../services/api';
 import { Star, ShoppingCart, ArrowLeft, Heart } from 'lucide-react-native';
 import { useStore } from '../context/StoreContext';
 import Toast from 'react-native-toast-message';
+import { calculateStockConsumptionInBaseUnits } from '../utils/stockUtils';
 
 export const ProductDetails = () => {
   const route = useRoute<any>();
@@ -141,7 +142,19 @@ export const ProductDetails = () => {
   const discount = currentMrp && displayPrice
     ? Math.round(((currentMrp - displayPrice) / currentMrp) * 100)
     : 0;
-  const stock = Number(currentItem.total_stock ?? currentItem.stock_quantity ?? product.total_stock ?? product.stock_quantity ?? 0);
+
+  const rawStock = Number(currentItem.total_stock ?? currentItem.stock_quantity ?? product.total_stock ?? product.stock_quantity ?? 0);
+  const consumedStockForOne = calculateStockConsumptionInBaseUnits(
+    currentItem?.weight_volume || currentItem?.weight || currentItem?.quantity || currentItem?.size || null,
+    currentItem?.unit || currentItem?.measurementUnit || null,
+    1
+  );
+  const finalConsumedForOne = consumedStockForOne > 0 ? consumedStockForOne : 1;
+  const availableQty = finalConsumedForOne > 0 ? Math.floor(rawStock / finalConsumedForOne) : rawStock;
+  const stock = availableQty;
+  const isOutOfStock = stock < 1;
+  const displayStock = Number.isInteger(rawStock) ? String(rawStock) : rawStock.toFixed(3).replace(/\.0+$/, '');
+  const stockUnit = currentItem?.unit || product?.unit || "units";
   const variants = Array.isArray(product.variants) ? product.variants : [];
   
   let comboItems = [];
@@ -212,9 +225,9 @@ export const ProductDetails = () => {
               )}
             </View>
             
-            <View className={`px-3 py-1 rounded-full ${stock > 0 ? (stock < 10 ? 'bg-orange-100' : 'bg-green-100') : 'bg-red-100'}`}>
-               <Text className={`text-xs font-bold ${stock > 0 ? (stock < 10 ? 'text-orange-700' : 'text-green-700') : 'text-red-700'}`}>
-                 {stock > 0 ? `${stock} in stock` : 'Out of Stock'}
+            <View className={`px-3 py-1 rounded-full ${!isOutOfStock ? (stock < 10 ? 'bg-orange-100' : 'bg-green-100') : 'bg-red-100'}`}>
+               <Text className={`text-xs font-bold ${!isOutOfStock ? (stock < 10 ? 'text-orange-700' : 'text-green-700') : 'text-red-700'}`}>
+                 {!isOutOfStock ? `Available: ${displayStock} ${stockUnit}` : 'Out of Stock'}
                </Text>
             </View>
           </View>
