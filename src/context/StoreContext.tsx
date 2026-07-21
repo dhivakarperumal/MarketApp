@@ -13,9 +13,12 @@ interface StoreContextData {
   categoriesCache: CategoryItem[];
   setCategoriesCache: React.Dispatch<React.SetStateAction<CategoryItem[]>>;
   wishlist: any[];
+  cart: any[];
   fetchWishlist: () => Promise<void>;
+  fetchCart: () => Promise<void>;
   toggleWishlist: (product: any) => Promise<void>;
   removeFromWishlist: (productId: any) => Promise<void>;
+  addToCart: (product: any, qty?: number) => Promise<void>;
   updateCartQuantity: (cartId: any, qty: number, item?: any) => Promise<void>;
   removeFromCart: (cartId: any) => Promise<void>;
   budgetMode: boolean;

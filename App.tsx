@@ -3,33 +3,44 @@ import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { View, ActivityIndicator } from 'react-native';
 import { TabNavigator } from './src/navigation/TabNavigator';
 import { AuthProvider, AuthContext } from './src/context/AuthContext';
 import { LoginScreen } from './src/screens/auth/LoginScreen';
 import { RegisterScreen } from './src/screens/auth/RegisterScreen';
+import { OnboardingScreen } from './src/screens/auth/OnboardingScreen';
 
 import { ProfileScreen } from './src/screens/ProfileScreen';
 import { EditProfileScreen } from './src/screens/EditProfileScreen';
 import { OrdersScreen } from './src/screens/OrdersScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
 import { HelpSupportScreen } from './src/screens/HelpSupportScreen';
+import { AboutScreen } from './src/screens/AboutScreen';
 import { Wishlist } from './src/pages/Wishlist';
 import { StoreProvider } from './src/context/StoreContext';
+import { ErrorBoundary } from './src/components/ErrorBoundary';
+import Toast from 'react-native-toast-message';
 
 const Stack = createNativeStackNavigator();
 
 const RootNavigator = () => {
-  const { user, isLoading } = useContext(AuthContext);
+  const { user, isLoading, hasSeenOnboarding } = useContext(AuthContext);
 
   if (isLoading) {
-    // Return null or a splash screen while checking async storage
-    return null;
+    // Show loading spinner while checking async storage
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
+        <ActivityIndicator size="large" color="#16a34a" />
+      </View>
+    );
   }
 
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {user ? (
+        {!hasSeenOnboarding ? (
+          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+        ) : user ? (
           <>
             <Stack.Screen name="Main" component={TabNavigator} />
             <Stack.Screen name="Wishlist" component={Wishlist} />
@@ -40,6 +51,7 @@ const RootNavigator = () => {
             <Stack.Screen name="Orders" component={OrdersScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
+            <Stack.Screen name="About" component={AboutScreen} />
             <Stack.Screen name="Addresses" component={require('./src/screens/AddressScreen').AddressScreen} />
           </>
         ) : (
@@ -53,18 +65,18 @@ const RootNavigator = () => {
   );
 };
 
-import Toast from 'react-native-toast-message';
-
 function App() {
   return (
-    <SafeAreaProvider>
-      <AuthProvider>
-        <StoreProvider>
-          <RootNavigator />
-          <Toast />
-        </StoreProvider>
-      </AuthProvider>
-    </SafeAreaProvider>
+    <ErrorBoundary>
+      <SafeAreaProvider>
+        <AuthProvider>
+          <StoreProvider>
+            <RootNavigator />
+            <Toast />
+          </StoreProvider>
+        </AuthProvider>
+      </SafeAreaProvider>
+    </ErrorBoundary>
   );
 }
 

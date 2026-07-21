@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import { User, ShoppingBag, Heart, ChevronRight, Settings, HelpCircle, LogOut, MapPin } from 'lucide-react-native';
+import { User, ShoppingBag, Heart, ChevronRight, Settings, HelpCircle, LogOut, MapPin, Info } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../context/AuthContext';
 
@@ -90,7 +90,14 @@ export const MoreScreen = () => {
           iconBg="bg-purple-50"
           onPress={() => navigation.navigate('HelpSupport')}
         />
-
+        <MoreItemCard
+          icon={Info}
+          title="About SuperMarket"
+          iconColor="#0ea5e9"
+          iconBg="bg-sky-50"
+          onPress={() => navigation.navigate('About')}
+        />
+        
         <TouchableOpacity
           className="flex-row items-center justify-center bg-red-50 p-4 mt-6 mb-10 rounded-2xl border border-red-100"
           onPress={() => console.log('Logout')}

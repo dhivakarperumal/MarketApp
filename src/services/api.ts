@@ -1,34 +1,41 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const API_BASE_URL = 'http://192.168.1.2:5000/api';
+export const API_BASE_URL = 'http://192.168.1.9:5000/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 30000, // 30 second timeout
+  timeout: 8000, // Reduced from 30s to 8s for faster failure detection
 });
 
 // Retry configuration
-const MAX_RETRIES = 3;
+const MAX_RETRIES = 1; // Reduced from 3 to 1 for faster UX
 let retryCount = 0;
+
+// In-memory token cache to avoid hitting AsyncStorage on every request
+let cachedToken: string | null = null;
+
+export const clearTokenCache = () => {
+  cachedToken = null;
+};
 
 // Add a request interceptor to attach the auth token automatically
 api.interceptors.request.use(
   async (config) => {
     try {
-      const token = await AsyncStorage.getItem('userToken');
-      if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
+      // Use cached token if available, otherwise read from AsyncStorage once
+      if (!cachedToken) {
+        cachedToken = await AsyncStorage.getItem('userToken');
+      }
+      if (cachedToken && config.headers) {
+        config.headers.Authorization = `Bearer ${cachedToken}`;
       }
     } catch (error) {
       console.warn('Failed to retrieve token:', error);
     }
-    
-    console.log(`📤 API Request: ${config.method?.toUpperCase()} ${config.url}`);
-    
     return config;
   },
   (error) => {
@@ -40,13 +47,12 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => {
     retryCount = 0; // Reset on success
-    console.log(`📥 API Response: ${response.status} ${response.config.url}`);
     return response;
   },
   async (error) => {
     const originalRequest = error.config;
 
-    // Network error - retry logic
+    // Network error - retry logic (no delay, retry immediately once)
     if (
       error.message === 'Network Error' ||
       (error.code && !error.response)
@@ -54,12 +60,9 @@ api.interceptors.response.use(
       if (retryCount < MAX_RETRIES) {
         retryCount++;
         console.warn(`🔄 Network error. Retry ${retryCount}/${MAX_RETRIES}`);
-        
-        // Wait before retrying
-        await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
         return api(originalRequest);
       }
-      
+
       console.error('❌ Network error after retries:', error.message);
       return Promise.reject({
         status: 'network_error',
