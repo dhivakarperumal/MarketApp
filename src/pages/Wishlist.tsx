@@ -86,7 +86,7 @@ export const Wishlist = () => {
             showsVerticalScrollIndicator={false}
             numColumns={2}
             columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: 4 }}
-            contentContainerStyle={wishlist.length === 0 ? { flex: 1, justifyContent: 'center' } : { paddingBottom: 40, paddingTop: 10 }}
+            contentContainerStyle={wishlist.length === 0 ? { flex: 1, justifyContent: 'center' } : { paddingBottom: 110, paddingTop: 10 }}
             ListEmptyComponent={
               <View className="items-center justify-center py-10 mt-10">
                 <Text className="text-lg font-semibold text-slate-500">

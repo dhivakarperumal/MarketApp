@@ -45,7 +45,7 @@ export const HomeScreen = () => {
   }, []);
 
   return (
-    <ScrollView className="flex-1 bg-slate-50">
+    <ScrollView className="flex-1 bg-slate-50" contentContainerStyle={{ paddingBottom: 110 }}>
       <View className="pb-4">
         <Hero />
 

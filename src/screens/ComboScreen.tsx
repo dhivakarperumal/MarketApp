@@ -299,7 +299,7 @@ export const ComboScreen = () => {
           numColumns={2}
           scrollEnabled={false}
           columnWrapperStyle={{ justifyContent: 'space-between' }}
-          contentContainerStyle={{ paddingVertical: 12, paddingHorizontal: 4 }}
+          contentContainerStyle={{ paddingVertical: 12, paddingHorizontal: 4, paddingBottom: 110 }}
         />
       </ScrollView>
     </View>

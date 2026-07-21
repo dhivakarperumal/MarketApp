@@ -142,6 +142,7 @@ export const ProductsScreen = () => {
           contentContainerStyle={{
             paddingVertical: 8,
             paddingHorizontal: 4,
+            paddingBottom: 110,
           }}
         />
       </ScrollView>

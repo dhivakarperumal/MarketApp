@@ -35,7 +35,7 @@ export const ProfileScreen = () => {
         </View>
       </View>
 
-      <ScrollView className="flex-1 px-4 -mt-16" showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1 px-4 -mt-16" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 110 }}>
         {/* Profile Card */}
         <View className="bg-white rounded-3xl p-6 shadow-sm shadow-slate-200/50 items-center mb-6">
           <View className="relative mb-4">
