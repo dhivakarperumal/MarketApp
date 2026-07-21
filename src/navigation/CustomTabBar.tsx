@@ -75,7 +75,7 @@ export default function CustomTabBar({ state, navigation }: BottomTabBarProps) {
                 style={{
                   alignItems: "center",
                   justifyContent: "center",
-                  backgroundColor: "#16A34A",
+                  backgroundColor: "#2F7D5A",
                   height: 48,
                   width: 48,
                   borderRadius: 24,

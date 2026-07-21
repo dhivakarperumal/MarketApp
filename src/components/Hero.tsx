@@ -50,7 +50,7 @@ export const Hero = () => {
         loop
         showsButtons={false}
         dotColor="#ffffff88"
-        activeDotColor="#22c55e"
+        activeDotColor="#2F7D5A"
       >
         {banners.map((item) => (
           <ImageBackground
@@ -131,14 +131,14 @@ export const Hero = () => {
                   activeOpacity={0.85}
                   style={{
                     marginTop: 28,
-                    backgroundColor: "#16a34a",
+                    backgroundColor: "#2F7D5A",
                     paddingHorizontal: 24,
                     paddingVertical: 14,
                     borderRadius: 30,
                     alignSelf: "flex-start",
                     flexDirection: "row",
                     alignItems: "center",
-                    shadowColor: "#16a34a",
+                    shadowColor: "#2F7D5A",
                     shadowOpacity: 0.35,
                     shadowRadius: 12,
                     shadowOffset: { width: 0, height: 6 },
