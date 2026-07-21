@@ -3,7 +3,7 @@ import {
   View, Text, ScrollView, TextInput, TouchableOpacity, 
   ActivityIndicator, Alert, PermissionsAndroid, Platform, Image, StatusBar
 } from "react-native";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { AuthContext } from "../context/AuthContext";
 import { useStore } from "../context/StoreContext";
@@ -57,6 +57,8 @@ const CheckoutScreen = () => {
   const [locationData, setLocationData] = useState({
     address: "", latitude: "", longitude: "",
   });
+
+  const insets = useSafeAreaInsets();
 
   const [form, setForm] = useState({
     user_id: user?.user_id || "", customer_name: "", customer_email: "",
@@ -458,11 +460,14 @@ const CheckoutScreen = () => {
   };
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-[#f7f8f3]">
+    <View className="flex-1 bg-[#f7f8f3]" style={{ paddingBottom: insets.bottom }}>
       <StatusBar barStyle="light-content" backgroundColor="#16a34a" />
       
       {/* Premium Header */}
-      <View className="bg-green-600 pb-5 pt-5 px-4 rounded-b-[40px] z-20 shadow-sm shadow-green-700/20 flex-row items-center justify-between">
+      <View 
+        className="bg-green-600 pb-5 px-4 rounded-b-[40px] z-20 shadow-sm shadow-green-700/20 flex-row items-center justify-between"
+        style={{ paddingTop: insets.top > 0 ? insets.top + 10 : 20 }}
+      >
         <View className="flex-row items-center">
           <TouchableOpacity
             onPress={() => navigation.goBack()}
@@ -721,7 +726,7 @@ const CheckoutScreen = () => {
         </View>
       </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

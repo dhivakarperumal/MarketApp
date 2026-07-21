@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { View, Text, ScrollView, TouchableOpacity, Image, TextInput, Modal, ActivityIndicator, StatusBar } from "react-native";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Package, Truck, CheckCircle, Clock, XCircle, ArrowLeft } from "lucide-react-native";
 import { AuthContext } from "../context/AuthContext";
 import api from "../services/api";
@@ -58,6 +59,7 @@ export const OrdersScreen = () => {
   const [loadingOrder, setLoadingOrder] = useState(false);
   const [loading, setLoading] = useState(true);
   const [trackOrderId, setTrackOrderId] = useState("");
+  const insets = useSafeAreaInsets();
 
   const handleTrackOrder = () => {
     if (!trackOrderId.trim()) {
@@ -112,10 +114,13 @@ export const OrdersScreen = () => {
   };
 
   return (
-    <View className="flex-1 bg-[#FDFBF7]">
+    <View className="flex-1 bg-[#FDFBF7]" style={{ paddingBottom: insets.bottom }}>
       <StatusBar barStyle="light-content" backgroundColor="#16a34a" />
       {/* Premium Header */}
-      <View className="bg-green-600 pb-5 pt-5 px-4 rounded-b-[40px] z-10 shadow-sm shadow-green-700/20">
+      <View 
+        className="bg-green-600 pb-5 px-4 rounded-b-[40px] z-10 shadow-sm shadow-green-700/20"
+        style={{ paddingTop: insets.top > 0 ? insets.top + 10 : 20 }}
+      >
         <View className="flex-row items-center mb-4">
           <TouchableOpacity 
             onPress={() => navigation.canGoBack() ? navigation.goBack() : navigation.navigate("Main", { screen: "Home" })} 

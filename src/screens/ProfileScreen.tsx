@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StatusBar } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft, User as UserIcon, Phone, Mail, Hash, Wallet, Edit3, Shield } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../context/AuthContext';
@@ -7,12 +8,16 @@ import { AuthContext } from '../context/AuthContext';
 export const ProfileScreen = () => {
   const navigation = useNavigation();
   const { user } = useContext(AuthContext);
+  const insets = useSafeAreaInsets();
 
   return (
-    <View className="flex-1 bg-slate-50">
+    <View className="flex-1 bg-slate-50" style={{ paddingBottom: insets.bottom }}>
       <StatusBar barStyle="light-content" backgroundColor="#16a34a" />
       {/* Header Background */}
-      <View className="bg-green-600 pb-20 pt-6 px-4 rounded-b-[40px]">
+      <View 
+        className="bg-green-600 pb-20 px-4 rounded-b-[40px]"
+        style={{ paddingTop: insets.top > 0 ? insets.top + 10 : 24 }}
+      >
         <View className="flex-row items-center justify-between mb-6">
           <TouchableOpacity 
             onPress={() => navigation.goBack()} 

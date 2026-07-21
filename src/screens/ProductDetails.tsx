@@ -9,7 +9,7 @@ import {
   Alert,
   StatusBar,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import api from '../services/api';
@@ -151,6 +151,7 @@ export const ProductDetails = () => {
   const displayStock = Number.isInteger(rawStock) ? String(rawStock) : rawStock.toFixed(3).replace(/\.0+$/, '');
   const stockUnit = currentItem?.unit || product?.unit || "units";
   const variants = Array.isArray(product.variants) ? product.variants : [];
+  const insets = useSafeAreaInsets();
   
   let comboItems = [];
   try {
@@ -161,11 +162,14 @@ export const ProductDetails = () => {
   }
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-white">
+    <View className="flex-1 bg-white">
       <StatusBar barStyle="light-content" backgroundColor="#16a34a" />
 
       {/* Premium Header */}
-      <View className="bg-green-600 pb-5 pt-5 px-4 rounded-b-[40px] z-20 shadow-sm shadow-green-700/20 flex-row items-center justify-between">
+      <View 
+        className="bg-green-600 pb-5 px-4 rounded-b-[40px] z-20 shadow-sm shadow-green-700/20 flex-row items-center justify-between"
+        style={{ paddingTop: insets.top > 0 ? insets.top + 10 : 20 }}
+      >
         <View className="flex-row items-center">
           <TouchableOpacity
             onPress={() => navigation.goBack()}
@@ -306,7 +310,10 @@ export const ProductDetails = () => {
       </ScrollView>
 
       {/* Sticky Bottom Buttons */}
-      <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-5 py-4 flex-row gap-3">
+      <View 
+        className="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-5 flex-row gap-3"
+        style={{ paddingBottom: insets.bottom > 0 ? insets.bottom + 16 : 16, paddingTop: 16 }}
+      >
         <TouchableOpacity
           onPress={async () => {
             const itemToAdd = {
@@ -338,7 +345,7 @@ export const ProductDetails = () => {
           <Text className={`font-bold text-base ${stock === 0 ? 'text-slate-400' : 'text-white'}`}>Buy Now</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

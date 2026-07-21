@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, StatusBar, Modal, TextInput, Alert } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft, MapPin, Plus, Edit2, Trash2, X, Home, Map, Navigation, Phone, User, Building2, Mail } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../context/AuthContext';
@@ -14,6 +15,7 @@ export const AddressScreen = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editingAddress, setEditingAddress] = useState<any>(null);
+  const insets = useSafeAreaInsets();
   const [formData, setFormData] = useState({
     customer_name: '',
     customer_phone: '',
@@ -140,11 +142,14 @@ export const AddressScreen = () => {
   };
 
   return (
-    <View className="flex-1 bg-slate-50">
+    <View className="flex-1 bg-slate-50" style={{ paddingBottom: insets.bottom }}>
       <StatusBar barStyle="light-content" backgroundColor="#16a34a" />
 
       {/* Header */}
-      <View className="bg-green-600 pb-5 pt-5 px-4 rounded-b-[40px] z-10 shadow-sm shadow-green-700/20">
+      <View 
+        className="bg-green-600 pb-5 px-4 rounded-b-[40px] z-10 shadow-sm shadow-green-700/20"
+        style={{ paddingTop: insets.top > 0 ? insets.top + 10 : 20 }}
+      >
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center">
             <TouchableOpacity
