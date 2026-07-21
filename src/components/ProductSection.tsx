@@ -39,7 +39,7 @@ export const ProductSection: React.FC<ProductSectionProps> = ({ title, highlight
   return (
     <View className="bg-white mt-4 pb-4">
       <SectionHeading title={title} highlight={highlight} />
-      <View style={{ height: 310, marginTop: 10 }}>
+      <View style={{ height: 285, marginTop: 10 }}>
         <Swiper
           autoplay
           autoplayTimeout={5}
