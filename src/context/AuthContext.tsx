@@ -37,12 +37,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   async function loadStorageData() {
     try {
-      const keys = ['userToken', 'userData', 'has_seen_onboarding'];
-      const results = await AsyncStorage.multiGet(keys);
-      
-      const storedToken = results[0][1];
-      const storedUser = results[1][1];
-      const onboardingFlag = results[2][1];
+      const [storedToken, storedUser, onboardingFlag] = await Promise.all([
+        AsyncStorage.getItem('userToken'),
+        AsyncStorage.getItem('userData'),
+        AsyncStorage.getItem('has_seen_onboarding'),
+      ]);
 
       if (onboardingFlag === 'true') {
         setHasSeenOnboarding(true);
