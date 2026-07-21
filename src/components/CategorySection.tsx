@@ -31,8 +31,9 @@ export const CategorySection = () => {
 
       const res = await api.get('/categories');
       const data = Array.isArray(res.data) ? res.data : [];
-      setCategories(data);
-      setCategoriesCache(data);
+      const sortedData = data.sort((a: any, b: any) => a.id - b.id);
+      setCategories(sortedData);
+      setCategoriesCache(sortedData);
     } catch (error) {
       console.error(error);
       setCategories([]);
