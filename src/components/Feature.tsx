@@ -93,7 +93,7 @@ export const Features = () => {
         keyExtractor={(item) => item.title}
         decelerationRate="fast"
         contentContainerStyle={{
-          paddingHorizontal: 10,
+          paddingHorizontal: 0,
         }}
         renderItem={({ item }) => {
           const Icon = item.Icon;
@@ -101,8 +101,8 @@ export const Features = () => {
           return (
             <View
               style={{
-                width: width - 20, // Full page
-                paddingHorizontal: 4,
+                width: width, // Full screen width to ensure only one card is shown with paging
+                paddingHorizontal: 10,
               }}
             >
               <LinearGradient
