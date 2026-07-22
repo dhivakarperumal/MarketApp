@@ -98,11 +98,20 @@ export const ProductDetails = () => {
         
         // Fetch related products
         try {
-          const catId = data?.category_id || data?.category;
-          const endpoint = catId ? `/products?category_id=${catId}` : `/products`;
-          const relRes = await api.get(endpoint);
+          const relRes = await api.get('/products');
           const relData = Array.isArray(relRes.data) ? relRes.data : (relRes.data?.products || relRes.data?.data || []);
-          setRelatedProducts(relData.filter((p: any) => p.id !== id).slice(0, 6));
+          
+          const catId = data?.category_id || data?.category;
+          let filtered = relData.filter((p: any) => p.id !== id);
+          
+          if (catId) {
+             const catFiltered = filtered.filter((p: any) => p.category_id == catId || p.category == catId);
+             if (catFiltered.length > 0) {
+                 filtered = catFiltered;
+             }
+          }
+          
+          setRelatedProducts(filtered.slice(0, 6));
         } catch (e) {
           console.error("Failed to fetch related products", e);
         }

@@ -94,7 +94,7 @@ const ProductCard: React.FC<{
                 }}
             >
                 <View className="relative w-full h-40 bg-gray-100">
-                    <TouchableOpacity onPress={() => navigation.navigate('ProductDetails', { id: product.id, product })} activeOpacity={0.9}>
+                    <TouchableOpacity onPress={() => navigation.push ? navigation.push('ProductDetails', { id: product.id, product }) : navigation.navigate('ProductDetails', { id: product.id, product })} activeOpacity={0.9}>
                         <Image
                             source={{ uri: imageUri }}
                             className="w-full h-full"
@@ -121,7 +121,7 @@ const ProductCard: React.FC<{
                         <Text
                             className="text-sm font-bold text-slate-900 mb-1"
                             numberOfLines={compact ? 1 : 2}
-                            onPress={() => navigation.navigate('ProductDetails', { id: product.id, product })}
+                            onPress={() => navigation.push ? navigation.push('ProductDetails', { id: product.id, product }) : navigation.navigate('ProductDetails', { id: product.id, product })}
                         >
                             {product.name}
                         </Text>
@@ -136,31 +136,31 @@ const ProductCard: React.FC<{
                         </View>
                     )} */}
 
-                       {mrpBelow ? (
-    <View className="mb-2">
-        <Text className="text-xl font-extrabold text-[#2F7D5A]">
-            ₹{sellingPrice.toFixed(2)}
-        </Text>
+                        {mrpBelow ? (
+                            <View className="mb-2">
+                                <Text className="text-xl font-extrabold text-[#2F7D5A]">
+                                    ₹{sellingPrice.toFixed(2)}
+                                </Text>
 
-        {mrpPrice > 0 && (
-            <Text className="text-sm line-through text-slate-400 mt-0.5">
-                ₹{mrpPrice.toFixed(2)}
-            </Text>
-        )}
-    </View>
-) : (
-    <View className="flex-row items-center gap-2 mb-2">
-        <Text className="text-xl font-extrabold text-[#2F7D5A]">
-            ₹{sellingPrice.toFixed(2)}
-        </Text>
+                                {mrpPrice > 0 && (
+                                    <Text className="text-sm line-through text-slate-400 mt-0.5">
+                                        ₹{mrpPrice.toFixed(2)}
+                                    </Text>
+                                )}
+                            </View>
+                        ) : (
+                            <View className="flex-row items-center gap-2 mb-2">
+                                <Text className="text-xl font-extrabold text-[#2F7D5A]">
+                                    ₹{sellingPrice.toFixed(2)}
+                                </Text>
 
-        {mrpPrice > 0 && (
-            <Text className="text-sm line-through text-slate-400">
-                ₹{mrpPrice.toFixed(2)}
-            </Text>
-        )}
-    </View>
-)}
+                                {mrpPrice > 0 && (
+                                    <Text className="text-sm line-through text-slate-400">
+                                        ₹{mrpPrice.toFixed(2)}
+                                    </Text>
+                                )}
+                            </View>
+                        )}
 
                         {/* {product.delivery_time && (
                         <Text className="text-xs text-green-600 font-semibold mb-2">📦 {product.delivery_time}</Text>
@@ -169,7 +169,7 @@ const ProductCard: React.FC<{
                     </View>
 
                     {!compact && (
-                        <TouchableOpacity onPress={() => navigation.navigate('ProductDetails', { id: product.id, product })} className="mt-3 border border-green-600 rounded-lg py-3 flex-row items-center justify-center">
+                        <TouchableOpacity onPress={() => navigation.push ? navigation.push('ProductDetails', { id: product.id, product }) : navigation.navigate('ProductDetails', { id: product.id, product })} className="mt-3 border border-green-600 rounded-lg py-3 flex-row items-center justify-center">
                             <Text className="text-green-600 font-semibold">Quick View</Text>
                             <Text className="text-green-600 ml-2">→</Text>
                         </TouchableOpacity>
