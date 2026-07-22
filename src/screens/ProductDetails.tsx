@@ -189,7 +189,7 @@ export const ProductDetails = () => {
 
       <ScrollView showsVerticalScrollIndicator={false} bounces={false} className="pt-2">
         {/* Image Swiper */}
-        <View className="h-80 bg-slate-100">
+        <View className="h-64 bg-slate-100">
           <Swiper autoplay loop showsPagination dotColor="#e2e8f0" activeDotColor="#16a34a">
             {images.map((img: string, idx: number) => (
               <Image key={idx} source={{ uri: img }} className="w-full h-80" resizeMode="cover" />
