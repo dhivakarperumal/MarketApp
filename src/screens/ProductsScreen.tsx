@@ -77,8 +77,10 @@ export const ProductsScreen = () => {
 
       // Handle categories
       if (catRes.data && Array.isArray(catRes.data)) {
-        setCategories(catRes.data);
-        setCategoriesCache(catRes.data);
+        // Sort categories by ID ascending so the "first added" category shows first
+        const sortedCategories = [...catRes.data].sort((a, b) => a.id - b.id);
+        setCategories(sortedCategories);
+        setCategoriesCache(sortedCategories);
       }
     } catch (err: any) {
       console.error('Fetch Data Error:', err);
@@ -162,7 +164,7 @@ export const ProductsScreen = () => {
   return (
     <View className="flex-1 bg-slate-50 flex-row">
       {/* Left Sidebar - Categories */}
-      <View style={{ width: 90, backgroundColor: '#ffffff', borderRightWidth: 1, borderRightColor: '#e2e8f0' }}>
+      <View style={{ width: 110, backgroundColor: '#ffffff', borderRightWidth: 1, borderRightColor: '#e2e8f0' }}>
         <ScrollView 
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 20 }}
