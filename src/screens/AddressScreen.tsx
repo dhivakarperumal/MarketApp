@@ -7,6 +7,15 @@ import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
 import Toast from 'react-native-toast-message';
 
+const INDIAN_STATES = [
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
+  "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+  "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+  "Delhi", "Jammu and Kashmir", "Ladakh", "Puducherry"
+];
+
 export const AddressScreen = () => {
   const navigation = useNavigation<any>();
   const { user } = useContext(AuthContext) as any;
@@ -15,6 +24,7 @@ export const AddressScreen = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editingAddress, setEditingAddress] = useState<any>(null);
+  const [stateModalVisible, setStateModalVisible] = useState(false);
   const insets = useSafeAreaInsets();
   const [formData, setFormData] = useState({
     customer_name: '',
@@ -37,7 +47,7 @@ export const AddressScreen = () => {
     if (!uid) { setLoading(false); return; }
     try {
       setLoading(true);
-      const res = await api.get(`/addresses/user/${uid}`);
+      const res = await api.get(`/address/user/${uid}`);
       setAddresses(res.data || []);
     } catch (error) {
       console.log('Failed to fetch addresses', error);
@@ -89,7 +99,7 @@ export const AddressScreen = () => {
           text: 'Delete', style: 'destructive',
           onPress: async () => {
             try {
-              await api.delete(`/addresses/${address.id}`);
+              await api.delete(`/address/${address.id}`);
               Toast.show({ type: 'success', text1: 'Address deleted' });
               fetchAddresses();
             } catch (error) {
@@ -99,6 +109,16 @@ export const AddressScreen = () => {
         }
       ]
     );
+  };
+
+  const handleSetDefault = async (id: number) => {
+    try {
+      await api.patch(`/address/${id}/set-default`, { user_id: user?.user_id || user?.id });
+      Toast.show({ type: 'success', text1: 'Default address updated' });
+      fetchAddresses();
+    } catch (error) {
+      Toast.show({ type: 'error', text1: 'Failed to set default address' });
+    }
   };
 
   const saveAddress = async () => {
@@ -125,10 +145,10 @@ export const AddressScreen = () => {
       };
 
       if (editingAddress) {
-        await api.put(`/addresses/${editingAddress.id}`, payload);
+        await api.put(`/address/${editingAddress.id}`, payload);
         Toast.show({ type: 'success', text1: 'Address updated successfully!' });
       } else {
-        await api.post('/addresses', payload);
+        await api.post('/address', payload);
         Toast.show({ type: 'success', text1: 'Address saved successfully!' });
       }
       setShowAddModal(false);
@@ -223,7 +243,15 @@ export const AddressScreen = () => {
                   </View>
 
                   {/* Action Buttons */}
-                  <View className="flex-row gap-3">
+                  <View className="flex-row gap-3 mt-1">
+                    {!address.is_default && (
+                      <TouchableOpacity
+                        onPress={() => handleSetDefault(address.id)}
+                        className="flex-1 flex-row items-center justify-center bg-slate-50 border border-slate-200 py-2.5 rounded-xl"
+                      >
+                        <Text className="font-semibold text-slate-500 text-xs uppercase tracking-wider">Set Default</Text>
+                      </TouchableOpacity>
+                    )}
                     <TouchableOpacity
                       onPress={() => handleEdit(address)}
                       className="flex-1 flex-row items-center justify-center bg-slate-50 border border-slate-200 py-2.5 rounded-xl"
@@ -350,14 +378,15 @@ export const AddressScreen = () => {
                 </View>
               </View>
 
-              <View className="flex-row items-center bg-white border border-slate-200 rounded-xl px-4 mb-6">
+              <TouchableOpacity
+                onPress={() => setStateModalVisible(true)}
+                className="flex-row items-center bg-white border border-slate-200 rounded-xl px-4 py-3.5 mb-6"
+              >
                 <Map color="#94a3b8" size={18} />
-                <TextInput
-                  placeholder="State *" placeholderTextColor="#94a3b8"
-                  value={formData.state} onChangeText={(t) => setFormData({ ...formData, state: t })}
-                  className="flex-1 py-3.5 px-3 text-sm text-slate-800 font-medium"
-                />
-              </View>
+                <Text className={`flex-1 px-3 text-sm font-medium ${formData.state ? 'text-slate-800' : 'text-[#94a3b8]'}`}>
+                  {formData.state || "Select State *"}
+                </Text>
+              </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={saveAddress}
@@ -371,6 +400,41 @@ export const AddressScreen = () => {
                 )}
               </TouchableOpacity>
 
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* State Selection Modal */}
+      <Modal
+        visible={stateModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setStateModalVisible(false)}
+      >
+        <View className="flex-1 justify-end bg-black/50">
+          <View className="bg-white rounded-t-3xl h-2/3 p-4">
+            <View className="flex-row justify-between items-center mb-4 border-b border-gray-100 pb-3">
+              <Text className="text-lg font-bold text-slate-800">Select State</Text>
+              <TouchableOpacity onPress={() => setStateModalVisible(false)} className="p-2">
+                <Text className="text-green-700 font-bold">Close</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {INDIAN_STATES.map((item) => (
+                <TouchableOpacity
+                  key={item}
+                  className="py-4 border-b border-gray-50"
+                  onPress={() => {
+                    setFormData({ ...formData, state: item });
+                    setStateModalVisible(false);
+                  }}
+                >
+                  <Text className={`text-base ${formData.state === item ? 'text-green-700 font-bold' : 'text-slate-700'}`}>
+                    {item}
+                  </Text>
+                </TouchableOpacity>
+              ))}
             </ScrollView>
           </View>
         </View>

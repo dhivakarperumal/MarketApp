@@ -73,7 +73,7 @@ const CheckoutScreen = () => {
 
   const fetchAddresses = async () => {
     try {
-      const res = await api.get(`/addresses/user/${user.user_id}`);
+      const res = await api.get(`/address/user/${user.user_id}`);
       const userAddresses = res.data || [];
       setAddresses(userAddresses);
 
@@ -402,6 +402,25 @@ const CheckoutScreen = () => {
         coupon_discount: discountAmount || 0,
         subtotal_before_discount: subtotal,
       };
+
+      // Auto-save address if it's new
+      if (user?.user_id && form.street_address) {
+        const isDuplicate = addresses.some(
+          (addr: any) => addr.street_address?.toLowerCase() === form.street_address?.toLowerCase() &&
+                  addr.zip_code === form.zip_code
+        );
+        if (!isDuplicate) {
+          try {
+            await api.post("/address", {
+              ...form,
+              user_id: user.user_id,
+              is_default: addresses.length === 0 ? 1 : 0
+            });
+          } catch (e) {
+            console.error("Failed to auto-save address", e);
+          }
+        }
+      }
 
       await api.post("/orders", orderData);
       if (clearCart && typeof clearCart === 'function') {
