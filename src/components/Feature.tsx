@@ -9,7 +9,7 @@ import {
 import LinearGradient from "react-native-linear-gradient";
 import {
   View,
- Text,
+  Text,
   FlatList,
   Dimensions,
 } from "react-native";
@@ -92,91 +92,92 @@ export const Features = () => {
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => item.title}
         decelerationRate="fast"
-        onMomentumScrollEnd={(e) => {
-          const index = Math.round(
-            e.nativeEvent.contentOffset.x / (width * 0.88)
-          );
-          setActiveIndex(index);
+        contentContainerStyle={{
+          paddingHorizontal: 10,
         }}
         renderItem={({ item }) => {
           const Icon = item.Icon;
 
           return (
-            <LinearGradient
-              colors={item.colors as [string, string]}
+            <View
               style={{
-                width: width * 0.84,
-                height: 165,
-                borderRadius: 28,
-                marginHorizontal: 8,
-                padding: 20,
-                justifyContent: "space-between",
+                width: width - 20, // Full page
+                paddingHorizontal: 4,
               }}
             >
-              <View className="flex-row items-center">
+              <LinearGradient
+                colors={item.colors as [string, string]}
+                style={{
+                  flex: 1,
+                  height: 165,
+                  borderRadius: 28,
+                  padding: 20,
+                  justifyContent: "space-between",
+                }}
+              >
+                <View className="flex-row items-center">
+                  <View
+                    style={{
+                      width: 65,
+                      height: 65,
+                      borderRadius: 20,
+                      backgroundColor: "#fff",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      elevation: 4,
+                    }}
+                  >
+                    <Icon
+                      size={32}
+                      color={item.iconColor}
+                      strokeWidth={2.3}
+                    />
+                  </View>
+
+                  <View className="ml-4 flex-1">
+                    <Text
+                      style={{
+                        fontSize: 20,
+                        fontWeight: "700",
+                        color: "#1F2937",
+                      }}
+                    >
+                      {item.title}
+                    </Text>
+
+                    <Text
+                      style={{
+                        marginTop: 8,
+                        fontSize: 14,
+                        color: "#6B7280",
+                        lineHeight: 22,
+                      }}
+                    >
+                      {item.desc}
+                    </Text>
+                  </View>
+                </View>
 
                 <View
                   style={{
-                    width: 65,
-                    height: 65,
-                    borderRadius: 20,
+                    alignSelf: "flex-end",
                     backgroundColor: "#fff",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    elevation: 4,
+                    paddingHorizontal: 15,
+                    paddingVertical: 8,
+                    borderRadius: 20,
                   }}
                 >
-                  <Icon
-                    size={32}
-                    color={item.iconColor}
-                    strokeWidth={2.3}
-                  />
-                </View>
-
-                <View className="ml-4 flex-1">
                   <Text
                     style={{
-                      fontSize: 20,
+                      color: item.iconColor,
                       fontWeight: "700",
-                      color: "#1F2937",
                     }}
                   >
-                    {item.title}
-                  </Text>
-
-                  <Text
-                    style={{
-                      marginTop: 8,
-                      fontSize: 14,
-                      color: "#6B7280",
-                      lineHeight: 22,
-                    }}
-                  >
-                    {item.desc}
+                    Learn More →
                   </Text>
                 </View>
-
-              </View>
-
-              <View
-                style={{
-                  alignSelf: "flex-end",
-                  backgroundColor: "#fff",
-                  paddingHorizontal: 15,
-                  paddingVertical: 8,
-                  borderRadius: 20,
-                }}
-              >
-                <Text
-                  style={{
-                    color: item.iconColor,
-                    fontWeight: "700",
-                  }}
-                >
-                  Learn More →
-                </Text>
-              </View>
-            </LinearGradient>
+              </LinearGradient>
+            </View>
           );
         }}
       />
