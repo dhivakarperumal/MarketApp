@@ -84,16 +84,17 @@ export const ProductDetails = () => {
   useEffect(() => {
     let mounted = true;
     const fetchProduct = async () => {
-      if (product) return;
       if (!id) return;
-      setLoading(true);
+      if (!product) setLoading(true);
       try {
         const res = await api.get(`/products/${id}`);
         if (!mounted) return;
         const data = res.data || res.data?.data || null;
-        setProduct(data);
-        if (data?.variants?.length > 0) {
-          setSelectedVariant(data.variants[0]);
+        if (data) {
+          setProduct(data);
+          if (data?.variants?.length > 0 && !selectedVariant) {
+            setSelectedVariant(data.variants[0]);
+          }
         }
         
         // Fetch related products
@@ -101,7 +102,7 @@ export const ProductDetails = () => {
           const relRes = await api.get('/products');
           const relData = Array.isArray(relRes.data) ? relRes.data : (relRes.data?.products || relRes.data?.data || []);
           
-          const catId = data?.category_id || data?.category;
+          const catId = data?.category_id || data?.category || product?.category_id || product?.category;
           let filtered = relData.filter((p: any) => p.id !== id);
           
           if (catId) {
