@@ -171,7 +171,7 @@ export const ProductsScreen = () => {
       <View style={{ width: 110, backgroundColor: '#ffffff', borderRightWidth: 1, borderRightColor: '#e2e8f0' }}>
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 20 }}
+          contentContainerStyle={{ paddingBottom: 120 }}
         >
           {/* All Categories Option */}
           <TouchableOpacity
