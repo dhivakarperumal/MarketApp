@@ -91,9 +91,7 @@ export const Features = () => {
         data={features}
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => item.title}
-        snapToInterval={width * 0.88}
         decelerationRate="fast"
-        contentContainerStyle={{ paddingHorizontal: 16 }}
         onMomentumScrollEnd={(e) => {
           const index = Math.round(
             e.nativeEvent.contentOffset.x / (width * 0.88)
@@ -183,27 +181,6 @@ export const Features = () => {
         }}
       />
 
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          marginTop: 20,
-        }}
-      >
-        {features.map((_, index) => (
-          <View
-            key={index}
-            style={{
-              width: activeIndex === index ? 22 : 8,
-              height: 8,
-              borderRadius: 20,
-              marginHorizontal: 4,
-              backgroundColor:
-                activeIndex === index ? "#16A34A" : "#D1D5DB",
-            }}
-          />
-        ))}
-      </View>
     </View>
   );
 };
