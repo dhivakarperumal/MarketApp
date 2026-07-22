@@ -101,8 +101,8 @@ export const Features = () => {
           return (
             <View
               style={{
-                width: width, // Full screen width to ensure only one card is shown with paging
-                paddingHorizontal: 10,
+                width: width,
+                paddingHorizontal: 20,
               }}
             >
               <LinearGradient
