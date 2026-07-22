@@ -280,6 +280,30 @@ export const ProductDetails = () => {
             </View>
           )}
 
+           {/* Quantity */}
+          <View className="flex-row items-center mb-4">
+            <Text className="text-sm font-bold text-slate-700 flex-1">Quantity</Text>
+            <View className="flex-row items-center bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+              <TouchableOpacity
+                onPress={() => setQuantity((q) => Math.max(1, q - 1))}
+                className="w-10 h-10 items-center justify-center"
+                disabled={stock === 0}
+              >
+                <Text className={`text-xl font-bold ${stock === 0 ? 'text-slate-300' : 'text-slate-600'}`}>−</Text>
+              </TouchableOpacity>
+              <View className="w-10 h-10 items-center justify-center border-l border-r border-slate-200">
+                <Text className={`font-bold ${stock === 0 ? 'text-slate-400' : 'text-slate-800'}`}>{stock === 0 ? 0 : quantity}</Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => setQuantity((q) => Math.min(stock, q + 1))}
+                className="w-10 h-10 items-center justify-center"
+                disabled={stock === 0 || quantity >= stock}
+              >
+                <Text className={`text-xl font-bold ${stock === 0 || quantity >= stock ? 'text-slate-300' : 'text-green-600'}`}>+</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
           {/* Combo Items */}
           {comboItems.length > 0 && (
             <View className="mb-5">
@@ -306,30 +330,6 @@ export const ProductDetails = () => {
           <Text className="text-sm text-slate-500 leading-relaxed mb-5">
             {product.description || 'No description available.'}
           </Text>
-
-          {/* Quantity */}
-          <View className="flex-row items-center mb-4">
-            <Text className="text-sm font-bold text-slate-700 flex-1">Quantity</Text>
-            <View className="flex-row items-center bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
-              <TouchableOpacity
-                onPress={() => setQuantity((q) => Math.max(1, q - 1))}
-                className="w-10 h-10 items-center justify-center"
-                disabled={stock === 0}
-              >
-                <Text className={`text-xl font-bold ${stock === 0 ? 'text-slate-300' : 'text-slate-600'}`}>−</Text>
-              </TouchableOpacity>
-              <View className="w-10 h-10 items-center justify-center border-l border-r border-slate-200">
-                <Text className={`font-bold ${stock === 0 ? 'text-slate-400' : 'text-slate-800'}`}>{stock === 0 ? 0 : quantity}</Text>
-              </View>
-              <TouchableOpacity
-                onPress={() => setQuantity((q) => Math.min(stock, q + 1))}
-                className="w-10 h-10 items-center justify-center"
-                disabled={stock === 0 || quantity >= stock}
-              >
-                <Text className={`text-xl font-bold ${stock === 0 || quantity >= stock ? 'text-slate-300' : 'text-green-600'}`}>+</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
 
         </View>
       </ScrollView>
