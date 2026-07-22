@@ -247,8 +247,8 @@ export const ProductsScreen = () => {
             }}
             ListHeaderComponent={
               <View className="px-3 pb-3 pt-2">
-                <Text className="text-lg font-bold text-slate-800">
-                  {activeCategoryId ? categories.find(c => c.id === activeCategoryId)?.name : 'Featured On Meesho'}
+                <Text className="text-lg font-bold text-[#2F7D5A]">
+                  {activeCategoryId ? categories.find(c => c.id === activeCategoryId)?.name : 'Featured On Supermarket'}
                 </Text>
               </View>
             }
