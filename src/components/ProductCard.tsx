@@ -106,7 +106,7 @@ const ProductCard: React.FC<{ product: any; onPress?: () => void; compact?: bool
 
             </View>
 
-            <View className="p-3 flex-1 justify-between">
+            <View className={`p-3 ${compact ? '' : 'flex-1 justify-between'}`}>
                 <View>
                     <Text
                         className="text-sm font-bold text-slate-900 mb-1"
