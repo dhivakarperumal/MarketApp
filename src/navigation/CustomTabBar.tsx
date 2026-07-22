@@ -7,6 +7,7 @@ import {
   Search,
   ShoppingCart,
   User,
+  MoreVertical,
 } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -15,7 +16,7 @@ const TAB_CONFIG: Record<string, { icon: any; label: string }> = {
   Products: { icon: Package,      label: "Products" },
   Search:   { icon: Search,       label: "Search"   },
   Cart:     { icon: ShoppingCart, label: "Cart"     },
-  Profile:  { icon: User,         label: "Profile"  },
+  Profile:  { icon: MoreVertical,         label: "More"  },
 };
 
 export default function CustomTabBar({ state, navigation }: BottomTabBarProps) {
