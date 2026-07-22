@@ -293,22 +293,37 @@ const CheckoutScreen = () => {
           const distance = calculateDistanceKm(userLat, userLng, shopLat, shopLng);
 
           try {
-            const reverseResponse = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${userLat}&lon=${userLng}&addressdetails=1`);
+            const reverseResponse = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${userLat}&lon=${userLng}&addressdetails=1`,
+              {
+                headers: {
+                  'User-Agent': 'SuperMarketApp/1.0',
+                  'Accept': 'application/json'
+                }
+              }
+            );
             if (reverseResponse.ok) {
               const reverseData = await reverseResponse.json();
               const address = reverseData?.address || {};
               const fullAddress = reverseData.display_name;
-              setLocationData({ address: fullAddress, latitude: String(userLat), longitude: String(userLng) });
               
-              setForm((prev) => ({
-                ...prev,
-                street_address: fullAddress || prev.street_address,
-                city: address.city || address.town || address.county || address.state_district || prev.city,
-                state: address.state || prev.state,
-                zip_code: address.postcode || prev.zip_code,
-              }));
+              if (fullAddress) {
+                setLocationData({ address: fullAddress, latitude: String(userLat), longitude: String(userLng) });
+                
+                setForm((prev) => ({
+                  ...prev,
+                  street_address: fullAddress,
+                  city: address.city || address.town || address.county || address.state_district || prev.city,
+                  state: address.state || prev.state,
+                  zip_code: address.postcode || prev.zip_code,
+                }));
+              }
+            } else {
+              console.log("Reverse Geocoding failed: ", reverseResponse.status);
             }
-          } catch (err) {}
+          } catch (err) {
+            console.error("Geocoding Error: ", err);
+          }
 
           setDistanceInfo({ loading: false, error: '', distanceKm: Number(distance.toFixed(1)) });
         } catch (error) {
