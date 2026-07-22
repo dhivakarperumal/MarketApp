@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -29,6 +29,8 @@ export const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const [wishlisted, setWishlisted] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
+  const swiperRef = useRef<Swiper>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const resolveImage = (url?: string | null) => {
     if (!url || typeof url !== 'string') return null;
@@ -190,7 +192,13 @@ export const ProductDetails = () => {
       <ScrollView showsVerticalScrollIndicator={false} bounces={false} className="pt-2">
         {/* Image Swiper */}
         <View className="h-64 bg-slate-100">
-          <Swiper autoplay loop showsPagination dotColor="#e2e8f0" activeDotColor="#16a34a">
+          <Swiper 
+            ref={swiperRef}
+            autoplay={false} 
+            loop={false} 
+            showsPagination={false} 
+            onIndexChanged={(index) => setActiveIndex(index)}
+          >
             {images.map((img: string, idx: number) => (
               <Image key={idx} source={{ uri: img }} className="w-full h-80" resizeMode="cover" />
             ))}
@@ -199,6 +207,23 @@ export const ProductDetails = () => {
 
         {/* Product Info Card */}
         <View className="bg-white rounded-t-[32px] -mt-6 px-5 pt-6 pb-32 z-10">
+          
+          {/* Thumbnail Images */}
+          {images.length > 0 && (
+            <View className="mb-4">
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
+                {images.map((img: string, idx: number) => (
+                  <TouchableOpacity 
+                    key={idx} 
+                    onPress={() => swiperRef.current?.scrollTo(idx)}
+                    className={`mr-3 rounded-xl border-2 overflow-hidden ${activeIndex === idx ? 'border-green-500' : 'border-transparent'}`}
+                  >
+                    <Image source={{ uri: img }} className="w-16 h-16 bg-slate-100" resizeMode="cover" />
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          )}
 
           {/* Name & Rating */}
           <View className="flex-row items-start justify-between mb-1">
