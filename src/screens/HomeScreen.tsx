@@ -60,7 +60,7 @@ export const HomeScreen = () => {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#16a34a"]} />
       }
     >
-      <View className="pb-4">
+      <View className="pb-[120px]">
         <Hero />
 
         <View style={{ marginTop: -60 }}>
