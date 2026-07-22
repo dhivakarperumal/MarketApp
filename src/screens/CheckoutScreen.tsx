@@ -61,8 +61,11 @@ const CheckoutScreen = () => {
   const insets = useSafeAreaInsets();
 
   const [form, setForm] = useState({
-    user_id: user?.user_id || "", customer_name: "", customer_email: "",
-    customer_phone: "", street_address: "", city: "", district: "",
+    user_id: user?.user_id || "", 
+    customer_name: user?.name || user?.username || user?.first_name || "", 
+    customer_email: user?.email || "",
+    customer_phone: user?.phone || user?.mobile || user?.phone_number || "", 
+    street_address: "", city: "", district: "",
     state: "", country: "India", zip_code: "", payment_method: "Online Payment",
   });
 
@@ -79,9 +82,9 @@ const CheckoutScreen = () => {
         setSelectedAddress(defaultAddr.id);
         setForm((prev) => ({
           ...prev,
-          customer_name: defaultAddr.customer_name || "",
-          customer_email: defaultAddr.customer_email || "",
-          customer_phone: defaultAddr.customer_phone || "",
+          customer_name: defaultAddr.customer_name || prev.customer_name,
+          customer_email: defaultAddr.customer_email || prev.customer_email,
+          customer_phone: defaultAddr.customer_phone || prev.customer_phone,
           street_address: defaultAddr.street_address || "",
           city: defaultAddr.city || "",
           district: defaultAddr.district || "",
@@ -588,9 +591,9 @@ const CheckoutScreen = () => {
                       setSelectedAddress(addr.id);
                       setForm((prev: any) => ({
                         ...prev,
-                        customer_name: addr.customer_name || "",
-                        customer_email: addr.customer_email || "",
-                        customer_phone: addr.customer_phone || "",
+                        customer_name: addr.customer_name || prev.customer_name,
+                        customer_email: addr.customer_email || prev.customer_email,
+                        customer_phone: addr.customer_phone || prev.customer_phone,
                         street_address: addr.street_address || "",
                         city: addr.city || "",
                         district: addr.district || "",
