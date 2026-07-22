@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { 
   View, Text, ScrollView, TextInput, TouchableOpacity, 
-  ActivityIndicator, Alert, PermissionsAndroid, Platform, Image, StatusBar
+  ActivityIndicator, Alert, PermissionsAndroid, Platform, Image, StatusBar, Modal, FlatList
 } from "react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -65,6 +65,8 @@ const CheckoutScreen = () => {
     customer_phone: "", street_address: "", city: "", district: "",
     state: "", country: "India", zip_code: "", payment_method: "Online Payment",
   });
+
+  const [stateModalVisible, setStateModalVisible] = useState(false);
 
   const fetchAddresses = async () => {
     try {
@@ -297,10 +299,11 @@ const CheckoutScreen = () => {
               const address = reverseData?.address || {};
               const fullAddress = reverseData.display_name;
               setLocationData({ address: fullAddress, latitude: String(userLat), longitude: String(userLng) });
+              
               setForm((prev) => ({
                 ...prev,
-                street_address: [address.house_number, address.road, address.suburb].filter(Boolean).join(" ") || prev.street_address,
-                city: address.city || address.town || prev.city,
+                street_address: fullAddress || prev.street_address,
+                city: address.city || address.town || address.county || address.state_district || prev.city,
                 state: address.state || prev.state,
                 zip_code: address.postcode || prev.zip_code,
               }));
@@ -619,10 +622,51 @@ const CheckoutScreen = () => {
               </View>
             </View>
 
-            <View className="flex-row items-center bg-slate-50 border border-slate-200 rounded-xl px-3">
+            <TouchableOpacity 
+              onPress={() => setStateModalVisible(true)}
+              className="flex-row items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-3.5 mb-3"
+            >
               <Map color="#94a3b8" size={18} />
-              <TextInput placeholder="State" placeholderTextColor="#94a3b8" value={form.state} onChangeText={(t) => handleChange("state", t)} className="flex-1 py-3.5 px-3 text-sm text-slate-800 font-medium" />
-            </View>
+              <Text className={`flex-1 px-3 text-sm font-medium ${form.state ? 'text-slate-800' : 'text-[#94a3b8]'}`}>
+                {form.state || "Select State"}
+              </Text>
+            </TouchableOpacity>
+
+            <Modal
+              visible={stateModalVisible}
+              animationType="slide"
+              transparent={true}
+              onRequestClose={() => setStateModalVisible(false)}
+            >
+              <View className="flex-1 justify-end bg-black/50">
+                <View className="bg-white rounded-t-3xl h-2/3 p-4">
+                  <View className="flex-row justify-between items-center mb-4 border-b border-gray-100 pb-3">
+                    <Text className="text-lg font-bold text-slate-800">Select State</Text>
+                    <TouchableOpacity onPress={() => setStateModalVisible(false)} className="p-2">
+                      <Text className="text-green-700 font-bold">Close</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <FlatList
+                    data={indianStates}
+                    keyExtractor={(item) => item}
+                    renderItem={({ item }) => (
+                      <TouchableOpacity
+                        className="py-4 border-b border-gray-50"
+                        onPress={() => {
+                          handleChange("state", item);
+                          setStateModalVisible(false);
+                        }}
+                      >
+                        <Text className={`text-base ${form.state === item ? 'text-green-700 font-bold' : 'text-slate-700'}`}>
+                          {item}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                    showsVerticalScrollIndicator={false}
+                  />
+                </View>
+              </View>
+            </Modal>
           </View>
         )}
 
