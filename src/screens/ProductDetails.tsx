@@ -355,6 +355,40 @@ export const ProductDetails = () => {
             {product.description || 'No description available.'}
           </Text>
 
+          {/* Action Buttons */}
+          <View className="flex-row gap-3 mt-2 mb-6">
+            <TouchableOpacity
+              onPress={async () => {
+                const itemToAdd = {
+                  ...product,
+                  ...currentItem,
+                  id: product.id || product.product_id,
+                  variant_size: currentItem !== product ? `${currentItem.quantity || currentItem.weight_volume || ''} ${currentItem.unit || ''}`.trim() : null
+                };
+                await addToCart(itemToAdd, quantity);
+                Toast.show({ type: 'success', text1: 'Added to Cart', text2: `${product.name} x${quantity}` });
+              }}
+              disabled={stock === 0}
+              className={`flex-1 flex-row items-center justify-center border py-3.5 rounded-2xl ${stock === 0 ? 'bg-slate-100 border-slate-200' : 'bg-green-50 border-green-500'}`}
+            >
+              <ShoppingCart size={18} color={stock === 0 ? "#94a3b8" : "#16a34a"} />
+              <Text className={`font-bold ml-2 ${stock === 0 ? 'text-slate-400' : 'text-green-700'}`}>Add to Cart</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('Checkout', {
+                  product: product,
+                  variant: selectedVariant,
+                  quantity: quantity
+                });
+              }}
+              disabled={stock === 0}
+              className={`flex-1 py-3.5 rounded-2xl items-center justify-center ${stock === 0 ? 'bg-slate-200' : 'bg-green-600'}`}
+            >
+              <Text className={`font-bold text-base ${stock === 0 ? 'text-slate-400' : 'text-white'}`}>Buy Now</Text>
+            </TouchableOpacity>
+          </View>
+
           {/* Related Products */}
           {relatedProducts.length > 0 && (
             <View className="-mx-5 mt-2 bg-slate-50 pb-4">
@@ -369,45 +403,10 @@ export const ProductDetails = () => {
 
         </View>
       </ScrollView>
-
-      {/* Sticky Bottom Buttons */}
-      <View 
-        className="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-5 flex-row gap-3"
-        style={{ paddingBottom: insets.bottom > 0 ? insets.bottom + 16 : 16, paddingTop: 16 }}
-      >
-        <TouchableOpacity
-          onPress={async () => {
-            const itemToAdd = {
-              ...product,
-              ...currentItem,
-              id: product.id || product.product_id,
-              variant_size: currentItem !== product ? `${currentItem.quantity || currentItem.weight_volume || ''} ${currentItem.unit || ''}`.trim() : null
-            };
-            await addToCart(itemToAdd, quantity);
-            Toast.show({ type: 'success', text1: 'Added to Cart', text2: `${product.name} x${quantity}` });
-          }}
-          disabled={stock === 0}
-          className={`flex-1 flex-row items-center justify-center border py-3.5 rounded-2xl ${stock === 0 ? 'bg-slate-100 border-slate-200' : 'bg-green-50 border-green-500'}`}
-        >
-          <ShoppingCart size={18} color={stock === 0 ? "#94a3b8" : "#16a34a"} />
-          <Text className={`font-bold ml-2 ${stock === 0 ? 'text-slate-400' : 'text-green-700'}`}>Add to Cart</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Checkout', {
-              product: product,
-              variant: selectedVariant,
-              quantity: quantity
-            });
-          }}
-          disabled={stock === 0}
-          className={`flex-1 py-3.5 rounded-2xl items-center justify-center ${stock === 0 ? 'bg-slate-200' : 'bg-green-600'}`}
-        >
-          <Text className={`font-bold text-base ${stock === 0 ? 'text-slate-400' : 'text-white'}`}>Buy Now</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };
 
 export default ProductDetails;
+
+
