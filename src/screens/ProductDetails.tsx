@@ -17,6 +17,7 @@ import { Star, ShoppingCart, ArrowLeft, Heart } from 'lucide-react-native';
 import { useStore } from '../context/StoreContext';
 import Toast from 'react-native-toast-message';
 import { calculateStockConsumptionInBaseUnits } from '../utils/stockUtils';
+import { ProductSection } from '../components/ProductSection';
 
 export const ProductDetails = () => {
   const route = useRoute<any>();
@@ -29,6 +30,7 @@ export const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const [wishlisted, setWishlisted] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
+  const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
   const swiperRef = useRef<Swiper>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -93,6 +95,18 @@ export const ProductDetails = () => {
         if (data?.variants?.length > 0) {
           setSelectedVariant(data.variants[0]);
         }
+        
+        // Fetch related products
+        try {
+          const catId = data?.category_id || data?.category;
+          const endpoint = catId ? `/products?category_id=${catId}` : `/products`;
+          const relRes = await api.get(endpoint);
+          const relData = Array.isArray(relRes.data) ? relRes.data : (relRes.data?.products || relRes.data?.data || []);
+          setRelatedProducts(relData.filter((p: any) => p.id !== id).slice(0, 6));
+        } catch (e) {
+          console.error("Failed to fetch related products", e);
+        }
+        
       } catch (err) {
         console.error(err);
         Alert.alert('Error', 'Failed to load product');
@@ -330,6 +344,18 @@ export const ProductDetails = () => {
           <Text className="text-sm text-slate-500 leading-relaxed mb-5">
             {product.description || 'No description available.'}
           </Text>
+
+          {/* Related Products */}
+          {relatedProducts.length > 0 && (
+            <View className="-mx-5 mt-2 bg-slate-50 pb-4">
+              <ProductSection
+                title="Related"
+                highlight="Products"
+                products={relatedProducts}
+                itemWidth={170}
+              />
+            </View>
+          )}
 
         </View>
       </ScrollView>
