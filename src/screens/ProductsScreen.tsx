@@ -13,6 +13,14 @@ import {
 import { Star, ShoppingCart, Zap, TrendingUp } from 'lucide-react-native';
 import ProductCard from '../components/ProductCard';
 import api from '../services/api';
+import { useStore } from '../context/StoreContext';
+
+interface Category {
+  id: number;
+  name: string;
+  images?: string | string[];
+  image?: string;
+}
 
 interface Product {
   id: number;
@@ -30,34 +38,51 @@ interface Product {
   delivery_time: string;
   stock_quantity: string;
   product_code: string;
+  category_id?: number | string;
 }
 
 export const ProductsScreen = () => {
+  const { categoriesCache, setCategoriesCache } = useStore();
+  const [categories, setCategories] = useState<Category[]>(categoriesCache || []);
   const [products, setProducts] = useState<Product[]>([]);
+  const [activeCategoryId, setActiveCategoryId] = useState<number | null>(null);
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    fetchProducts();
+    fetchAllData();
   }, []);
 
-  const fetchProducts = async () => {
+  const fetchAllData = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await api.get('/products');
 
-      if (response.data && Array.isArray(response.data)) {
-        setProducts(response.data);
-      } else if (response.data && response.data.data) {
-        setProducts(response.data.data);
+      // Fetch products and categories concurrently
+      const [prodRes, catRes] = await Promise.all([
+        api.get('/products'),
+        api.get('/categories')
+      ]);
+
+      // Handle products
+      if (prodRes.data && Array.isArray(prodRes.data)) {
+        setProducts(prodRes.data);
+      } else if (prodRes.data && prodRes.data.data) {
+        setProducts(prodRes.data.data);
       } else {
         setProducts([]);
       }
+
+      // Handle categories
+      if (catRes.data && Array.isArray(catRes.data)) {
+        setCategories(catRes.data);
+        setCategoriesCache(catRes.data);
+      }
     } catch (err: any) {
-      console.error('Fetch Products Error:', err);
-      const errorMessage = err.response?.data?.message || 'Failed to load products';
+      console.error('Fetch Data Error:', err);
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to load data';
       setError(errorMessage);
       Alert.alert('Error', errorMessage);
     } finally {
@@ -68,7 +93,14 @@ export const ProductsScreen = () => {
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchProducts();
+    fetchAllData();
+  };
+
+  const getCategoryImage = (cat: Category) => {
+    if (typeof cat.images === 'string') return cat.images;
+    if (Array.isArray(cat.images) && cat.images.length > 0) return cat.images[0];
+    if (cat.image) return cat.image;
+    return 'https://images.unsplash.com/photo-1610030469983-98e550d6193c';
   };
 
   const renderProductBadges = (product: Product) => {
@@ -114,7 +146,7 @@ export const ProductsScreen = () => {
         <Text className="text-red-600 font-bold text-lg mb-3">Oops!</Text>
         <Text className="text-slate-600 text-center mb-6">{error}</Text>
         <TouchableOpacity
-          onPress={fetchProducts}
+          onPress={fetchAllData}
           className="bg-green-600 px-6 py-3 rounded-lg"
         >
           <Text className="text-white font-bold">Try Again</Text>
@@ -123,42 +155,104 @@ export const ProductsScreen = () => {
     );
   }
 
-  if (products.length === 0) {
-    return (
-      <View className="flex-1 bg-slate-50 items-center justify-center">
-        <ShoppingCart size={48} color="#ccc" />
-        <Text className="text-slate-600 mt-3 font-semibold">No products available</Text>
-      </View>
-    );
-  }
+  const filteredProducts = activeCategoryId 
+    ? products.filter(p => Number(p.category_id) === activeCategoryId)
+    : products;
 
   return (
-    <View className="flex-1 py-5 bg-slate-50">
-      <ScrollView 
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#16a34a"]} />
-        }
-      >
+    <View className="flex-1 bg-slate-50 flex-row">
+      {/* Left Sidebar - Categories */}
+      <View style={{ width: 90, backgroundColor: '#ffffff', borderRightWidth: 1, borderRightColor: '#e2e8f0' }}>
+        <ScrollView 
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 20 }}
+        >
+          {/* All Categories Option */}
+          <TouchableOpacity
+            onPress={() => setActiveCategoryId(null)}
+            style={{
+              paddingVertical: 14,
+              alignItems: 'center',
+              backgroundColor: activeCategoryId === null ? '#f8fafc' : '#ffffff',
+              borderLeftWidth: 4,
+              borderLeftColor: activeCategoryId === null ? '#9333ea' : 'transparent',
+            }}
+          >
+            <View className="w-14 h-14 rounded-full bg-slate-50 items-center justify-center mb-2 border border-slate-200 shadow-sm">
+              <Star size={24} color={activeCategoryId === null ? "#9333ea" : "#f59e0b"} fill={activeCategoryId === null ? "#9333ea" : "#fde68a"} />
+            </View>
+            <Text style={{ fontSize: 11, textAlign: 'center', color: activeCategoryId === null ? '#9333ea' : '#475569', fontWeight: activeCategoryId === null ? '700' : '500' }}>
+              Popular
+            </Text>
+          </TouchableOpacity>
 
-        {/* Products Grid */}
-        <FlatList
-          data={products}
-          renderItem={renderProductCard}
-          keyExtractor={(item) => item.id.toString()}
-          numColumns={2}
-          scrollEnabled={false}
-          columnWrapperStyle={{
-            justifyContent: "space-between",
-            paddingHorizontal: 8,
-          }}
-          contentContainerStyle={{
-            paddingVertical: 8,
-            paddingHorizontal: 4,
-            paddingBottom: 50,
-          }}
-        />
-      </ScrollView>
+          {/* Category List */}
+          {categories.map((cat) => {
+            const isActive = activeCategoryId === cat.id;
+            return (
+              <TouchableOpacity
+                key={cat.id.toString()}
+                onPress={() => setActiveCategoryId(cat.id)}
+                style={{
+                  paddingVertical: 14,
+                  alignItems: 'center',
+                  backgroundColor: isActive ? '#f8fafc' : '#ffffff',
+                  borderLeftWidth: 4,
+                  borderLeftColor: isActive ? '#9333ea' : 'transparent',
+                }}
+              >
+                <View className="w-14 h-14 rounded-full bg-slate-50 items-center justify-center mb-2 border border-slate-200 overflow-hidden shadow-sm">
+                  <Image
+                    source={{ uri: getCategoryImage(cat) }}
+                    style={{ width: '100%', height: '100%' }}
+                    resizeMode="cover"
+                  />
+                </View>
+                <Text style={{ fontSize: 11, textAlign: 'center', paddingHorizontal: 4, color: isActive ? '#9333ea' : '#475569', fontWeight: isActive ? '700' : '500' }}>
+                  {cat.name}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      </View>
+
+      {/* Right Side - Products */}
+      <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
+        {filteredProducts.length === 0 ? (
+          <View className="flex-1 items-center justify-center pt-20">
+            <ShoppingCart size={48} color="#ccc" />
+            <Text className="text-slate-500 mt-3">No products available</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={filteredProducts}
+            renderItem={renderProductCard}
+            keyExtractor={(item) => item.id.toString()}
+            numColumns={2}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#16a34a"]} />
+            }
+            columnWrapperStyle={{
+              justifyContent: "space-between",
+              paddingHorizontal: 8,
+            }}
+            contentContainerStyle={{
+              paddingTop: 12,
+              paddingHorizontal: 4,
+              paddingBottom: 50,
+            }}
+            ListHeaderComponent={
+              <View className="px-3 pb-3 pt-2">
+                <Text className="text-lg font-bold text-slate-800">
+                  {activeCategoryId ? categories.find(c => c.id === activeCategoryId)?.name : 'Featured On Meesho'}
+                </Text>
+              </View>
+            }
+          />
+        )}
+      </View>
     </View>
   );
 };
