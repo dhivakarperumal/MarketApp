@@ -46,7 +46,7 @@ export const ProductsScreen = () => {
   const [categories, setCategories] = useState<Category[]>(categoriesCache || []);
   const [products, setProducts] = useState<Product[]>([]);
   const [activeCategoryId, setActiveCategoryId] = useState<number | null>(null);
-  
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -130,7 +130,11 @@ export const ProductsScreen = () => {
   };
 
   const renderProductCard = ({ item }: { item: Product }) => {
-    return <ProductCard product={item} compact={true} />;
+    return <ProductCard
+      product={item}
+      compact={true}
+      mrpBelow={true}
+    />;
   };
 
   if (loading) {
@@ -157,7 +161,7 @@ export const ProductsScreen = () => {
     );
   }
 
-  const filteredProducts = activeCategoryId 
+  const filteredProducts = activeCategoryId
     ? products.filter(p => Number(p.category_id) === activeCategoryId)
     : products;
 
@@ -165,7 +169,7 @@ export const ProductsScreen = () => {
     <View className="flex-1 bg-slate-50 flex-row">
       {/* Left Sidebar - Categories */}
       <View style={{ width: 110, backgroundColor: '#ffffff', borderRightWidth: 1, borderRightColor: '#e2e8f0' }}>
-        <ScrollView 
+        <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 20 }}
         >
