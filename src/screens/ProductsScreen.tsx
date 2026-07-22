@@ -130,7 +130,7 @@ export const ProductsScreen = () => {
   };
 
   const renderProductCard = ({ item }: { item: Product }) => {
-    return <ProductCard product={item} />;
+    return <ProductCard product={item} compact={true} />;
   };
 
   if (loading) {

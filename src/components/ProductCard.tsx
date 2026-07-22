@@ -25,7 +25,7 @@ const resolveImage = (url?: string | null) => {
     return trimmed;
 };
 
-const ProductCard: React.FC<{ product: any; onPress?: () => void }> = ({ product, onPress }) => {
+const ProductCard: React.FC<{ product: any; onPress?: () => void; compact?: boolean }> = ({ product, onPress, compact }) => {
     const offerPercentage = parseFloat(String(product.offer || '0')) || 0;
     const sellingPrice = parseFloat(String(product.selling_price || '0')) || 0;
     const mrpPrice = parseFloat(String(product.mrp || '0')) || 0;
@@ -110,7 +110,7 @@ const ProductCard: React.FC<{ product: any; onPress?: () => void }> = ({ product
                 <View>
                     <Text
                         className="text-sm font-bold text-slate-900 mb-1"
-                        numberOfLines={2}
+                        numberOfLines={compact ? 1 : 2}
                         onPress={() => navigation.navigate('ProductDetails', { id: product.id, product })}
                     >
                         {product.name}
@@ -140,10 +140,12 @@ const ProductCard: React.FC<{ product: any; onPress?: () => void }> = ({ product
 
                 </View>
 
-                <TouchableOpacity onPress={() => navigation.navigate('ProductDetails', { id: product.id, product })} className="mt-3 border border-green-600 rounded-lg py-3 flex-row items-center justify-center">
-                    <Text className="text-green-600 font-semibold">Quick View</Text>
-                    <Text className="text-green-600 ml-2">→</Text>
-                </TouchableOpacity>
+                {!compact && (
+                    <TouchableOpacity onPress={() => navigation.navigate('ProductDetails', { id: product.id, product })} className="mt-3 border border-green-600 rounded-lg py-3 flex-row items-center justify-center">
+                        <Text className="text-green-600 font-semibold">Quick View</Text>
+                        <Text className="text-green-600 ml-2">→</Text>
+                    </TouchableOpacity>
+                )}
             </View>
 
             {/* QR Modal */}
