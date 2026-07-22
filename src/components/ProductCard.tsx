@@ -126,12 +126,11 @@ const ProductCard: React.FC<{ product: any; onPress?: () => void; compact?: bool
                         </View>
                     )} */}
 
-                    <View className="flex-row items-center gap-2 mb-2">
+                    <View className={compact ? "flex-col items-start gap-0.5 mb-2" : "flex-row items-center gap-2 mb-2"}>
                         <Text className="text-xl font-extrabold text-[#2F7D5A]">₹{sellingPrice.toFixed(2)}</Text>
                         {mrpPrice > 0 && (
                             <Text className="text-sm line-through text-slate-400">₹{mrpPrice.toFixed(2)}</Text>
                         )}
-
                     </View>
 
                     {/* {product.delivery_time && (
