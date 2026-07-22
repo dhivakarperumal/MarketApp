@@ -1,0 +1,38 @@
+export const banners = [
+  {
+    id: 1,
+    title: "100% ORGANIC",
+    subtitle: "Fresh & Healthy",
+    desc: "🌿 Freshness Guaranteed • Shop Today",
+    button: "Shop",
+    image: require("../assets/bannersm1.png"),
+    colors: ["#ECFDF5", "#BBF7D0"],
+  },
+  {
+    id: 2,
+    title: "COMBO",
+    subtitle: "More Savings",
+    desc: "💰 Save More • Shop Smarter",
+    button: "Shop",
+    image: require("../assets/banner2.png"),
+    colors: ["#FEFCE8", "#FDE68A"],
+  },
+  {
+    id: 3,
+    title: "SUPER",
+    subtitle: "Top Brands",
+    desc: "🛍️ Premium Groceries • Affordable Prices",
+    button: "Shop",
+    image: require("../assets/bannersm4.png"),
+    colors: ["#FFF7ED", "#FED7AA"],
+  },
+  {
+    id: 4,
+    title: "FREE",
+    subtitle: "Delivery",
+    desc: "🚚 Fast Delivery • Fresh Every Day",
+    button: "Order",
+    image: require("../assets/withoubgbanner3.png"),
+    colors: ["#EFF6FF", "#BFDBFE"],
+  },
+];

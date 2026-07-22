@@ -4,6 +4,7 @@ import { CategorySection } from '../components/CategorySection';
 import { AboutSection } from '../components/AboutSection';
 import { Features } from '../components/Feature';
 import { Banner1 } from '../components/Banner1';
+import { Banner2 } from "../components/Banner2";
 import { Hero } from '../components/Hero';
 import { ProductSection } from '../components/ProductSection';
 import api from '../services/api';
@@ -78,6 +79,8 @@ export const HomeScreen = () => {
               itemWidth={170} 
             />
 
+            <Banner1 />
+
             {/* Top Offers */}
             <ProductSection 
               title="Top" 
@@ -86,7 +89,7 @@ export const HomeScreen = () => {
               itemWidth={170} 
             />
 
-            <Banner1 />
+            <Banner2 />
 
             {/* Combos */}
             <ProductSection 
