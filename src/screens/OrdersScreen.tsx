@@ -220,7 +220,7 @@ export const OrdersScreen = () => {
                   {order.items?.slice(0, 2).map((item: any, index: number) => (
                     <View key={index} className="flex-row gap-3 mb-2 items-center">
                        <Image
-                          source={{ uri: item.image || "https://via.placeholder.com/150" }}
+                          source={{ uri: item.product_image || item.image || "https://via.placeholder.com/150" }}
                           className="w-12 h-12 rounded-lg bg-gray-100"
                        />
                        <View className="flex-1">
@@ -259,65 +259,47 @@ export const OrdersScreen = () => {
                 <>
                   <View className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm mb-5">
                     <Text className="text-lg font-bold text-gray-800 mb-4">Order Tracking</Text>
-                    <View className="relative ml-2">
-                      <View className="absolute left-5 top-5 bottom-5 w-0.5 bg-gray-200" />
-                      <View className="space-y-6">
+                    <View className="relative w-full pt-2 pb-4">
+                      <View className="absolute left-6 right-6 top-7 h-0.5 bg-gray-200" />
+                      <View className="flex-row justify-between relative z-10">
                         {selectedOrder.status?.toLowerCase() === "cancelled" ? (
-                          <View className="flex-row items-center gap-4">
-                            <View className="w-10 h-10 rounded-full items-center justify-center bg-red-100 z-10">
+                          <View className="items-center flex-1">
+                            <View className="w-10 h-10 rounded-full items-center justify-center bg-red-100">
                               <XCircle size={18} color="#dc2626" />
                             </View>
-                            <View>
-                              <Text className="font-bold text-red-600">Cancelled</Text>
-                              <Text className="text-xs text-red-500">Order was cancelled</Text>
-                            </View>
+                            <Text className="font-bold text-red-600 mt-2 text-center text-[10px]">Cancelled</Text>
                           </View>
                         ) : (
                           <>
-                            <View className="flex-row items-center gap-4">
-                              <View className="w-10 h-10 rounded-full items-center justify-center bg-green-100 z-10">
+                            <View className="items-center flex-1">
+                              <View className="w-10 h-10 rounded-full items-center justify-center bg-green-100">
                                 <Package size={18} color="#0e6827" />
                               </View>
-                              <View>
-                                <Text className="font-bold text-gray-800">Order Placed</Text>
-                                <Text className="text-xs text-gray-500">We have received your order</Text>
-                              </View>
+                              <Text className="font-bold text-gray-800 mt-2 text-center text-[10px]">Placed</Text>
                             </View>
-                            <View className="flex-row items-center gap-4">
-                              <View className={`w-10 h-10 rounded-full items-center justify-center z-10 ${["packing", "shipped", "shipping", "out for delivery", "delivered"].includes(selectedOrder.status?.toLowerCase()) ? "bg-green-100" : "bg-gray-100"}`}>
+                            <View className="items-center flex-1">
+                              <View className={`w-10 h-10 rounded-full items-center justify-center ${["packing", "shipped", "shipping", "out for delivery", "delivered"].includes(selectedOrder.status?.toLowerCase()) ? "bg-green-100" : "bg-white border border-gray-200"}`}>
                                 <Package size={18} color={["packing", "shipped", "shipping", "out for delivery", "delivered"].includes(selectedOrder.status?.toLowerCase()) ? "#0e6827" : "#9ca3af"} />
                               </View>
-                              <View>
-                                <Text className={`font-bold ${["packing", "shipped", "shipping", "out for delivery", "delivered"].includes(selectedOrder.status?.toLowerCase()) ? "text-gray-800" : "text-gray-400"}`}>Packing</Text>
-                                <Text className="text-xs text-gray-500">Your order is being packed</Text>
-                              </View>
+                              <Text className={`font-bold mt-2 text-center text-[10px] ${["packing", "shipped", "shipping", "out for delivery", "delivered"].includes(selectedOrder.status?.toLowerCase()) ? "text-gray-800" : "text-gray-400"}`}>Packing</Text>
                             </View>
-                            <View className="flex-row items-center gap-4">
-                              <View className={`w-10 h-10 rounded-full items-center justify-center z-10 ${["shipped", "shipping", "out for delivery", "delivered"].includes(selectedOrder.status?.toLowerCase()) ? "bg-green-100" : "bg-gray-100"}`}>
+                            <View className="items-center flex-1">
+                              <View className={`w-10 h-10 rounded-full items-center justify-center ${["shipped", "shipping", "out for delivery", "delivered"].includes(selectedOrder.status?.toLowerCase()) ? "bg-green-100" : "bg-white border border-gray-200"}`}>
                                 <Truck size={18} color={["shipped", "shipping", "out for delivery", "delivered"].includes(selectedOrder.status?.toLowerCase()) ? "#0e6827" : "#9ca3af"} />
                               </View>
-                              <View>
-                                <Text className={`font-bold ${["shipped", "shipping", "out for delivery", "delivered"].includes(selectedOrder.status?.toLowerCase()) ? "text-gray-800" : "text-gray-400"}`}>Shipping</Text>
-                                <Text className="text-xs text-gray-500">Your order is on the way</Text>
-                              </View>
+                              <Text className={`font-bold mt-2 text-center text-[10px] ${["shipped", "shipping", "out for delivery", "delivered"].includes(selectedOrder.status?.toLowerCase()) ? "text-gray-800" : "text-gray-400"}`}>Shipping</Text>
                             </View>
-                            <View className="flex-row items-center gap-4">
-                              <View className={`w-10 h-10 rounded-full items-center justify-center z-10 ${["out for delivery", "delivered"].includes(selectedOrder.status?.toLowerCase()) ? "bg-green-100" : "bg-gray-100"}`}>
+                            <View className="items-center flex-1">
+                              <View className={`w-10 h-10 rounded-full items-center justify-center ${["out for delivery", "delivered"].includes(selectedOrder.status?.toLowerCase()) ? "bg-green-100" : "bg-white border border-gray-200"}`}>
                                 <Truck size={18} color={["out for delivery", "delivered"].includes(selectedOrder.status?.toLowerCase()) ? "#0e6827" : "#9ca3af"} />
                               </View>
-                              <View>
-                                <Text className={`font-bold ${["out for delivery", "delivered"].includes(selectedOrder.status?.toLowerCase()) ? "text-gray-800" : "text-gray-400"}`}>Out for Delivery</Text>
-                                <Text className="text-xs text-gray-500">Your order is out for delivery</Text>
-                              </View>
+                              <Text className={`font-bold mt-2 text-center text-[10px] ${["out for delivery", "delivered"].includes(selectedOrder.status?.toLowerCase()) ? "text-gray-800" : "text-gray-400"}`}>Out for Del</Text>
                             </View>
-                            <View className="flex-row items-center gap-4">
-                              <View className={`w-10 h-10 rounded-full items-center justify-center z-10 ${selectedOrder.status?.toLowerCase() === "delivered" ? "bg-green-100" : "bg-gray-100"}`}>
+                            <View className="items-center flex-1">
+                              <View className={`w-10 h-10 rounded-full items-center justify-center ${selectedOrder.status?.toLowerCase() === "delivered" ? "bg-green-100" : "bg-white border border-gray-200"}`}>
                                 <CheckCircle size={18} color={selectedOrder.status?.toLowerCase() === "delivered" ? "#0e6827" : "#9ca3af"} />
                               </View>
-                              <View>
-                                <Text className={`font-bold ${selectedOrder.status?.toLowerCase() === "delivered" ? "text-gray-800" : "text-gray-400"}`}>Delivered</Text>
-                                <Text className="text-xs text-gray-500">Order has been delivered</Text>
-                              </View>
+                              <Text className={`font-bold mt-2 text-center text-[10px] ${selectedOrder.status?.toLowerCase() === "delivered" ? "text-gray-800" : "text-gray-400"}`}>Delivered</Text>
                             </View>
                           </>
                         )}
@@ -383,7 +365,7 @@ export const OrdersScreen = () => {
                     <Text className="font-bold text-lg text-gray-800 mb-3">Products</Text>
                     {selectedOrder.items?.map((item: any, idx: number) => (
                       <View key={idx} className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm mb-3 flex-row gap-4">
-                         <Image source={{ uri: item.image || "https://via.placeholder.com/150" }} className="w-20 h-24 rounded-xl bg-gray-50" />
+                         <Image source={{ uri: item.product_image || item.image || "https://via.placeholder.com/150" }} className="w-20 h-24 rounded-xl bg-gray-50" />
                          <View className="flex-1">
                             <Text className="font-bold text-gray-800 text-base" numberOfLines={2}>{item.product_name || item.name}</Text>
                             <Text className="font-bold text-[#0e6827] mt-1">₹{item.price}</Text>
