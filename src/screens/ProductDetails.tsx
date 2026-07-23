@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Alert,
   StatusBar,
+  TextInput
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
@@ -15,6 +16,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import api from '../services/api';
 import { Star, ShoppingCart, ArrowLeft, Heart } from 'lucide-react-native';
 import { useStore } from '../context/StoreContext';
+import { AuthContext } from '../context/AuthContext';
 import Toast from 'react-native-toast-message';
 import { calculateStockConsumptionInBaseUnits } from '../utils/stockUtils';
 import { ProductSection } from '../components/ProductSection';
@@ -33,6 +35,104 @@ export const ProductDetails = () => {
   const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
   const swiperRef = useRef<Swiper>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+
+  const { user } = useContext(AuthContext);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
+  const [userReviewed, setUserReviewed] = useState(false);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviewStats, setReviewStats] = useState({
+    total_reviews: 0,
+    average_rating: 0,
+    five_star: 0,
+    four_star: 0,
+    three_star: 0,
+    two_star: 0,
+    one_star: 0,
+  });
+
+  const calculateStats = (reviewsArray: any[]) => {
+    const total = reviewsArray.length;
+    if (total === 0) {
+      return { total_reviews: 0, average_rating: 0, five_star: 0, four_star: 0, three_star: 0, two_star: 0, one_star: 0 };
+    }
+    const stats = { total_reviews: total, average_rating: 0, five_star: 0, four_star: 0, three_star: 0, two_star: 0, one_star: 0 };
+    let sum = 0;
+    reviewsArray.forEach(r => {
+      const rate = Number(r.rating);
+      sum += rate;
+      if (rate === 5) stats.five_star++;
+      else if (rate === 4) stats.four_star++;
+      else if (rate === 3) stats.three_star++;
+      else if (rate === 2) stats.two_star++;
+      else if (rate === 1) stats.one_star++;
+    });
+    stats.average_rating = Number((sum / total).toFixed(1));
+    return stats;
+  };
+
+  const checkUserReview = async () => {
+    try {
+      const uId = user?.id || user?.user_id;
+      if (!uId || !product?.customer_review) {
+        setUserReviewed(false);
+        return;
+      }
+      const hasReviewed = product.customer_review.some((r: any) => String(r.user_id) === String(uId));
+      setUserReviewed(hasReviewed);
+    } catch (err) {
+      console.log("Review check error:", err);
+      setUserReviewed(false);
+    }
+  };
+
+  const submitReview = async () => {
+    if (!user) {
+      Toast.show({ type: 'error', text1: 'Please login to submit a review' });
+      return;
+    }
+    try {
+      if (!rating) {
+        Toast.show({ type: 'error', text1: 'Please select rating' });
+        return;
+      }
+      const uId = user?.id || user?.user_id;
+
+      await api.post(`/products/${product.id}/reviews`, {
+        user_name: user?.username || user?.email?.split('@')[0] || 'User',
+        user_email: user?.email,
+        user_id: uId,
+        rating: rating,
+        comment: reviewText,
+      });
+
+      Toast.show({ type: 'success', text1: 'Review submitted successfully!' });
+
+      setRating(0);
+      setReviewText("");
+      setShowReviewForm(false);
+      setUserReviewed(true);
+      
+      const res = await api.get(`/products/${id}`);
+      if (res.data) {
+         const data = res.data?.data || res.data;
+         setProduct(data);
+         const reviewsArr = data.customer_review || [];
+         setReviews(reviewsArr);
+         setReviewStats(calculateStats(reviewsArr));
+      }
+    } catch (error: any) {
+      console.error(error);
+      const errorMsg = error.response?.data?.message || "Failed to submit review";
+      Toast.show({ type: 'error', text1: errorMsg });
+
+      if (errorMsg.includes("already submitted")) {
+        setUserReviewed(true);
+        setShowReviewForm(false);
+      }
+    }
+  };
 
   const resolveImage = (url?: string | null) => {
     if (!url || typeof url !== 'string') return null;
@@ -95,6 +195,9 @@ export const ProductDetails = () => {
           if (data?.variants?.length > 0 && !selectedVariant) {
             setSelectedVariant(data.variants[0]);
           }
+          const reviewsArr = data.customer_review || [];
+          setReviews(reviewsArr);
+          setReviewStats(calculateStats(reviewsArr));
         }
         
         // Fetch related products
@@ -138,6 +241,12 @@ export const ProductDetails = () => {
       setSelectedVariant(product.variants[0]);
     }
   }, [product]);
+
+  useEffect(() => {
+    if (user && product) {
+      checkUserReview();
+    }
+  }, [user, product]);
 
   if (loading) {
     return (
@@ -387,6 +496,122 @@ export const ProductDetails = () => {
             >
               <Text className={`font-bold text-base ${stock === 0 ? 'text-slate-400' : 'text-white'}`}>Buy Now</Text>
             </TouchableOpacity>
+          </View>
+
+          {/* REVIEW SECTION */}
+          <View className="mt-4 mb-8">
+            <View className="flex-row items-center justify-between border-t border-slate-200 pt-8 mb-5">
+              <Text className="text-xl font-bold text-slate-800">Reviews</Text>
+              
+              {userReviewed ? (
+                <Text className="text-green-600 font-bold text-xs">You reviewed this</Text>
+              ) : !user ? (
+                <TouchableOpacity onPress={() => Toast.show({ type: 'error', text1: 'Please login to write a review' })} className="px-4 py-2 rounded-xl bg-slate-500">
+                  <Text className="text-white font-bold text-xs">Login to Review</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={() => setShowReviewForm(!showReviewForm)} className="px-4 py-2 rounded-xl bg-green-600">
+                  <Text className="text-white font-bold text-xs">{showReviewForm ? "Cancel" : "Write Review"}</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+            
+            {showReviewForm && (
+              <View className="bg-slate-50 border border-slate-200 rounded-2xl p-5 mb-8">
+                <Text className="text-lg font-bold mb-4 text-slate-800">Share your experience</Text>
+                <Text className="font-bold text-slate-700 mb-2">Rating</Text>
+                <View className="flex-row gap-2 mb-4">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <TouchableOpacity key={star} onPress={() => setRating(star)}>
+                      <Star size={26} color={star <= rating ? "#facc15" : "#cbd5e1"} fill={star <= rating ? "#facc15" : "transparent"} />
+                    </TouchableOpacity>
+                  ))}
+                </View>
+                <Text className="font-bold text-slate-700 mb-2">Review</Text>
+                <TextInput
+                  value={reviewText}
+                  onChangeText={setReviewText}
+                  placeholder="Write your review here..."
+                  multiline
+                  numberOfLines={4}
+                  textAlignVertical="top"
+                  className="w-full border border-slate-300 bg-white rounded-xl p-3 h-24 mb-4"
+                />
+                <TouchableOpacity onPress={submitReview} className="bg-green-600 py-3 rounded-xl items-center">
+                  <Text className="text-white font-bold">Submit Review</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            
+            <View className="mb-6">
+              
+              <View className="flex-row items-center gap-4 mb-6">
+                <Text className="text-4xl font-bold text-slate-800">{reviewStats.average_rating}</Text>
+                <View>
+                  <View className="flex-row gap-0.5">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star key={star} size={16} color={star <= Math.round(reviewStats.average_rating) ? "#facc15" : "#e2e8f0"} fill={star <= Math.round(reviewStats.average_rating) ? "#facc15" : "transparent"} />
+                    ))}
+                  </View>
+                  <Text className="text-xs text-slate-500 mt-1">Based on {reviewStats.total_reviews} reviews</Text>
+                </View>
+              </View>
+
+              <View className="space-y-2 mb-8">
+                {[5, 4, 3, 2, 1].map((star) => {
+                  const count = (reviewStats as any)[`${star === 5 ? 'five' : star === 4 ? 'four' : star === 3 ? 'three' : star === 2 ? 'two' : 'one'}_star`] || 0;
+                  const percentage = reviewStats.total_reviews > 0 ? (count / reviewStats.total_reviews) * 100 : 0;
+                  return (
+                    <View key={star} className="flex-row items-center gap-3">
+                      <Text className="text-xs font-bold text-slate-600 w-3">{star}</Text>
+                      <Star color="#facc15" fill="#facc15" size={12} />
+                      <View className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+                        <View className="h-full bg-green-500" style={{ width: `${percentage}%` }} />
+                      </View>
+                      <Text className="text-xs text-slate-500 w-6 text-right">{count}</Text>
+                    </View>
+                  );
+                })}
+              </View>
+              
+              {reviews.length > 0 ? (
+                <View>
+                  {reviews.map((review, idx) => (
+                    <View key={idx} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm mb-4">
+                      <View className="flex-row justify-between items-start mb-2">
+                        <View>
+                          <Text className="font-bold text-slate-800 text-base">{review.user_name}</Text>
+                          <View className="flex-row gap-0.5 mt-1">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Star key={star} size={12} color={star <= review.rating ? "#facc15" : "#e2e8f0"} fill={star <= review.rating ? "#facc15" : "transparent"} />
+                            ))}
+                          </View>
+                        </View>
+                        <Text className="text-xs text-slate-400 bg-slate-50 px-2 py-1 rounded-full">
+                          {new Date(review.created_at).toLocaleDateString()}
+                        </Text>
+                      </View>
+                      <Text className="text-slate-600 italic mt-2">{review.review || review.comment}</Text>
+                      
+                      {(review.review_image || review.image) && (
+                        <Image source={{ uri: review.review_image || review.image }} className="w-24 h-24 rounded-xl mt-3 border border-slate-100" />
+                      )}
+                      
+                      {review.admin_reply && (
+                        <View className="mt-4 bg-green-50/50 p-3 rounded-xl border-l-4 border-green-500/30">
+                          <Text className="text-[10px] font-bold text-green-700 uppercase tracking-wider mb-1">Response from Seller</Text>
+                          <Text className="text-slate-600 text-sm italic">{review.admin_reply}</Text>
+                        </View>
+                      )}
+                    </View>
+                  ))}
+                </View>
+              ) : (
+                <View className="items-center py-8 bg-slate-50 rounded-2xl">
+                  <Text className="text-slate-500 font-bold text-center">No reviews yet. Be the first to share your experience!</Text>
+                </View>
+              )}
+            </View>
           </View>
 
           {/* Related Products */}
