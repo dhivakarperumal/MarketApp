@@ -133,7 +133,7 @@ export const Wishlist = () => {
                 </Text>
                 <TouchableOpacity 
                   className="mt-8 bg-[#ffc107] px-8 py-3 rounded-xl shadow-sm"
-                  onPress={() => navigation.navigate('Shop' as never)}
+                  onPress={() => navigation.navigate('Main' as never, { screen: 'Products' } as never)}
                 >
                   <Text className="text-black font-bold text-center">Browse Products</Text>
                 </TouchableOpacity>
