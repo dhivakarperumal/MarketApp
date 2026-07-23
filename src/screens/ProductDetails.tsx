@@ -131,14 +131,14 @@ export const ProductDetails = () => {
       setReviewImage(null);
       setShowReviewForm(false);
       setUserReviewed(true);
-      
+
       const res = await api.get(`/products/${id}`);
       if (res.data) {
-         const data = res.data?.data || res.data;
-         setProduct(data);
-         const reviewsArr = data.customer_review || [];
-         setReviews(reviewsArr);
-         setReviewStats(calculateStats(reviewsArr));
+        const data = res.data?.data || res.data;
+        setProduct(data);
+        const reviewsArr = data.customer_review || [];
+        setReviews(reviewsArr);
+        setReviewStats(calculateStats(reviewsArr));
       }
     } catch (error: any) {
       console.error(error);
@@ -217,27 +217,27 @@ export const ProductDetails = () => {
           setReviews(reviewsArr);
           setReviewStats(calculateStats(reviewsArr));
         }
-        
+
         // Fetch related products
         try {
           const relRes = await api.get('/products');
           const relData = Array.isArray(relRes.data) ? relRes.data : (relRes.data?.products || relRes.data?.data || []);
-          
+
           const catId = data?.category_id || data?.category || product?.category_id || product?.category;
           let filtered = relData.filter((p: any) => p.id !== id);
-          
+
           if (catId) {
-             const catFiltered = filtered.filter((p: any) => p.category_id == catId || p.category == catId);
-             if (catFiltered.length > 0) {
-                 filtered = catFiltered;
-             }
+            const catFiltered = filtered.filter((p: any) => p.category_id == catId || p.category == catId);
+            if (catFiltered.length > 0) {
+              filtered = catFiltered;
+            }
           }
-          
+
           setRelatedProducts(filtered.slice(0, 6));
         } catch (e) {
           console.error("Failed to fetch related products", e);
         }
-        
+
       } catch (err) {
         console.error(err);
         Alert.alert('Error', 'Failed to load product');
@@ -247,7 +247,7 @@ export const ProductDetails = () => {
     };
     fetchProduct();
     if (product && product.variants?.length > 0 && !selectedVariant) {
-        setSelectedVariant(product.variants[0]);
+      setSelectedVariant(product.variants[0]);
     }
     return () => {
       mounted = false;
@@ -283,7 +283,7 @@ export const ProductDetails = () => {
   }
 
   const images = getDisplayImages(product);
-  
+
   const currentItem = selectedVariant || product;
   const displayPrice = currentItem.offer_price || currentItem.sellingPrice || currentItem.selling_price || currentItem.price;
   const currentMrp = currentItem.mrp;
@@ -305,7 +305,7 @@ export const ProductDetails = () => {
   const stockUnit = currentItem?.unit || product?.unit || "units";
   const variants = Array.isArray(product.variants) ? product.variants : [];
   const insets = useSafeAreaInsets();
-  
+
   let comboItems = [];
   try {
     if (Array.isArray(product.combo_items)) comboItems = product.combo_items;
@@ -319,7 +319,7 @@ export const ProductDetails = () => {
       <StatusBar barStyle="light-content" backgroundColor="#16a34a" />
 
       {/* Premium Header */}
-      <View 
+      <View
         className="bg-green-600 pb-5 px-4 rounded-b-[40px] z-20 shadow-sm shadow-green-700/20 flex-row items-center justify-between"
         style={{ paddingTop: insets.top > 0 ? insets.top + 10 : 20 }}
       >
@@ -343,11 +343,11 @@ export const ProductDetails = () => {
       <ScrollView showsVerticalScrollIndicator={false} bounces={false} className="pt-2">
         {/* Image Swiper */}
         <View className="h-64 bg-slate-100">
-          <Swiper 
+          <Swiper
             ref={swiperRef}
-            autoplay={false} 
-            loop={false} 
-            showsPagination={false} 
+            autoplay={false}
+            loop={false}
+            showsPagination={false}
             onIndexChanged={(index) => setActiveIndex(index)}
           >
             {images.map((img: string, idx: number) => (
@@ -358,14 +358,14 @@ export const ProductDetails = () => {
 
         {/* Product Info Card */}
         <View className="bg-white rounded-t-[32px] -mt-6 px-5 pt-6 pb-32 z-10">
-          
+
           {/* Thumbnail Images */}
           {images.length > 0 && (
             <View className="mb-4">
               <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
                 {images.map((img: string, idx: number) => (
-                  <TouchableOpacity 
-                    key={idx} 
+                  <TouchableOpacity
+                    key={idx}
                     onPress={() => swiperRef.current?.scrollTo(idx)}
                     className={`mr-3 rounded-xl border-2 overflow-hidden ${activeIndex === idx ? 'border-green-500' : 'border-transparent'}`}
                   >
@@ -399,11 +399,11 @@ export const ProductDetails = () => {
                 </View>
               )}
             </View>
-            
+
             <View className={`px-3 py-1 rounded-full ${!isOutOfStock ? (stock < 10 ? 'bg-orange-100' : 'bg-green-100') : 'bg-red-100'}`}>
-               <Text className={`text-xs font-bold ${!isOutOfStock ? (stock < 10 ? 'text-orange-700' : 'text-green-700') : 'text-red-700'}`}>
-                 {!isOutOfStock ? `Available: ${displayStock} ${stockUnit}` : 'Out of Stock'}
-               </Text>
+              <Text className={`text-xs font-bold ${!isOutOfStock ? (stock < 10 ? 'text-orange-700' : 'text-green-700') : 'text-red-700'}`}>
+                {!isOutOfStock ? `Available: ${displayStock} ${stockUnit}` : 'Out of Stock'}
+              </Text>
             </View>
           </View>
 
@@ -431,7 +431,7 @@ export const ProductDetails = () => {
             </View>
           )}
 
-           {/* Quantity */}
+          {/* Quantity */}
           <View className="flex-row items-center mb-4">
             <Text className="text-sm font-bold text-slate-700 flex-1">Quantity</Text>
             <View className="flex-row items-center bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
@@ -516,11 +516,24 @@ export const ProductDetails = () => {
             </TouchableOpacity>
           </View>
 
+
+          {/* Related Products */}
+          {relatedProducts.length > 0 && (
+            <View className="-mx-5 mt-2 bg-slate-50 pb-4">
+              <ProductSection
+                title="Related"
+                highlight="Products"
+                products={relatedProducts}
+                itemWidth={170}
+              />
+            </View>
+          )}
+
           {/* REVIEW SECTION */}
           <View className="mt-4 mb-8">
             <View className="flex-row items-center justify-between border-t border-slate-200 pt-8 mb-5">
               <Text className="text-xl font-bold text-slate-800">Reviews</Text>
-              
+
               {userReviewed ? (
                 <Text className="text-green-600 font-bold text-xs">You reviewed this</Text>
               ) : !user ? (
@@ -533,7 +546,7 @@ export const ProductDetails = () => {
                 </TouchableOpacity>
               )}
             </View>
-            
+
             {showReviewForm && (
               <View className="bg-slate-50 border border-slate-200 rounded-2xl p-5 mb-8">
                 <Text className="text-lg font-bold mb-4 text-slate-800">Share your experience</Text>
@@ -574,9 +587,9 @@ export const ProductDetails = () => {
                 </TouchableOpacity>
               </View>
             )}
-            
+
             <View className="mb-6">
-              
+
               <View className="flex-row items-center gap-4 mb-6">
                 <Text className="text-4xl font-bold text-slate-800">{reviewStats.average_rating}</Text>
                 <View>
@@ -605,7 +618,7 @@ export const ProductDetails = () => {
                   );
                 })}
               </View>
-              
+
               {reviews.length > 0 ? (
                 <View>
                   {reviews.map((review, idx) => (
@@ -624,11 +637,11 @@ export const ProductDetails = () => {
                         </Text>
                       </View>
                       <Text className="text-slate-600 italic mt-2">{review.review || review.comment}</Text>
-                      
+
                       {(review.review_image || review.image) && (
                         <Image source={{ uri: review.review_image || review.image }} className="w-24 h-24 rounded-xl mt-3 border border-slate-100" />
                       )}
-                      
+
                       {review.admin_reply && (
                         <View className="mt-4 bg-green-50/50 p-3 rounded-xl border-l-4 border-green-500/30">
                           <Text className="text-[10px] font-bold text-green-700 uppercase tracking-wider mb-1">Response from Seller</Text>
@@ -646,17 +659,7 @@ export const ProductDetails = () => {
             </View>
           </View>
 
-          {/* Related Products */}
-          {relatedProducts.length > 0 && (
-            <View className="-mx-5 mt-2 bg-slate-50 pb-4">
-              <ProductSection
-                title="Related"
-                highlight="Products"
-                products={relatedProducts}
-                itemWidth={170}
-              />
-            </View>
-          )}
+
 
         </View>
       </ScrollView>
