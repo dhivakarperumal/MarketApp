@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import api from '../../services/api';
 import { AuthContext } from '../../context/AuthContext';
 import { RefreshControl } from "react-native";
+import { CustomAlertModal } from '../../components/CustomAlertModal';
 
 export const LoginScreen = () => {
   const navigation = useNavigation<any>();
@@ -30,13 +31,34 @@ export const LoginScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    type: 'error' as 'success' | 'error' | 'info',
+    onConfirm: () => { setAlertConfig(prev => ({ ...prev, visible: false })) }
+  });
+
+  const showAlert = (title: string, message: string, type: 'success' | 'error' | 'info' = 'error', onConfirm?: () => void) => {
+    setAlertConfig({
+      visible: true,
+      title,
+      message,
+      type,
+      onConfirm: () => {
+        setAlertConfig(prev => ({ ...prev, visible: false }));
+        if (onConfirm) onConfirm();
+      }
+    });
+  };
+
   const handleChange = (name: string, value: string) => {
     setForm({ ...form, [name]: value });
   };
 
   const handleSubmit = async () => {
     if (!form.identifier || !form.password) {
-      Alert.alert("Error", "Please fill in all fields.");
+      showAlert("Error", "Please fill in all fields.");
       return;
     }
 
@@ -54,7 +76,7 @@ export const LoginScreen = () => {
 
       await login("dummy_token_123456", dummyUser);
 
-      Alert.alert("Success", "Dummy Login Successful");
+      showAlert("Success", "Dummy Login Successful", "success");
       return;
     }
 
@@ -69,7 +91,7 @@ export const LoginScreen = () => {
       if (response.data && response.data.token && response.data.user) {
         await login(response.data.token, response.data.user);
       } else {
-        Alert.alert(
+        showAlert(
           "Login Failed",
           response.data?.message || "Invalid response from server."
         );
@@ -80,7 +102,7 @@ export const LoginScreen = () => {
         error.message ||
         "An error occurred during login.";
 
-      Alert.alert("Login Failed", errorMessage);
+      showAlert("Login Failed", errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -241,6 +263,14 @@ export const LoginScreen = () => {
 
         </View>
       </ScrollView>
+
+      <CustomAlertModal
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+        onConfirm={alertConfig.onConfirm}
+      />
     </KeyboardAvoidingView>
   );
 };

@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingVi
 import { User, Phone, Mail, Lock, Leaf, CheckSquare, ShoppingCart, ShieldCheck, Eye, EyeOff } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import api from '../../services/api';
+import { CustomAlertModal } from '../../components/CustomAlertModal';
 
 export const RegisterScreen = () => {
   const navigation = useNavigation<any>();
@@ -20,23 +21,44 @@ export const RegisterScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    type: 'error' as 'success' | 'error' | 'info',
+    onConfirm: () => { setAlertConfig(prev => ({ ...prev, visible: false })) }
+  });
+
+  const showAlert = (title: string, message: string, type: 'success' | 'error' | 'info' = 'error', onConfirm?: () => void) => {
+    setAlertConfig({
+      visible: true,
+      title,
+      message,
+      type,
+      onConfirm: () => {
+        setAlertConfig(prev => ({ ...prev, visible: false }));
+        if (onConfirm) onConfirm();
+      }
+    });
+  };
+
   const handleChange = (name: string, value: string | boolean) => {
     setForm({ ...form, [name]: value });
   };
 
   const handleSubmit = async () => {
     if (!form.agreed) {
-      Alert.alert("Error", "Please agree to the Terms & Conditions");
+      showAlert("Error", "Please agree to the Terms & Conditions");
       return;
     }
 
     if (!form.username || !form.email || !form.phone || !form.password) {
-      Alert.alert("Error", "Please fill in all fields");
+      showAlert("Error", "Please fill in all fields");
       return;
     }
 
     if (form.password !== form.confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
+      showAlert("Error", "Passwords do not match");
       return;
     }
 
@@ -52,14 +74,11 @@ export const RegisterScreen = () => {
       const response = await api.post("/auth/register", payload);
       
       if (response.data && response.data.success) {
-        Alert.alert("Success", response.data.message || "Registration successful! Please login.", [
-          {
-            text: "OK",
-            onPress: () => navigation.navigate("Login"),
-          },
-        ]);
+        showAlert("Success", response.data.message || "Registration successful! Please login.", "success", () => {
+          navigation.navigate("Login");
+        });
       } else {
-        Alert.alert("Registration Failed", response.data?.message || "Something went wrong.");
+        showAlert("Registration Failed", response.data?.message || "Something went wrong.");
       }
     } catch (error: any) {
       console.error("Register Error:", error);
@@ -67,7 +86,7 @@ export const RegisterScreen = () => {
         error.response?.data?.message || 
         error.message || 
         "Registration failed. Please try again.";
-      Alert.alert("Registration Failed", errorMessage);
+      showAlert("Registration Failed", errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -238,6 +257,14 @@ export const RegisterScreen = () => {
 
         </View>
       </ScrollView>
+
+      <CustomAlertModal
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+        onConfirm={alertConfig.onConfirm}
+      />
     </KeyboardAvoidingView>
   );
 };
