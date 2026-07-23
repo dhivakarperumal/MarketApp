@@ -14,6 +14,7 @@ import { Star, ShoppingCart, Zap, TrendingUp, Heart, Share2, QrCode } from 'luci
 import { useNavigation } from '@react-navigation/native';
 import QuickView from './QuickView';
 import { useStore } from '../context/StoreContext';
+import { CustomAlertModal } from './CustomAlertModal';
 
 // product is treated as any to accommodate varying API shapes
 
@@ -43,6 +44,24 @@ const ProductCard: React.FC<{
         const isInWishlist = wishlist.some((w) => w.product_id === product.id || w.id === product.id);
         const [showQR, setShowQR] = useState(false);
         const [quickView, setQuickView] = useState(false);
+        
+        const [alertConfig, setAlertConfig] = useState({
+            visible: false,
+            title: '',
+            message: '',
+            type: 'info' as 'success' | 'error' | 'info',
+            onConfirm: () => setAlertConfig(prev => ({ ...prev, visible: false }))
+        });
+
+        const showAlert = (title: string, message: string, type: 'success' | 'error' | 'info' = 'info') => {
+            setAlertConfig({
+                visible: true,
+                title,
+                message,
+                type,
+                onConfirm: () => setAlertConfig(prev => ({ ...prev, visible: false }))
+            });
+        };
 
         const imageSrc =
             Array.isArray((product as any).product_images) && (product as any).product_images.length > 0
@@ -54,7 +73,7 @@ const ProductCard: React.FC<{
         const imageUri: string | undefined = imageSrc ? imageSrc : undefined;
 
         const handleAdd = () => {
-            Alert.alert('Add to cart', `Added "${product.name}" to cart`);
+            showAlert('Add to cart', `Added "${product.name}" to cart`, 'success');
         };
 
         const navigation = useNavigation<any>();
@@ -195,6 +214,14 @@ const ProductCard: React.FC<{
 
                 {/* Quick View Modal Component */}
                 <QuickView visible={quickView} product={product} onClose={() => setQuickView(false)} onAdd={(qty) => { handleAdd(); setQuickView(false); }} />
+
+                <CustomAlertModal
+                    visible={alertConfig.visible}
+                    title={alertConfig.title}
+                    message={alertConfig.message}
+                    type={alertConfig.type}
+                    onConfirm={alertConfig.onConfirm}
+                />
             </TouchableOpacity>
         );
     };

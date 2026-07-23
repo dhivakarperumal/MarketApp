@@ -14,6 +14,7 @@ import { Star, ShoppingCart, Zap, TrendingUp } from 'lucide-react-native';
 import ProductCard from '../components/ProductCard';
 import api from '../services/api';
 import { useStore } from '../context/StoreContext';
+import { CustomAlertModal } from '../components/CustomAlertModal';
 
 interface Category {
   id: number;
@@ -51,6 +52,24 @@ export const ProductsScreen = () => {
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
+  const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    type: 'error' as 'success' | 'error' | 'info',
+    onConfirm: () => setAlertConfig(prev => ({ ...prev, visible: false }))
+  });
+
+  const showAlert = (title: string, message: string, type: 'success' | 'error' | 'info' = 'error') => {
+    setAlertConfig({
+      visible: true,
+      title,
+      message,
+      type,
+      onConfirm: () => setAlertConfig(prev => ({ ...prev, visible: false }))
+    });
+  };
+
   useEffect(() => {
     fetchAllData();
   }, []);
@@ -86,7 +105,7 @@ export const ProductsScreen = () => {
       console.error('Fetch Data Error:', err);
       const errorMessage = err.response?.data?.message || err.message || 'Failed to load data';
       setError(errorMessage);
-      Alert.alert('Error', errorMessage);
+      showAlert('Error', errorMessage);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -259,6 +278,14 @@ export const ProductsScreen = () => {
           />
         )}
       </View>
+
+      <CustomAlertModal
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+        onConfirm={alertConfig.onConfirm}
+      />
     </View>
   );
 };

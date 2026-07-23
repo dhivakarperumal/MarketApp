@@ -15,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../context/AuthContext';
 import { useStore } from '../context/StoreContext';
 import api from '../services/api';
+import { CustomAlertModal } from '../components/CustomAlertModal';
 
 interface WishlistItem {
   id: number;
@@ -37,6 +38,24 @@ export const Wishlist = () => {
 
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    type: 'error' as 'success' | 'error' | 'info',
+    onConfirm: () => setAlertConfig(prev => ({ ...prev, visible: false }))
+  });
+
+  const showAlert = (title: string, message: string, type: 'success' | 'error' | 'info' = 'error') => {
+    setAlertConfig({
+      visible: true,
+      title,
+      message,
+      type,
+      onConfirm: () => setAlertConfig(prev => ({ ...prev, visible: false }))
+    });
+  };
 
   useEffect(() => {
     if (user?.user_id) {
@@ -62,7 +81,7 @@ export const Wishlist = () => {
       await removeFromWishlist(productId);
       setWishlist(prev => prev.filter(w => w.id !== item.id && w.product_id !== productId));
     } catch (error) {
-      Alert.alert('Error', 'Failed to remove item from wishlist');
+      showAlert('Error', 'Failed to remove item from wishlist');
     }
   };
 
@@ -171,6 +190,14 @@ export const Wishlist = () => {
           />
         </View>
       )}
+
+      <CustomAlertModal
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+        onConfirm={alertConfig.onConfirm}
+      />
     </View>
   );
 };

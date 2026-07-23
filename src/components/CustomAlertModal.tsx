@@ -9,6 +9,9 @@ interface CustomAlertModalProps {
   type?: 'success' | 'error' | 'info';
   onConfirm: () => void;
   confirmText?: string;
+  showCancel?: boolean;
+  onCancel?: () => void;
+  cancelText?: string;
 }
 
 export const CustomAlertModal: React.FC<CustomAlertModalProps> = ({
@@ -18,6 +21,9 @@ export const CustomAlertModal: React.FC<CustomAlertModalProps> = ({
   type = 'error',
   onConfirm,
   confirmText = 'OK',
+  showCancel = false,
+  onCancel,
+  cancelText = 'Cancel',
 }) => {
   const getIcon = () => {
     switch (type) {
@@ -47,8 +53,8 @@ export const CustomAlertModal: React.FC<CustomAlertModalProps> = ({
   };
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onConfirm}>
-      <TouchableWithoutFeedback onPress={onConfirm}>
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={showCancel && onCancel ? onCancel : onConfirm}>
+      <TouchableWithoutFeedback onPress={showCancel && onCancel ? onCancel : onConfirm}>
         <View className="flex-1 items-center justify-center bg-black/50 px-5">
           <TouchableWithoutFeedback>
             <View className="w-full bg-white rounded-3xl p-6 items-center shadow-lg">
@@ -64,12 +70,29 @@ export const CustomAlertModal: React.FC<CustomAlertModalProps> = ({
                 {message}
               </Text>
               
-              <TouchableOpacity
-                onPress={onConfirm}
-                className={`w-full py-3.5 rounded-2xl ${getButtonColor()} items-center justify-center`}
-              >
-                <Text className="font-bold text-white">{confirmText}</Text>
-              </TouchableOpacity>
+              {showCancel ? (
+                <View className="flex-row w-full gap-3 mt-2">
+                  <TouchableOpacity
+                    onPress={onCancel}
+                    className="flex-1 py-3.5 rounded-2xl bg-slate-100 items-center justify-center border border-slate-200"
+                  >
+                    <Text className="font-bold text-slate-700">{cancelText}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={onConfirm}
+                    className={`flex-1 py-3.5 rounded-2xl ${getButtonColor()} items-center justify-center`}
+                  >
+                    <Text className="font-bold text-white">{confirmText}</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  onPress={onConfirm}
+                  className={`w-full py-3.5 rounded-2xl ${getButtonColor()} items-center justify-center`}
+                >
+                  <Text className="font-bold text-white">{confirmText}</Text>
+                </TouchableOpacity>
+              )}
             </View>
           </TouchableWithoutFeedback>
         </View>

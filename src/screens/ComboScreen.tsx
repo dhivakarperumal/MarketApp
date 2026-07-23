@@ -9,9 +9,9 @@ import {
   Image,
   Alert,
   RefreshControl,
-} from 'react-native';
 import { Star, ShoppingCart, Heart, Tag, Eye } from 'lucide-react-native';
 import api from '../services/api';
+import { CustomAlertModal } from '../components/CustomAlertModal';
 
 interface ComboItem {
   id?: number;
@@ -75,6 +75,24 @@ export const ComboScreen = () => {
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
+  const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    type: 'error' as 'success' | 'error' | 'info',
+    onConfirm: () => setAlertConfig(prev => ({ ...prev, visible: false }))
+  });
+
+  const showAlert = (title: string, message: string, type: 'success' | 'error' | 'info' = 'error') => {
+    setAlertConfig({
+      visible: true,
+      title,
+      message,
+      type,
+      onConfirm: () => setAlertConfig(prev => ({ ...prev, visible: false }))
+    });
+  };
+
   useEffect(() => {
     fetchCombos();
   }, []);
@@ -97,7 +115,7 @@ export const ComboScreen = () => {
       console.error('Fetch Combos Error:', err);
       const errorMessage = err.response?.data?.message || 'Failed to load combos';
       setError(errorMessage);
-      Alert.alert('Error', errorMessage);
+      showAlert('Error', errorMessage);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -305,6 +323,14 @@ export const ComboScreen = () => {
           contentContainerStyle={{ paddingVertical: 12, paddingHorizontal: 4, paddingBottom: 110 }}
         />
       </ScrollView>
+
+      <CustomAlertModal
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+        onConfirm={alertConfig.onConfirm}
+      />
     </View>
   );
 };

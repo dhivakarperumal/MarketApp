@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
 import Toast from 'react-native-toast-message';
+import { CustomAlertModal } from '../components/CustomAlertModal';
 
 const INDIAN_STATES = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
@@ -37,6 +38,33 @@ export const AddressScreen = () => {
     country: 'India',
     address_type: 'Home'
   });
+
+  const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    type: 'error' as 'success' | 'error' | 'info',
+    showCancel: false,
+    confirmText: 'OK',
+    onConfirm: () => setAlertConfig(prev => ({ ...prev, visible: false })),
+    onCancel: () => setAlertConfig(prev => ({ ...prev, visible: false }))
+  });
+
+  const showConfirm = (title: string, message: string, onConfirmAction: () => void) => {
+    setAlertConfig({
+      visible: true,
+      title,
+      message,
+      type: 'error',
+      showCancel: true,
+      confirmText: 'Delete',
+      onConfirm: () => {
+        setAlertConfig(prev => ({ ...prev, visible: false }));
+        onConfirmAction();
+      },
+      onCancel: () => setAlertConfig(prev => ({ ...prev, visible: false }))
+    });
+  };
 
   useEffect(() => {
     fetchAddresses();
@@ -90,24 +118,18 @@ export const AddressScreen = () => {
   };
 
   const handleDelete = (address: any) => {
-    Alert.alert(
+    showConfirm(
       'Delete Address',
       `Are you sure you want to delete this ${address.address_type || 'address'}?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete', style: 'destructive',
-          onPress: async () => {
-            try {
-              await api.delete(`/address/${address.id}`);
-              Toast.show({ type: 'success', text1: 'Address deleted' });
-              fetchAddresses();
-            } catch (error) {
-              Toast.show({ type: 'error', text1: 'Failed to delete address' });
-            }
-          }
+      async () => {
+        try {
+          await api.delete(`/address/${address.id}`);
+          Toast.show({ type: 'success', text1: 'Address deleted' });
+          fetchAddresses();
+        } catch (error) {
+          Toast.show({ type: 'error', text1: 'Failed to delete address' });
         }
-      ]
+      }
     );
   };
 
@@ -439,6 +461,17 @@ export const AddressScreen = () => {
           </View>
         </View>
       </Modal>
+
+      <CustomAlertModal
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+        showCancel={alertConfig.showCancel}
+        confirmText={alertConfig.confirmText}
+        onConfirm={alertConfig.onConfirm}
+        onCancel={alertConfig.onCancel}
+      />
     </View>
   );
 };

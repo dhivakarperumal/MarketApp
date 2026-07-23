@@ -13,6 +13,7 @@ import Geolocation from "react-native-geolocation-service";
 import RazorpayCheckout from "react-native-razorpay";
 import { MapPin, Package, CreditCard, Shield, CheckCircle, User, Mail, Phone, Home, Building2, Map, Navigation, ArrowLeft } from "lucide-react-native";
 import { calculateStockConsumptionInBaseUnits } from "../utils/stockUtils";
+import { CustomAlertModal } from "../components/CustomAlertModal";
 const indianStates = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
   "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
@@ -70,6 +71,24 @@ const CheckoutScreen = () => {
   });
 
   const [stateModalVisible, setStateModalVisible] = useState(false);
+
+  const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    type: 'error' as 'success' | 'error' | 'info',
+    onConfirm: () => setAlertConfig(prev => ({ ...prev, visible: false }))
+  });
+
+  const showAlert = (title: string, message: string, type: 'success' | 'error' | 'info' = 'error') => {
+    setAlertConfig({
+      visible: true,
+      title,
+      message,
+      type,
+      onConfirm: () => setAlertConfig(prev => ({ ...prev, visible: false }))
+    });
+  };
 
   const fetchAddresses = async () => {
     try {
@@ -429,7 +448,7 @@ const CheckoutScreen = () => {
       Toast.show({ type: "success", text1: "Order Placed Successfully!" });
       navigation.replace("Orders");
     } catch (error) {
-      Alert.alert("Order failed", "An error occurred while placing the order.");
+      showAlert("Order failed", "An error occurred while placing the order.");
     }
   };
 
@@ -441,7 +460,7 @@ const CheckoutScreen = () => {
       if (!form.city.trim()) return Toast.show({ type: "error", text1: "Please enter city" });
       if (deliveryInfo.isError) return Toast.show({ type: "error", text1: deliveryInfo.message });
     }
-    if (!checkoutItems.length) return Alert.alert("No product to checkout");
+    if (!checkoutItems.length) return showAlert("Error", "No product to checkout", "error");
 
     // Validate Stock
     for (const item of checkoutItems) {
@@ -495,7 +514,7 @@ const CheckoutScreen = () => {
     RazorpayCheckout.open(options).then((data: any) => {
       saveOrder(data.razorpay_payment_id);
     }).catch((error: any) => {
-      Alert.alert(`Error: ${error.code} | ${error.description}`);
+      showAlert("Payment Error", `Error: ${error.code} | ${error.description}`);
     });
   };
 
@@ -805,8 +824,16 @@ const CheckoutScreen = () => {
             <Text className="text-white font-bold text-lg">Place Order</Text>
           </TouchableOpacity>
         </View>
-      </View>
+        </View>
       </ScrollView>
+
+      <CustomAlertModal
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+        onConfirm={alertConfig.onConfirm}
+      />
     </View>
   );
 };

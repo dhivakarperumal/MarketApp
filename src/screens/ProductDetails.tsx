@@ -21,6 +21,7 @@ import Toast from 'react-native-toast-message';
 import { calculateStockConsumptionInBaseUnits } from '../utils/stockUtils';
 import { ProductSection } from '../components/ProductSection';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { CustomAlertModal } from '../components/CustomAlertModal';
 
 export const ProductDetails = () => {
   const route = useRoute<any>();
@@ -50,9 +51,26 @@ export const ProductDetails = () => {
     five_star: 0,
     four_star: 0,
     three_star: 0,
-    two_star: 0,
     one_star: 0,
   });
+
+  const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    type: 'error' as 'success' | 'error' | 'info',
+    onConfirm: () => setAlertConfig(prev => ({ ...prev, visible: false }))
+  });
+
+  const showAlert = (title: string, message: string, type: 'success' | 'error' | 'info' = 'error') => {
+    setAlertConfig({
+      visible: true,
+      title,
+      message,
+      type,
+      onConfirm: () => setAlertConfig(prev => ({ ...prev, visible: false }))
+    });
+  };
 
   const calculateStats = (reviewsArray: any[]) => {
     const total = reviewsArray.length;
@@ -240,7 +258,7 @@ export const ProductDetails = () => {
 
       } catch (err) {
         console.error(err);
-        Alert.alert('Error', 'Failed to load product');
+        showAlert('Error', 'Failed to load product');
       } finally {
         if (mounted) setLoading(false);
       }
@@ -663,6 +681,14 @@ export const ProductDetails = () => {
 
         </View>
       </ScrollView>
+
+      <CustomAlertModal
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+        onConfirm={alertConfig.onConfirm}
+      />
     </View>
   );
 };
