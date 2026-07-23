@@ -20,6 +20,7 @@ import { AuthContext } from '../context/AuthContext';
 import Toast from 'react-native-toast-message';
 import { calculateStockConsumptionInBaseUnits } from '../utils/stockUtils';
 import { ProductSection } from '../components/ProductSection';
+import { launchImageLibrary } from 'react-native-image-picker';
 
 export const ProductDetails = () => {
   const route = useRoute<any>();
@@ -40,6 +41,7 @@ export const ProductDetails = () => {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
+  const [reviewImage, setReviewImage] = useState<any>(null);
   const [userReviewed, setUserReviewed] = useState(false);
   const [reviews, setReviews] = useState<any[]>([]);
   const [reviewStats, setReviewStats] = useState({
@@ -87,6 +89,20 @@ export const ProductDetails = () => {
     }
   };
 
+  const handleImagePick = () => {
+    launchImageLibrary({ mediaType: 'photo', includeBase64: true, quality: 0.5 }, (response) => {
+      if (response.didCancel) return;
+      if (response.errorMessage) {
+        Toast.show({ type: 'error', text1: 'Image picker error', text2: response.errorMessage });
+        return;
+      }
+      if (response.assets && response.assets.length > 0) {
+        const asset = response.assets[0];
+        setReviewImage(`data:${asset.type};base64,${asset.base64}`);
+      }
+    });
+  };
+
   const submitReview = async () => {
     if (!user) {
       Toast.show({ type: 'error', text1: 'Please login to submit a review' });
@@ -105,12 +121,14 @@ export const ProductDetails = () => {
         user_id: uId,
         rating: rating,
         comment: reviewText,
+        review_image: reviewImage,
       });
 
       Toast.show({ type: 'success', text1: 'Review submitted successfully!' });
 
       setRating(0);
       setReviewText("");
+      setReviewImage(null);
       setShowReviewForm(false);
       setUserReviewed(true);
       
@@ -537,6 +555,20 @@ export const ProductDetails = () => {
                   textAlignVertical="top"
                   className="w-full border border-slate-300 bg-white rounded-xl p-3 h-24 mb-4"
                 />
+
+                <Text className="font-bold text-slate-700 mb-2">Upload Image (optional)</Text>
+                <TouchableOpacity onPress={handleImagePick} className="w-full border border-slate-300 border-dashed bg-white rounded-xl p-3 items-center justify-center mb-4">
+                  <Text className="text-slate-500 font-semibold">{reviewImage ? "Change Image" : "Select an Image"}</Text>
+                </TouchableOpacity>
+                {reviewImage && (
+                  <View className="relative w-24 h-24 mb-4">
+                    <Image source={{ uri: reviewImage }} className="w-24 h-24 rounded-xl border border-slate-200" />
+                    <TouchableOpacity onPress={() => setReviewImage(null)} className="absolute -top-2 -right-2 bg-red-500 rounded-full w-6 h-6 items-center justify-center">
+                      <Text className="text-white font-bold text-xs">X</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+
                 <TouchableOpacity onPress={submitReview} className="bg-green-600 py-3 rounded-xl items-center">
                   <Text className="text-white font-bold">Submit Review</Text>
                 </TouchableOpacity>
