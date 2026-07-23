@@ -1,8 +1,9 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { User, ShoppingBag, Heart, ChevronRight, Settings, HelpCircle, LogOut, MapPin, Info } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../context/AuthContext';
+import { LogoutConfirmationModal } from '../components/LogoutConfirmationModal';
 
 const MoreItemCard = ({ icon: Icon, title, onPress, iconColor = "#16a34a", iconBg = "bg-green-50" }) => (
   <TouchableOpacity
@@ -23,7 +24,8 @@ const MoreItemCard = ({ icon: Icon, title, onPress, iconColor = "#16a34a", iconB
 
 export const MoreScreen = () => {
   const navigation = useNavigation();
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
+  const [logoutModalVisible, setLogoutModalVisible] = useState(false);
 
   return (
     <View className="flex-1 bg-slate-50">
@@ -100,12 +102,21 @@ export const MoreScreen = () => {
         
         <TouchableOpacity
           className="flex-row items-center justify-center bg-red-50 p-4 mt-6 mb-10 rounded-2xl border border-red-100"
-          onPress={() => console.log('Logout')}
+          onPress={() => setLogoutModalVisible(true)}
         >
           <LogOut size={22} color="#ef4444" className="mr-2" />
           <Text className="text-red-500 font-bold text-lg">Log Out</Text>
         </TouchableOpacity>
       </ScrollView>
+
+      <LogoutConfirmationModal
+        visible={logoutModalVisible}
+        onCancel={() => setLogoutModalVisible(false)}
+        onConfirm={async () => {
+          setLogoutModalVisible(false);
+          await logout();
+        }}
+      />
     </View>
   );
 };

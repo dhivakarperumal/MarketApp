@@ -18,6 +18,7 @@ import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AuthContext } from "../context/AuthContext";
 import { useStore } from "../context/StoreContext";
+import { LogoutConfirmationModal } from "./LogoutConfirmationModal";
 
 interface HeaderProps {
   title: string;
@@ -25,6 +26,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ title }) => {
   const [menuVisible, setMenuVisible] = useState(false);
+  const [logoutModalVisible, setLogoutModalVisible] = useState(false);
 
   const navigation = useNavigation<any>();
   const { user, logout } = useContext(AuthContext);
@@ -184,9 +186,9 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
             <TouchableOpacity
               activeOpacity={0.8}
               className="flex-row items-center justify-between px-5 py-4"
-              onPress={async () => {
+              onPress={() => {
                 setMenuVisible(false);
-                await logout();
+                setLogoutModalVisible(true);
               }}
             >
               <View className="flex-row items-center">
@@ -201,6 +203,15 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
+
+      <LogoutConfirmationModal
+        visible={logoutModalVisible}
+        onCancel={() => setLogoutModalVisible(false)}
+        onConfirm={async () => {
+          setLogoutModalVisible(false);
+          await logout();
+        }}
+      />
     </>
   );
 };
