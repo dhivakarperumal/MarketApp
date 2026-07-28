@@ -18,33 +18,29 @@ import api, { API_BASE_URL } from "../services/api";
 import { AuthContext } from "../context/AuthContext";
 
 const resolveImage = (url?: any) => {
-    if (!url) return null;
-    let trimmed = url;
-    
-    if (Array.isArray(url) && url.length > 0) {
-        trimmed = url[0];
-    }
-    
-    if (typeof trimmed !== 'string') return null;
-    trimmed = trimmed.trim();
-    if (!trimmed) return null;
-    
-    try {
-        const parsed = JSON.parse(trimmed);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-            trimmed = parsed[0];
-        } else if (typeof parsed === 'string') {
-            trimmed = parsed;
-        }
-    } catch (e) {
-        // Not JSON, continue with trimmed string
-    }
-
+    if (!url || typeof url !== 'string') return null;
+    const trimmed = url.trim();
     if (!trimmed) return null;
     if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:')) return trimmed;
 
     const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
     return `${baseUrl}/${trimmed.replace(/^\/+/, '')}`;
+};
+
+const normalizeImageList = (value: any) => {
+    if (!value) return [];
+    if (Array.isArray(value)) return value.filter(Boolean);
+    if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (!trimmed) return [];
+        try {
+            const parsed = JSON.parse(trimmed);
+            return Array.isArray(parsed) ? parsed.filter(Boolean) : [parsed].filter(Boolean);
+        } catch {
+            return [trimmed];
+        }
+    }
+    return [value];
 };
 
 const getImageUrl = (item: any) => {
@@ -62,10 +58,14 @@ const getImageUrl = (item: any) => {
         item?.variants?.[0]?.images,
         item?.variant_info?.images
     ];
-    for (const c of candidates) {
-        const res = resolveImage(c);
-        if (res) return res;
-    }
+    
+    const images = candidates
+        .flatMap(c => normalizeImageList(c))
+        .map(resolveImage)
+        .filter(Boolean);
+
+    if (images.length > 0) return images[0];
+    
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(item?.product_name || item?.name || "Product")}`;
 };
 

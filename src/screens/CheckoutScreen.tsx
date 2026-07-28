@@ -10,34 +10,34 @@ import { useStore } from "../context/StoreContext";
 import api, { API_BASE_URL } from "../services/api";
 import Toast from "react-native-toast-message";
 
-const resolveImage = (url?: any) => {
+const resolveImage = (url?: any): string | null => {
     if (!url) return null;
-    let trimmed = url;
-    
-    if (Array.isArray(url) && url.length > 0) {
-        trimmed = url[0];
+    if (typeof url === 'object') {
+        url = url.url || url.image || url.image_url || url.product_image || url.src || null;
     }
-    
-    if (typeof trimmed !== 'string') return null;
-    trimmed = trimmed.trim();
-    if (!trimmed) return null;
-    
-    try {
-        const parsed = JSON.parse(trimmed);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-            trimmed = parsed[0];
-        } else if (typeof parsed === 'string') {
-            trimmed = parsed;
-        }
-    } catch (e) {
-        // Not JSON, continue with trimmed string
-    }
-
-    if (!trimmed) return null;
-    if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:')) return trimmed;
+    if (typeof url !== 'string') return null;
+    const t = url.trim();
+    if (!t) return null;
+    if (t.startsWith('http://') || t.startsWith('https://') || t.startsWith('data:')) return t;
 
     const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
-    return `${baseUrl}/${trimmed.replace(/^\/+/, '')}`;
+    return `${baseUrl}/${t.replace(/^\/+/, '')}`;
+};
+
+const normalizeImageList = (value: any) => {
+    if (!value) return [];
+    if (Array.isArray(value)) return value.filter(Boolean);
+    if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (!trimmed) return [];
+        try {
+            const parsed = JSON.parse(trimmed);
+            return Array.isArray(parsed) ? parsed.filter(Boolean) : [parsed].filter(Boolean);
+        } catch {
+            return [trimmed];
+        }
+    }
+    return [value];
 };
 
 const getImageUrl = (item: any) => {
@@ -55,10 +55,14 @@ const getImageUrl = (item: any) => {
         item?.variants?.[0]?.images,
         item?.variant_info?.images
     ];
-    for (const c of candidates) {
-        const res = resolveImage(c);
-        if (res) return res;
-    }
+    
+    const images = candidates
+        .flatMap(c => normalizeImageList(c))
+        .map(resolveImage)
+        .filter(Boolean);
+
+    if (images.length > 0) return images[0];
+    
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(item?.product_name || item?.name || "Product")}`;
 };
 import Geolocation from "react-native-geolocation-service";
