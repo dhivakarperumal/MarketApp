@@ -19,7 +19,20 @@ import { AuthContext } from "../context/AuthContext";
 
 const resolveImage = (url?: string | null) => {
     if (!url || typeof url !== 'string') return null;
-    const trimmed = url.trim();
+    let trimmed = url.trim();
+    if (!trimmed) return null;
+    
+    try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+            trimmed = parsed[0];
+        } else if (typeof parsed === 'string') {
+            trimmed = parsed;
+        }
+    } catch (e) {
+        // Not JSON, continue with trimmed string
+    }
+
     if (!trimmed) return null;
     if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:')) return trimmed;
 
