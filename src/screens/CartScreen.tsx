@@ -318,7 +318,7 @@ export const CartScreen = () => {
                 <Image
                   source={{
                     uri:
-                      resolveImage(item.product_image || item.image) || "https://ui-avatars.com/api/?name=Product",
+                      resolveImage(item.product_image || item.image || (item as any).product_images || (item as any).images) || `https://ui-avatars.com/api/?name=${encodeURIComponent(item.product_name || item.name || "Product")}`,
                   }}
                   className="w-28 h-28 rounded-2xl bg-slate-100"
                   resizeMode="cover"
@@ -453,7 +453,7 @@ export const CartScreen = () => {
         {/* Order Summary */}
 
         <View
-          className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl px-5 pt-5 pb-6 "
+          className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl px-5 pt-5 pb-24"
           style={{
             elevation: 18,
             shadowColor: "#000",
