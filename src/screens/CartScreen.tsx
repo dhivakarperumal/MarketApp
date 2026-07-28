@@ -453,7 +453,7 @@ export const CartScreen = () => {
         {/* Order Summary */}
 
         <View
-          className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl px-5 pt-5 pb-24"
+          className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl px-5 pt-5 pb-24 mb-5"
           style={{
             elevation: 18,
             shadowColor: "#000",
