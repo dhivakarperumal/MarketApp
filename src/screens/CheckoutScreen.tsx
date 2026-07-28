@@ -10,9 +10,16 @@ import { useStore } from "../context/StoreContext";
 import api, { API_BASE_URL } from "../services/api";
 import Toast from "react-native-toast-message";
 
-const resolveImage = (url?: string | null) => {
-    if (!url || typeof url !== 'string') return null;
-    let trimmed = url.trim();
+const resolveImage = (url?: any) => {
+    if (!url) return null;
+    let trimmed = url;
+    
+    if (Array.isArray(url) && url.length > 0) {
+        trimmed = url[0];
+    }
+    
+    if (typeof trimmed !== 'string') return null;
+    trimmed = trimmed.trim();
     if (!trimmed) return null;
     
     try {
