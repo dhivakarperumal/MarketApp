@@ -39,6 +39,28 @@ const resolveImage = (url?: any) => {
     const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
     return `${baseUrl}/${trimmed.replace(/^\/+/, '')}`;
 };
+
+const getImageUrl = (item: any) => {
+    const candidates = [
+        item?.product_image,
+        item?.image,
+        item?.product_images,
+        item?.images,
+        item?.thumbnail_image,
+        item?.image_url,
+        item?.product?.product_images,
+        item?.product?.images,
+        item?.product?.image,
+        item?.product?.thumbnail_image,
+        item?.variants?.[0]?.images,
+        item?.variant_info?.images
+    ];
+    for (const c of candidates) {
+        const res = resolveImage(c);
+        if (res) return res;
+    }
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(item?.product_name || item?.name || "Product")}`;
+};
 import Geolocation from "react-native-geolocation-service";
 import RazorpayCheckout from "react-native-razorpay";
 import { MapPin, Package, CreditCard, Shield, CheckCircle, User, Mail, Phone, Home, Building2, Map, Navigation, ArrowLeft } from "lucide-react-native";
@@ -801,7 +823,7 @@ const CheckoutScreen = () => {
           <Text className="text-lg font-semibold text-slate-800 mb-3">Order Summary</Text>
           {checkoutItems.map((item: any, idx: number) => (
             <View key={item.id || idx} className="flex-row items-center mb-3 border-b border-gray-100 pb-2">
-              <Image source={{ uri: resolveImage(item.product_image || item.image || (item as any).product_images || (item as any).images) || `https://ui-avatars.com/api/?name=${encodeURIComponent(item.product_name || item.name || "Product")}` }} className="w-12 h-12 rounded-lg bg-gray-50 mr-3" />
+              <Image source={{ uri: getImageUrl(item) }} className="w-12 h-12 rounded-lg bg-gray-50 mr-3" />
               <View className="flex-1">
                 <Text className="text-sm text-slate-700">{item.name} (x{item.quantity})</Text>
               </View>

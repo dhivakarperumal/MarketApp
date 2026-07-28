@@ -47,6 +47,28 @@ const resolveImage = (url?: any) => {
     return `${baseUrl}/${trimmed.replace(/^\/+/, '')}`;
 };
 
+const getImageUrl = (item: any) => {
+    const candidates = [
+        item?.product_image,
+        item?.image,
+        item?.product_images,
+        item?.images,
+        item?.thumbnail_image,
+        item?.image_url,
+        item?.product?.product_images,
+        item?.product?.images,
+        item?.product?.image,
+        item?.product?.thumbnail_image,
+        item?.variants?.[0]?.images,
+        item?.variant_info?.images
+    ];
+    for (const c of candidates) {
+        const res = resolveImage(c);
+        if (res) return res;
+    }
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(item?.product_name || item?.name || "Product")}`;
+};
+
 import { ShoppingCart,
   Plus,
   Minus,
@@ -316,10 +338,7 @@ export const CartScreen = () => {
                 {/* Product Image */}
 
                 <Image
-                  source={{
-                    uri:
-                      resolveImage(item.product_image || item.image || (item as any).product_images || (item as any).images) || `https://ui-avatars.com/api/?name=${encodeURIComponent(item.product_name || item.name || "Product")}`,
-                  }}
+                  source={{ uri: getImageUrl(item) }}
                   className="w-28 h-28 rounded-2xl bg-slate-100"
                   resizeMode="cover"
                 />

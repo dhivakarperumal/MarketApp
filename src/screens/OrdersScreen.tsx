@@ -35,6 +35,28 @@ const resolveImage = (url?: any) => {
     const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
     return `${baseUrl}/${trimmed.replace(/^\/+/, '')}`;
 };
+
+const getImageUrl = (item: any) => {
+    const candidates = [
+        item?.product_image,
+        item?.image,
+        item?.product_images,
+        item?.images,
+        item?.thumbnail_image,
+        item?.image_url,
+        item?.product?.product_images,
+        item?.product?.images,
+        item?.product?.image,
+        item?.product?.thumbnail_image,
+        item?.variants?.[0]?.images,
+        item?.variant_info?.images
+    ];
+    for (const c of candidates) {
+        const res = resolveImage(c);
+        if (res) return res;
+    }
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(item?.product_name || item?.name || "Product")}`;
+};
 import { useNavigation } from "@react-navigation/native";
 
 const StatusBadge = ({ status }: { status: string }) => {
@@ -250,7 +272,7 @@ export const OrdersScreen = () => {
                   {order.items?.slice(0, 2).map((item: any, index: number) => (
                     <View key={index} className="flex-row gap-3 mb-2 items-center">
                        <Image
-                          source={{ uri: resolveImage(item.product_image || item.image) || `https://ui-avatars.com/api/?name=${encodeURIComponent(item.product_name || item.name || "Product")}` }}
+                          source={{ uri: getImageUrl(item) }}
                           className="w-12 h-12 rounded-lg bg-gray-100"
                        />
                        <View className="flex-1">
@@ -395,7 +417,7 @@ export const OrdersScreen = () => {
                     <Text className="font-bold text-lg text-gray-800 mb-3">Products</Text>
                     {selectedOrder.items?.map((item: any, idx: number) => (
                       <View key={idx} className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm mb-3 flex-row gap-4">
-                         <Image source={{ uri: resolveImage(item.product_image || item.image) || `https://ui-avatars.com/api/?name=${encodeURIComponent(item.product_name || item.name || "Product")}` }} className="w-20 h-24 rounded-xl bg-gray-50" />
+                         <Image source={{ uri: getImageUrl(item) }} className="w-20 h-24 rounded-xl bg-gray-50" />
                          <View className="flex-1">
                             <Text className="font-bold text-gray-800 text-base" numberOfLines={2}>{item.product_name || item.name}</Text>
                             <Text className="font-bold text-[#0e6827] mt-1">₹{item.price}</Text>
