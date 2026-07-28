@@ -14,60 +14,9 @@ import {
   TextInput,
 } from "react-native";
 
-import api, { API_BASE_URL } from "../services/api";
+import api from "../services/api";
 import { AuthContext } from "../context/AuthContext";
-
-const resolveImage = (url?: any) => {
-    if (!url || typeof url !== 'string') return null;
-    const trimmed = url.trim();
-    if (!trimmed) return null;
-    if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:')) return trimmed;
-
-    const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
-    return `${baseUrl}/${trimmed.replace(/^\/+/, '')}`;
-};
-
-const normalizeImageList = (value: any) => {
-    if (!value) return [];
-    if (Array.isArray(value)) return value.filter(Boolean);
-    if (typeof value === 'string') {
-        const trimmed = value.trim();
-        if (!trimmed) return [];
-        try {
-            const parsed = JSON.parse(trimmed);
-            return Array.isArray(parsed) ? parsed.filter(Boolean) : [parsed].filter(Boolean);
-        } catch {
-            return [trimmed];
-        }
-    }
-    return [value];
-};
-
-const getImageUrl = (item: any) => {
-    const candidates = [
-        item?.product_image,
-        item?.image,
-        item?.product_images,
-        item?.images,
-        item?.thumbnail_image,
-        item?.image_url,
-        item?.product?.product_images,
-        item?.product?.images,
-        item?.product?.image,
-        item?.product?.thumbnail_image,
-        item?.variants?.[0]?.images,
-        item?.variant_info?.images
-    ];
-    
-    const images = candidates
-        .flatMap(c => normalizeImageList(c))
-        .map(resolveImage)
-        .filter(Boolean);
-
-    if (images.length > 0) return images[0];
-    
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(item?.product_name || item?.name || "Product")}`;
-};
+import { getImageUrl } from "../utils/imageUtils";
 
 import { ShoppingCart,
   Plus,

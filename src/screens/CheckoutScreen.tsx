@@ -7,64 +7,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { AuthContext } from "../context/AuthContext";
 import { useStore } from "../context/StoreContext";
-import api, { API_BASE_URL } from "../services/api";
+import api from "../services/api";
 import Toast from "react-native-toast-message";
-
-const resolveImage = (url?: any): string | null => {
-    if (!url) return null;
-    if (typeof url === 'object') {
-        url = url.url || url.image || url.image_url || url.product_image || url.src || null;
-    }
-    if (typeof url !== 'string') return null;
-    const t = url.trim();
-    if (!t) return null;
-    if (t.startsWith('http://') || t.startsWith('https://') || t.startsWith('data:')) return t;
-
-    const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
-    return `${baseUrl}/${t.replace(/^\/+/, '')}`;
-};
-
-const normalizeImageList = (value: any) => {
-    if (!value) return [];
-    if (Array.isArray(value)) return value.filter(Boolean);
-    if (typeof value === 'string') {
-        const trimmed = value.trim();
-        if (!trimmed) return [];
-        try {
-            const parsed = JSON.parse(trimmed);
-            return Array.isArray(parsed) ? parsed.filter(Boolean) : [parsed].filter(Boolean);
-        } catch {
-            return [trimmed];
-        }
-    }
-    return [value];
-};
-
-const getImageUrl = (item: any) => {
-    const candidates = [
-        item?.product_image,
-        item?.image,
-        item?.product_images,
-        item?.images,
-        item?.thumbnail_image,
-        item?.image_url,
-        item?.product?.product_images,
-        item?.product?.images,
-        item?.product?.image,
-        item?.product?.thumbnail_image,
-        item?.variants?.[0]?.images,
-        item?.variant_info?.images
-    ];
-    
-    const images = candidates
-        .flatMap(c => normalizeImageList(c))
-        .map(resolveImage)
-        .filter(Boolean);
-
-    if (images.length > 0) return images[0];
-    
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(item?.product_name || item?.name || "Product")}`;
-};
+import { getImageUrl } from "../utils/imageUtils";
 import Geolocation from "react-native-geolocation-service";
 import RazorpayCheckout from "react-native-razorpay";
 import { MapPin, Package, CreditCard, Shield, CheckCircle, User, Mail, Phone, Home, Building2, Map, Navigation, ArrowLeft } from "lucide-react-native";
@@ -244,7 +189,15 @@ const CheckoutScreen = () => {
       {
         id: buyNowProduct.id,
         name: buyNowProduct.name,
-        image: buyNowVariant?.images?.[0] || buyNowProduct?.thumbnail_image,
+        image: getImageUrl({
+          ...buyNowProduct,
+          image: buyNowProduct?.image,
+          thumbnail_image: buyNowProduct?.thumbnail_image,
+          product_images: buyNowProduct?.product_images || buyNowProduct?.images,
+          images: buyNowProduct?.product_images || buyNowProduct?.images,
+          variant_info: buyNowVariant,
+          variants: [buyNowVariant],
+        }, buyNowProduct.name),
         price: buyNowProduct.offer_price || buyNowProduct.price,
         quantity: buyNowQuantity,
         size: buyNowSize,

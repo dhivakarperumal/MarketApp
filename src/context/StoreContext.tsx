@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import api from '../services/api';
 import { AuthContext } from './AuthContext';
+import { getImageUrl } from '../utils/imageUtils';
 
 type CategoryItem = {
   id?: number | string;
@@ -128,6 +129,8 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
     const productId = product?.id || product?.product_id;
+    const imageUrl = getImageUrl(product, product?.name || product?.product_name);
+
     try {
       await api.post('/cart', {
         user_id: userId,
@@ -136,6 +139,10 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         price: product?.offer_price || product?.selling_price || product?.price || 0,
         variant_size: product?.variant_size || null,
         variant_color: product?.variant_color || null,
+        image: imageUrl,
+        product_image: imageUrl,
+        product_images: product?.product_images || product?.images || null,
+        thumbnail_image: product?.thumbnail_image || null,
       });
       await fetchCart();
     } catch (err) {

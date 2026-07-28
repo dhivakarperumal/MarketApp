@@ -13,7 +13,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import api, { API_BASE_URL } from '../services/api';
+import api from '../services/api';
 import { Star, ShoppingCart, ArrowLeft, Heart } from 'lucide-react-native';
 import { useStore } from '../context/StoreContext';
 import { AuthContext } from '../context/AuthContext';
@@ -22,6 +22,7 @@ import { calculateStockConsumptionInBaseUnits } from '../utils/stockUtils';
 import { ProductSection } from '../components/ProductSection';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { CustomAlertModal } from '../components/CustomAlertModal';
+import { getImageList } from '../utils/imageUtils';
 
 export const ProductDetails = () => {
   const route = useRoute<any>();
@@ -170,53 +171,8 @@ export const ProductDetails = () => {
     }
   };
 
-  const resolveImage = (url?: string | null) => {
-    if (!url || typeof url !== 'string') return null;
-    const t = url.trim();
-    if (!t) return null;
-    if (t.startsWith('http://') || t.startsWith('https://') || t.startsWith('data:')) return t;
-
-    const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
-    return `${baseUrl}/${t.replace(/^\/+/, '')}`;
-  };
-
-  const normalizeImageList = (value: any) => {
-    if (!value) return [];
-    if (Array.isArray(value)) return value.filter(Boolean);
-    if (typeof value === 'string') {
-      const trimmed = value.trim();
-      if (!trimmed) return [];
-      try {
-        const parsed = JSON.parse(trimmed);
-        return Array.isArray(parsed) ? parsed.filter(Boolean) : [parsed].filter(Boolean);
-      } catch {
-        return [trimmed];
-      }
-    }
-    return [value];
-  };
-
   const getDisplayImages = (data: any) => {
-    const candidates = [
-      data?.variants?.[0]?.images,
-      data?.thumbnail_image,
-      data?.product_images,
-      data?.images,
-      data?.image,
-      data?.image_url,
-    ];
-
-    const imgs = Array.from(
-      new Set(
-        candidates
-          .flatMap((c: any) => normalizeImageList(c))
-          .map(resolveImage)
-          .filter(Boolean),
-      ),
-    );
-
-    if (imgs.length > 0) return imgs;
-    return [`https://ui-avatars.com/api/?name=${encodeURIComponent(data?.name || 'Product')}&background=random`];
+    return getImageList(data, data?.name || 'Product');
   };
 
   useEffect(() => {
