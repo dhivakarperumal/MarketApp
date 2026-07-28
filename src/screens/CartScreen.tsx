@@ -14,8 +14,18 @@ import {
   TextInput,
 } from "react-native";
 
-import api from "../services/api";
+import api, { API_BASE_URL } from "../services/api";
 import { AuthContext } from "../context/AuthContext";
+
+const resolveImage = (url?: string | null) => {
+    if (!url || typeof url !== 'string') return null;
+    const trimmed = url.trim();
+    if (!trimmed) return null;
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:')) return trimmed;
+
+    const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
+    return `${baseUrl}/${trimmed.replace(/^\/+/, '')}`;
+};
 
 import { ShoppingCart,
   Plus,
@@ -187,7 +197,7 @@ export const CartScreen = () => {
           }
           contentContainerStyle={{
             padding: 16,
-            paddingBottom: 280,
+            paddingBottom: 200,
           }}
           ListHeaderComponent={
             <View className="mb-4">
@@ -288,8 +298,7 @@ export const CartScreen = () => {
                 <Image
                   source={{
                     uri:
-                      item.product_image ||
-                      item.image,
+                      resolveImage(item.product_image || item.image) || "https://ui-avatars.com/api/?name=Product",
                   }}
                   className="w-28 h-28 rounded-2xl bg-slate-100"
                   resizeMode="cover"
@@ -424,7 +433,7 @@ export const CartScreen = () => {
         {/* Order Summary */}
 
         <View
-          className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl px-5 pt-5 pb-32 "
+          className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl px-5 pt-5 pb-6 "
           style={{
             elevation: 18,
             shadowColor: "#000",
@@ -461,7 +470,7 @@ export const CartScreen = () => {
 
               <TouchableOpacity 
                 onPress={() => navigation.navigate("Checkout")}
-                className="bg-[#0e6827] mt-4 py-4 mb-20 rounded-xl items-center"
+                className="bg-[#0e6827] mt-4 py-4 mb-4 rounded-xl items-center"
               >
                 <Text className="text-white  font-bold text-lg">Proceed to Checkout</Text>
               </TouchableOpacity>

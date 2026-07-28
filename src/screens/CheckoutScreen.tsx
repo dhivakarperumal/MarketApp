@@ -7,8 +7,18 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { AuthContext } from "../context/AuthContext";
 import { useStore } from "../context/StoreContext";
-import api from "../services/api";
+import api, { API_BASE_URL } from "../services/api";
 import Toast from "react-native-toast-message";
+
+const resolveImage = (url?: string | null) => {
+    if (!url || typeof url !== 'string') return null;
+    const trimmed = url.trim();
+    if (!trimmed) return null;
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:')) return trimmed;
+
+    const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
+    return `${baseUrl}/${trimmed.replace(/^\/+/, '')}`;
+};
 import Geolocation from "react-native-geolocation-service";
 import RazorpayCheckout from "react-native-razorpay";
 import { MapPin, Package, CreditCard, Shield, CheckCircle, User, Mail, Phone, Home, Building2, Map, Navigation, ArrowLeft } from "lucide-react-native";
@@ -771,7 +781,10 @@ const CheckoutScreen = () => {
           <Text className="text-lg font-semibold text-slate-800 mb-3">Order Summary</Text>
           {checkoutItems.map((item: any, idx: number) => (
             <View key={item.id || idx} className="flex-row items-center mb-3 border-b border-gray-100 pb-2">
-              <Text className="flex-1 text-sm text-slate-700">{item.name} (x{item.quantity})</Text>
+              <Image source={{ uri: resolveImage(item.image) || "https://ui-avatars.com/api/?name=Product" }} className="w-12 h-12 rounded-lg bg-gray-50 mr-3" />
+              <View className="flex-1">
+                <Text className="text-sm text-slate-700">{item.name} (x{item.quantity})</Text>
+              </View>
               <Text className="text-sm font-semibold text-slate-800">₹{(item.price * item.quantity).toFixed(2)}</Text>
             </View>
           ))}
