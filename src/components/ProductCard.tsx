@@ -15,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import QuickView from './QuickView';
 import { useStore } from '../context/StoreContext';
 import { CustomAlertModal } from './CustomAlertModal';
+import { API_BASE_URL } from '../services/api';
 
 // product is treated as any to accommodate varying API shapes
 
@@ -22,8 +23,26 @@ const resolveImage = (url?: string | null) => {
     if (!url || typeof url !== 'string') return null;
     const trimmed = url.trim();
     if (!trimmed) return null;
-    if (trimmed.startsWith('http') || trimmed.startsWith('data:')) return trimmed;
-    return trimmed;
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:')) return trimmed;
+
+    const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
+    return `${baseUrl}/${trimmed.replace(/^\/+/, '')}`;
+};
+
+const normalizeImageList = (value: any) => {
+    if (!value) return [];
+    if (Array.isArray(value)) return value.filter(Boolean);
+    if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (!trimmed) return [];
+        try {
+            const parsed = JSON.parse(trimmed);
+            return Array.isArray(parsed) ? parsed.filter(Boolean) : [parsed].filter(Boolean);
+        } catch {
+            return [trimmed];
+        }
+    }
+    return [value];
 };
 
 const ProductCard: React.FC<{
@@ -63,13 +82,31 @@ const ProductCard: React.FC<{
             });
         };
 
-        const imageSrc =
-            Array.isArray((product as any).product_images) && (product as any).product_images.length > 0
-                ? resolveImage((product as any).product_images[0])
-                : resolveImage((product as any).thumbnail_image) ||
-                `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                    product?.name || "Product"
-                )}&background=d1fae5&color=065f46&size=400`;
+        const imageSrc = (() => {
+            const candidates = [
+                (product as any)?.product_images,
+                (product as any)?.images,
+                (product as any)?.thumbnail_image,
+                (product as any)?.image,
+                (product as any)?.image_url,
+                (product as any)?.variants?.[0]?.images,
+            ];
+
+            const images = Array.from(
+                new Set(
+                    candidates
+                        .flatMap((candidate: any) => normalizeImageList(candidate))
+                        .map(resolveImage)
+                        .filter(Boolean) as string[],
+                ),
+            );
+
+            if (images.length > 0) return images[0];
+
+            return `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                product?.name || "Product"
+            )}&background=d1fae5&color=065f46&size=400`;
+        })();
         const imageUri: string | undefined = imageSrc ? imageSrc : undefined;
 
         const handleAdd = () => {

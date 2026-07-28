@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Star, ShoppingCart, Heart } from 'lucide-react-native';
 import { useStore } from '../context/StoreContext';
 import { calculateStockConsumptionInBaseUnits } from '../utils/stockUtils';
+import { API_BASE_URL } from '../services/api';
 
 type Props = {
   visible: boolean;
@@ -19,8 +20,10 @@ const resolveImage = (url?: string | null) => {
   if (!url || typeof url !== 'string') return null;
   const t = url.trim();
   if (!t) return null;
-  if (t.startsWith('http') || t.startsWith('data:')) return t;
-  return t;
+  if (t.startsWith('http://') || t.startsWith('https://') || t.startsWith('data:')) return t;
+
+  const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
+  return `${baseUrl}/${t.replace(/^\/+/, '')}`;
 };
 
 const normalizeImageList = (value: any) => {

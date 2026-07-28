@@ -13,7 +13,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import api from '../services/api';
+import api, { API_BASE_URL } from '../services/api';
 import { Star, ShoppingCart, ArrowLeft, Heart } from 'lucide-react-native';
 import { useStore } from '../context/StoreContext';
 import { AuthContext } from '../context/AuthContext';
@@ -174,8 +174,10 @@ export const ProductDetails = () => {
     if (!url || typeof url !== 'string') return null;
     const t = url.trim();
     if (!t) return null;
-    if (t.startsWith('http') || t.startsWith('data:')) return t;
-    return t;
+    if (t.startsWith('http://') || t.startsWith('https://') || t.startsWith('data:')) return t;
+
+    const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
+    return `${baseUrl}/${t.replace(/^\/+/, '')}`;
   };
 
   const normalizeImageList = (value: any) => {
