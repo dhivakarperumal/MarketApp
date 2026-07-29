@@ -93,8 +93,8 @@ export const getImageList = (item: any, fallbackName?: string) => {
   const images = Array.from(new Set(candidates.flatMap((candidate) => normalizeImageList(candidate))));
   if (images.length > 0) return images;
 
-  const fallbackName = fallbackName || item?.product_name || item?.name || item?.product?.name || 'Product';
-  return [`https://ui-avatars.com/api/?name=${encodeURIComponent(fallbackName)}&background=random`];
+  const finalName = fallbackName || item?.product_name || item?.name || item?.product?.name || 'Product';
+  return [`https://ui-avatars.com/api/?name=${encodeURIComponent(finalName)}&background=random`];
 };
 
 export const getImageUrl = (item: any, fallbackName?: string) => {
