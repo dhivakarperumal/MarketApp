@@ -177,6 +177,7 @@ export const CartScreen = () => {
       <View className="flex-1">
 
         <FlatList
+          style={{ flex: 1 }}
           data={cart}
           keyExtractor={(item) => item.id.toString()}
           refreshControl={
@@ -188,8 +189,9 @@ export const CartScreen = () => {
           }
           contentContainerStyle={{
             padding: 16,
-            paddingBottom: 200,
+            paddingBottom: 300,
           }}
+          ListFooterComponent={<View style={{ height: 300 }} />}
           ListHeaderComponent={
             <View className="mb-4">
               <TouchableOpacity
