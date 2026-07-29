@@ -135,11 +135,22 @@ const CheckoutScreen = () => {
           chargesData = res.data;
         }
       }
-      if (chargesData && chargesData.id) {
+      if (chargesData && (chargesData.id || typeof chargesData === 'object')) {
         setDeliveryCharges(chargesData);
       }
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.warn('Delivery charges endpoint failed:', error);
+      if (error?.status === 404 || error?.response?.status === 404) {
+        try {
+          const fallbackRes = await api.get('/settings/delivery');
+          const fallbackData = fallbackRes.data?.data ?? fallbackRes.data;
+          if (fallbackData && typeof fallbackData === 'object') {
+            setDeliveryCharges(fallbackData);
+          }
+        } catch (fallbackError) {
+          console.warn('Delivery fallback route failed:', fallbackError);
+        }
+      }
     }
   };
 

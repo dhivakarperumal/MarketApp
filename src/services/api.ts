@@ -68,7 +68,7 @@ api.interceptors.response.use(
       console.error('❌ Network error after retries:', error.message);
       return Promise.reject({
         status: 'network_error',
-        message: 'Network connection failed. Please check:\n1. Backend server is running on 192.168.1.9:5000\n2. Your device is connected to the same WiFi\n3. Firewall is not blocking port 5000',
+        message: `Network connection failed. Please check:\n1. Backend server is running on ${API_BASE_URL.replace(/\/api\/?$/, '')}\n2. Your device is connected to the same network\n3. Firewall/antivirus is not blocking the port`,
       });
     }
 

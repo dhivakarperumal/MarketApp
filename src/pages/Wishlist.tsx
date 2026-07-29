@@ -15,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../context/AuthContext';
 import { useStore } from '../context/StoreContext';
 import api from '../services/api';
+import { getImageUrl } from '../utils/imageUtils';
 import { CustomAlertModal } from '../components/CustomAlertModal';
 
 interface WishlistItem {
@@ -143,7 +144,13 @@ export const Wishlist = () => {
               <View className="bg-white rounded-2xl p-4 mb-4 shadow-sm shadow-slate-200 border border-green-100 flex-row">
                 {/* Image */}
                 <Image
-                  source={{ uri: item.product_image }}
+                  source={{
+                    uri:
+                      getImageUrl(item, item.product_name || item.name || 'Product') ||
+                      `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                        item.product_name || item.name || 'Product'
+                      )}&background=d1fae5&color=065f46`,
+                  }}
                   className="w-24 h-24 rounded-xl border-2 border-green-100 bg-white mr-4"
                   resizeMode="cover"
                 />
@@ -200,4 +207,4 @@ export const Wishlist = () => {
       />
     </View>
   );
-};
+};

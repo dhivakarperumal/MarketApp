@@ -152,23 +152,31 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
   const toggleWishlist = async (product: any) => {
     if (!userId) {
-      // could show a toast or prompt login
       console.warn('User not logged in - cannot toggle wishlist');
       return;
     }
 
     const productId = product?.id || product?.product_id;
+    const imageUrl = getImageUrl(product, product?.name || product?.product_name || 'Product');
+    const wishlistPayload = {
+      user_id: userId,
+      product_id: productId,
+      product_name: product?.name || product?.product_name || product?.title || null,
+      price: product?.offer_price || product?.selling_price || product?.price || 0,
+      image: imageUrl,
+      product_image: imageUrl,
+      product_images: product?.product_images || product?.images || null,
+      thumbnail_image: product?.thumbnail_image || imageUrl,
+      variant_size: product?.variant_size || null,
+      variant_color: product?.variant_color || null,
+    };
     const exists = wishlist.some((w) => w.product_id === productId || w.id === productId);
 
     try {
       if (exists) {
         await api.delete(`/wishlist/${userId}/${productId}`);
       } else {
-        await api.post('/wishlist', {
-          user_id: userId,
-          product_id: productId,
-          price: product?.offer_price || product?.selling_price || product?.price || 0,
-        });
+        await api.post('/wishlist', wishlistPayload);
       }
       await fetchWishlist();
     } catch (err) {
