@@ -27,7 +27,7 @@ import { getImageList } from '../utils/imageUtils';
 export const ProductDetails = () => {
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
-  const { addToCart } = useStore();
+  const { addToCart, toggleWishlist, wishlist } = useStore();
   const id = route.params?.id || route.params?.productId || null;
 
   const [product, setProduct] = useState<any>(route.params?.product || null);
@@ -240,7 +240,12 @@ export const ProductDetails = () => {
     if (user && product) {
       checkUserReview();
     }
-  }, [user, product]);
+    if (product) {
+      const productId = product?.id || product?.product_id;
+      const isWishlisted = wishlist.some((w: any) => w.product_id === productId || w.id === productId);
+      setWishlisted(isWishlisted);
+    }
+  }, [user, product, wishlist]);
 
   if (loading) {
     return (
@@ -309,7 +314,15 @@ export const ProductDetails = () => {
           <Text className="text-xl font-bold text-white pr-4">Product Details</Text>
         </View>
         <TouchableOpacity
-          onPress={() => setWishlisted(!wishlisted)}
+          onPress={async () => {
+            try {
+              await toggleWishlist(product);
+              setWishlisted((prev) => !prev);
+            } catch (err) {
+              console.error('Failed to update wishlist:', err);
+              showAlert('Error', 'Unable to update wishlist right now.');
+            }
+          }}
           className="w-10 h-10 bg-white/20 rounded-full items-center justify-center"
         >
           <Heart size={20} color={wishlisted ? '#ef4444' : '#ffffff'} fill={wishlisted ? '#ef4444' : 'transparent'} />
